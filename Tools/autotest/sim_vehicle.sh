@@ -250,9 +250,9 @@ if [ $START_ANTENNA_TRACKER == 1 ]; then
     TRACKIN_PORT="127.0.0.1:"$((5502+10*$TRACKER_INSTANCE))
     TRACKOUT_PORT="127.0.0.1:"$((5501+10*$TRACKER_INSTANCE))
     TRACKER_UARTA="tcp:127.0.0.1:"$((5760+10*$TRACKER_INSTANCE))
-    cmd="nice /tmp/AntennaTracker.build/AntennaTracker.elf -I1"
+    cmd="python /tmp/AntennaTracker.build/AntennaTracker.elf -I1"
     $autotest/run_in_terminal_window.sh "AntennaTracker" $cmd || exit 1
-    $autotest/run_in_terminal_window.sh "pysim(Tracker)" nice $autotest/pysim/sim_tracker.py --home=$TRACKER_HOME --simin=$TRACKIN_PORT --simout=$TRACKOUT_PORT $TRACKER_ARGS || exit 1
+    $autotest/run_in_terminal_window.sh "pysim(Tracker)" python $autotest/pysim/sim_tracker.py --home=$TRACKER_HOME --simin=$TRACKIN_PORT --simout=$TRACKOUT_PORT $TRACKER_ARGS || exit 1
     popd
 fi
 
@@ -266,18 +266,18 @@ case $VEHICLE in
         [ "$REVERSE_THROTTLE" == 1 ] && {
             EXTRA_SIM="$EXTRA_SIM --revthr"
         }
-        RUNSIM="nice $autotest/jsbsim/runsim.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
+        RUNSIM="python $autotest/jsbsim/runsim.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
         PARMS="ArduPlane.parm"
         if [ $WIPE_EEPROM == 1 ]; then
             cmd="$cmd -PFORMAT_VERSION=13 -PSKIP_GYRO_CAL=1 -PRC3_MIN=1000 -PRC3_TRIM=1000"
         fi
         ;;
     ArduCopter)
-        RUNSIM="nice $autotest/pysim/sim_multicopter.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
+        RUNSIM="python $autotest/pysim/sim_multicopter.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
         PARMS="copter_params.parm"
         ;;
     APMrover2)
-        RUNSIM="nice $autotest/pysim/sim_rover.py --home=$SIMHOME --rate=400 $EXTRA_SIM"
+        RUNSIM="python $autotest/pysim/sim_rover.py --home=$SIMHOME --rate=400 $EXTRA_SIM"
         PARMS="Rover.parm"
         ;;
     *)
