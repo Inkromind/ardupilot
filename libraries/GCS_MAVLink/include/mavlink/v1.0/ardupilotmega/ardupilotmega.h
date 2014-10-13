@@ -100,6 +100,7 @@ typedef enum MAV_CMD
 	MAV_CMD_PAYLOAD_PREPARE_DEPLOY=30001, /* Deploy payload on a Lat / Lon / Alt position. This includes the navigation to reach the required release position and velocity. |Operation mode. 0: prepare single payload deploy (overwriting previous requests), but do not execute it. 1: execute payload deploy immediately (rejecting further deploy commands during execution, but allowing abort). 2: add payload deploy to existing deployment list.| Desired approach vector in degrees compass heading (0..360). A negative value indicates the system can define the approach vector at will.| Desired ground speed at release time. This can be overriden by the airframe in case it needs to meet minimum airspeed. A negative value indicates the system can define the ground speed at will.| Minimum altitude clearance to the release position in meters. A negative value indicates the system can define the clearance at will.| Latitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT| Longitude unscaled for MISSION_ITEM or in 1e7 degrees for MISSION_ITEM_INT| Altitude, in meters WGS84|  */
 	MAV_CMD_PAYLOAD_CONTROL_DEPLOY=30002, /* Control the payload deployment. |Operation mode. 0: Abort deployment, continue normal mission. 1: switch to payload deploment mode. 100: delete first payload deployment request. 101: delete all payload deployment requests.| Reserved| Reserved| Reserved| Reserved| Reserved| Reserved|  */
 	MAV_CMD_ENUM_END=30003, /*  | */
+	MAV_CMD_START_TEST_FLIGHT=50001, /* Mission command to start test flight |Empty| Empty| Empty| Empty| Empty| Empty| Empty|  */
 } MAV_CMD;
 #endif
 
@@ -139,6 +140,18 @@ typedef enum RALLY_FLAGS
 	LAND_IMMEDIATELY=2, /* Flag set when plane is to immediately descend to break altitude and land without GCS intervention.  Flag not set when plane is to loiter at Rally point until commanded to land. | */
 	RALLY_FLAGS_ENUM_END=3, /*  | */
 } RALLY_FLAGS;
+#endif
+
+/** @brief  */
+#ifndef HAVE_ENUM_PARACHUTE_ACTION
+#define HAVE_ENUM_PARACHUTE_ACTION
+typedef enum PARACHUTE_ACTION
+{
+	PARACHUTE_DISABLE=0, /* Disable parachute release | */
+	PARACHUTE_ENABLE=1, /* Enable parachute release | */
+	PARACHUTE_RELEASE=2, /* Release parachute | */
+	PARACHUTE_ACTION_ENUM_END=3, /*  | */
+} PARACHUTE_ACTION;
 #endif
 
 /** @brief  */

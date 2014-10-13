@@ -63,3 +63,4 @@ SIM_MAG_RND     0
 # CIRCLE 		7 !
 # POSITION 		8
 # LAND 			9 !
+ARMING_CHECK 0

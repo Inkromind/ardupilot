@@ -1292,6 +1292,9 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
             }
             break;
 #endif
+        case MAV_CMD_START_TEST_FLIGHT:
+            result = mas_test_flight_start();
+            break;
         default:
             result = MAV_RESULT_UNSUPPORTED;
             break;

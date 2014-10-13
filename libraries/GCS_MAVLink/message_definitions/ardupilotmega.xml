@@ -33,6 +33,16 @@
               <param index="6">Empty</param>
               <param index="7">Empty</param>
             </entry>
+            <entry name="MAV_CMD_START_TEST_FLIGHT" value="50001">
+              <description>Mission command to start test flight</description>
+              <param index="1">Empty</param>
+              <param index="2">Empty</param>
+              <param index="3">Empty</param>
+              <param index="4">Empty</param>
+              <param index="5">Empty</param>
+              <param index="6">Empty</param>
+              <param index="7">Empty</param>
+            </entry>
           </enum>
 	  
 	  	<!--  AP_Limits Enums -->
