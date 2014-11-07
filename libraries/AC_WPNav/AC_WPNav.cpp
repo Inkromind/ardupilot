@@ -86,10 +86,11 @@ const AP_Param::GroupInfo AC_WPNav::var_info[] PROGMEM = {
 // Note that the Vector/Matrix constructors already implicitly zero
 // their values.
 //
-AC_WPNav::AC_WPNav(const AP_InertialNav& inav, const AP_AHRS& ahrs, AC_PosControl& pos_control) :
+AC_WPNav::AC_WPNav(const AP_InertialNav& inav, const AP_AHRS& ahrs, AC_PosControl& pos_control, const AC_AttitudeControl& attitude_control) :
     _inav(inav),
     _ahrs(ahrs),
     _pos_control(pos_control),
+    _attitude_control(attitude_control),
     _loiter_last_update(0),
     _loiter_step(0),
     _pilot_accel_fwd_cms(0),
@@ -341,7 +342,7 @@ void AC_WPNav::wp_and_spline_init()
 void AC_WPNav::set_speed_xy(float speed_cms)
 {
     // range check new target speed and update position controller
-    if (_wp_speed_cms >= WPNAV_WP_SPEED_MIN) {
+    if (speed_cms >= WPNAV_WP_SPEED_MIN) {
         _wp_speed_cms = speed_cms;
         _pos_control.set_speed_xy(_wp_speed_cms);
         // flag that wp leash must be recalculated
@@ -367,7 +368,7 @@ void AC_WPNav::set_wp_destination(const Vector3f& destination)
     set_wp_origin_and_destination(origin, destination);
 }
 
-/// set_origin_and_destination - set origin and destination using lat/lon coordinates
+/// set_origin_and_destination - set origin and destination waypoints using position vectors (distance from home in cm)
 void AC_WPNav::set_wp_origin_and_destination(const Vector3f& origin, const Vector3f& destination)
 {
     // store origin and destination locations
@@ -395,7 +396,7 @@ void AC_WPNav::set_wp_origin_and_destination(const Vector3f& origin, const Vecto
         _yaw = get_bearing_cd(_origin, _destination);
     } else {
         // set target yaw to current heading.  Alternatively we could pull this from the attitude controller if we had access to it
-        _yaw = _ahrs.yaw_sensor;
+        _yaw = _attitude_control.angle_ef_targets().z;
     }
 
     // initialise intermediate point to the origin
@@ -412,6 +413,33 @@ void AC_WPNav::set_wp_origin_and_destination(const Vector3f& origin, const Vecto
     // get speed along track (note: we convert vertical speed into horizontal speed equivalent)
     float speed_along_track = curr_vel.x * _pos_delta_unit.x + curr_vel.y * _pos_delta_unit.y + curr_vel.z * _pos_delta_unit.z;
     _limited_speed_xy_cms = constrain_float(speed_along_track,0,_wp_speed_cms);
+}
+
+/// shift_wp_origin_to_current_pos - shifts the origin and destination so the origin starts at the current position
+///     used to reset the position just before takeoff
+///     relies on set_wp_destination or set_wp_origin_and_destination having been called first
+void AC_WPNav::shift_wp_origin_to_current_pos()
+{
+    // return immediately if vehicle is not at the origin
+    if (_track_desired > 0.0f) {
+        return;
+    }
+
+    // get current and target locations
+    const Vector3f curr_pos = _inav.get_position();
+    const Vector3f pos_target = _pos_control.get_pos_target();
+
+    // calculate difference between current position and target
+    Vector3f pos_diff = curr_pos - pos_target;
+
+    // shift origin and destination
+    _origin += pos_diff;
+    _destination += pos_diff;
+
+    // move pos controller target and disable feed forward
+    _pos_control.set_pos_target(curr_pos);
+    _pos_control.freeze_ff_xy();
+    _pos_control.freeze_ff_z();
 }
 
 /// get_wp_stopping_point_xy - returns vector to stopping point based on a horizontal position and velocity
@@ -758,7 +786,7 @@ void AC_WPNav::set_spline_origin_and_destination(const Vector3f& origin, const V
     }
 
     // initialise yaw heading to current heading
-    _yaw = _ahrs.yaw_sensor;
+    _yaw = _attitude_control.angle_ef_targets().z;
 
     // store origin and destination locations
     _origin = origin;
