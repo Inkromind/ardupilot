@@ -1,15 +1,13 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant::Config.run do |config|
-  config.vm.box = "ubuntu-12.04-32bit"
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+Vagrant.configure("2") do |config|
+  config.vm.box = "hashicorp/precise64"
 
-  config.vm.share_folder("ardupilot", "/home/vagrant/ardupilot", ".")
-
-  # Allow symlinks
-  config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/cross-compiler", "1"]
-  # Otherwise the compile will go into swap, making things slow
-  config.vm.customize ["modifyvm", :id, "--memory", "2048"]
+  config.vm.synced_folder ".","/home/vagrant/ardupilot"
+  
+  config.vm.provider "virtualbox" do |v|
+    v.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/cross-compiler", "1"]
+    v.customize ["modifyvm", :id, "--memory", "3072", "--cpus", "4"]
+  end
 end
-
