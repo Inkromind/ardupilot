@@ -57,7 +57,9 @@ ifneq ($(wildcard systemcmds/auth),)
 MODULES		+= systemcmds/auth
 endif
 MODULES         += systemcmds/mtd
+ifneq ($(wildcard systemcmds/reflect),)  
 MODULES         += systemcmds/reflect
+endif
 
 #
 # Library modules
@@ -73,6 +75,12 @@ MODULES	        += modules/libtomfastmath
 MODULES         += modules/libtomcrypt
 endif
 MODULES		+= lib/conversion
+
+ifneq ($(wildcard $(SKETCHBOOK)/../uavcan),)  
+MODULES         += modules/uavcan
+MODULES         += lib/mathlib
+LIBRARIES       += lib/mathlib/CMSIS
+endif
 
 #
 # Transitional support - add commands from the NuttX export archive.
