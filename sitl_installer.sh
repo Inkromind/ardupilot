@@ -32,10 +32,10 @@ echo '#! /bin/bash' >>copter.sh
 echo 'read -p "Do you want to reset parameters to default? [Do this first run](y/n) " RESP' >>copter.sh
 echo 'if [ "$RESP" = "y" ]; then' >>copter.sh
 echo 'cd ~/ardupilot/ArduCopter' >>copter.sh
-echo 'sim_vehicle.sh -v ArduCopter -f X  -j 2 -w --console --map --aircraft test' >>copter.sh
+echo 'sim_vehicle.sh -v ArduCopter -f quad  -j 4 -w --console --map --aircraft test' >>copter.sh
 echo 'else' >>copter.sh
 echo 'cd ~/ardupilot/ArduCopter' >>copter.sh
-echo 'sim_vehicle.sh -v ArduCopter -f X  -j 2 --console --map --aircraft test' >>copter.sh
+echo 'sim_vehicle.sh -v ArduCopter -f quad  -j 4 --console --map --aircraft test' >>copter.sh
 echo 'fi'  >>copter.sh
 chmod +x copter.sh
 
