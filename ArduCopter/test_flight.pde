@@ -94,51 +94,52 @@ static void mas_test_flight_loop()
             break;
         case 2:
             if (verify_command(cmd)) {
+                init_arm_motors();
                 mas_test_flight_state = 3;
-                hal.console->printf_P(PSTR("delay command completed. Taking off to 30m...\n"));
-                mas_takeoff(30);
+                hal.console->printf_P(PSTR("delay command completed. Taking off to 2m...\n"));
+                mas_takeoff(2);
             }
             break;
         case 3:
             if (verify_command(cmd)) {
                 mas_test_flight_state = 4;
-                hal.console->printf_P(PSTR("Reached target altitude... Moving forward 50m\n"));
-                mas_forward(50);
+                hal.console->printf_P(PSTR("Reached target altitude... Moving forward 2m\n"));
+                mas_forward(2);
             }
             break;
         case 4:
             if (verify_command(cmd)) {
                 mas_test_flight_state = 5;
-                hal.console->printf_P(PSTR("Reached location 1... Moving right 25m\n"));
-                mas_right(25);
+                hal.console->printf_P(PSTR("Reached location 1... Moving right 1m\n"));
+                mas_right(1);
             }
             break;
         case 5:
             if (verify_command(cmd)) {
                 mas_test_flight_state = 6;
-                hal.console->printf_P(PSTR("Reached location 2... Descending 15m\n"));
-                mas_down(15);
+                hal.console->printf_P(PSTR("Reached location 2... Descending 1m\n"));
+                mas_down(1);
             }
             break;
         case 6:
             if (verify_command(cmd)) {
                 mas_test_flight_state = 7;
-                hal.console->printf_P(PSTR("Reached target altitude 2... Moving back 50m\n"));
-                mas_back(50);
+                hal.console->printf_P(PSTR("Reached target altitude 2... Moving back 2m\n"));
+                mas_back(2);
             }
             break;
         case 7:
             if (verify_command(cmd)) {
                 mas_test_flight_state = 8;
-                hal.console->printf_P(PSTR("Reached location 3... Ascending 25m\n"));
-                mas_up(25);
+                hal.console->printf_P(PSTR("Reached location 3... Ascending 1m\n"));
+                mas_up(1);
             }
             break;
         case 8:
             if (verify_command(cmd)) {
                 mas_test_flight_state = 9;
-                hal.console->printf_P(PSTR("Reached target altitude 3... Moving left 25m\n"));
-                mas_left(25);
+                hal.console->printf_P(PSTR("Reached target altitude 3... Moving left 1m\n"));
+                mas_left(1);
             }
             break;
         case 9:
