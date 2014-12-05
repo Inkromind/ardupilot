@@ -829,6 +829,7 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 #ifdef USERHOOK_SUPERSLOWLOOP
     { userhook_SuperSlowLoop,400,   10 },
 #endif
+    { mas_test_flight_loop, 1,      10 },
 };
 #else
 /*

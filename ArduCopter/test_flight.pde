@@ -9,8 +9,10 @@ static uint8_t mas_test_flight_start()
     mas_test_flight_state = 0;
     mission.stop();
     mission.clear();
+    gcs_send_text_P(SEVERITY_HIGH,PSTR("Starting test flight."));
     if (set_mode(AUTO))
     {
+        gcs_send_text_P(SEVERITY_HIGH,PSTR("Auto mode started."));
         mas_test_flight_state = 1;
         return MAV_RESULT_ACCEPTED;
     }
@@ -40,6 +42,13 @@ static Location mas_vector_to_location(Vector3f vec)
 static void mas_do_nav(Location loc) {
     cmd.id = MAV_CMD_NAV_WAYPOINT;
     cmd.content.location = loc;
+    start_command(cmd);
+}
+
+static void mas_loiter(int8_t sec) {
+    auto_loiter_start();
+    cmd.id = MAV_CMD_CONDITION_DELAY;
+    cmd.content.delay.seconds = sec;
     start_command(cmd);
 }
 
@@ -78,81 +87,99 @@ static void mas_land() {
     start_command(cmd);
 }
 
-
-
-
-
 static void mas_test_flight_loop()
 {
+    if (mas_test_flight_state > 0) {
+        if (control_mode != AUTO) {
+            gcs_send_text_P(SEVERITY_HIGH,PSTR("No longer in AUTO flightmode. Cancelling mission."));
+            mas_test_flight_state = 0;
+            return;
+        }
+    }
     switch (mas_test_flight_state) {
         case 1:
-            cmd.id = MAV_CMD_CONDITION_DELAY;
-            cmd.content.delay.seconds = 20;
-            start_command(cmd);
+            mas_loiter(10);
             hal.console->printf_P(PSTR("started delay command\n"));
+            gcs_send_text_P(SEVERITY_HIGH,PSTR("Started delay command"));
             mas_test_flight_state = 2;
             break;
         case 2:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Delay command completed. Arming engines..."));
                 init_arm_motors();
                 mas_test_flight_state = 3;
-                hal.console->printf_P(PSTR("delay command completed. Taking off to 2m...\n"));
-                mas_takeoff(2);
             }
             break;
         case 3:
-            if (verify_command(cmd)) {
+            if (motors.armed()) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Engines armed, taking off to 20m..."));
+                set_auto_armed(true);
                 mas_test_flight_state = 4;
-                hal.console->printf_P(PSTR("Reached target altitude... Moving forward 2m\n"));
-                mas_forward(2);
+
+                mas_takeoff(20);
             }
             break;
         case 4:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Takeoff completed. Holding position for 20s..."));
                 mas_test_flight_state = 5;
-                hal.console->printf_P(PSTR("Reached location 1... Moving right 1m\n"));
-                mas_right(1);
+
+                mas_loiter(20);
             }
             break;
         case 5:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Moving forward 50m"));
                 mas_test_flight_state = 6;
-                hal.console->printf_P(PSTR("Reached location 2... Descending 1m\n"));
-                mas_down(1);
+                mas_forward(50);
             }
             break;
         case 6:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Moving right 50m"));
                 mas_test_flight_state = 7;
-                hal.console->printf_P(PSTR("Reached target altitude 2... Moving back 2m\n"));
-                mas_back(2);
+                mas_right(50);
             }
             break;
         case 7:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Descending 10m"));
                 mas_test_flight_state = 8;
-                hal.console->printf_P(PSTR("Reached location 3... Ascending 1m\n"));
-                mas_up(1);
+                mas_down(10);
             }
             break;
         case 8:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Moving back 50m"));
                 mas_test_flight_state = 9;
-                hal.console->printf_P(PSTR("Reached target altitude 3... Moving left 1m\n"));
-                mas_left(1);
+                mas_back(50);
             }
             break;
         case 9:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Ascending 35m"));
                 mas_test_flight_state = 10;
-                hal.console->printf_P(PSTR("Reached start location... Landing\n"));
-                mas_land();
+                mas_up(35);
             }
             break;
         case 10:
             if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Moving left 50m"));
                 mas_test_flight_state = 11;
-                hal.console->printf_P(PSTR("Landed. Test flight complete\n"));
+                mas_left(50);
+            }
+            break;
+        case 11:
+            if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Starting landing."));
+                mas_test_flight_state = 12;
+                mas_land();
+            }
+            break;
+        case 12:
+            if (verify_command(cmd)) {
+                gcs_send_text_P(SEVERITY_HIGH,PSTR("Landed, test flight completed"));
+                mas_test_flight_state = 0;
             }
             break;
         default:
