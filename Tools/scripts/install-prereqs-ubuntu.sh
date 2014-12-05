@@ -62,11 +62,11 @@ sudo pip -q install $PYTHON_PKGS
 
 
 if [ ! -d PX4Firmware ]; then
-    git clone https://github.com/diydrones/PX4Firmware.git
+    git clone https://github.com/Inkromind/PX4Firmware.git -b ArduCopter-3.2
 fi
 
 if [ ! -d PX4NuttX ]; then
-    git clone https://github.com/diydrones/PX4NuttX.git
+    git clone https://github.com/Inkromind/PX4NuttX.git -b ArduCopter-3.2
 fi
 
 if [ ! -d VRNuttX ]; then
