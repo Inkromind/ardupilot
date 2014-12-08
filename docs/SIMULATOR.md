@@ -16,19 +16,31 @@
 ## Installing VM
 
 ### Premade VM
-The premade VM already has the simulator and dependencies installed.
+The premade VM already has the simulator, repositories and dependencies installed.
+The following settings were used for the VM:
 
-User: ardupilot
-
-Password: password
+* User: ardupilot
+* Password: password
+* 64-bit ubuntu
+* 4 CPU's
+* 3072MB RAM
+* 20GB HDD
 
 ### Other VM
+When setting up your own vm, try to match the settings of the premade vm above as close as possible.
+
 To install the simulator on the vm, clone the [develop branch of my repository](https://github.com/Inkromind/ardupilot/tree/develop) or
 the [simpleExtension-UNSTABLE branch of my repository](https://github.com/Inkromind/ardupilot/tree/simpleExtension-UNSTABLE) into the home directory
 of the current user. This should result in the directory ~/ardupilot containing the source.
 
 Next, run the installar located at ```~/ardupilot/sitl_installer.sh```.
 This will install all required dependencies and repositories for the the simulator.
+
+__If you set less than 4 CPU's for the vm, you will have to edit ```~/copter.sh```:__
+
+Change ```-j 4``` in both mavlink commands with ```-j X``` where X represents the number of CPU's
+you assigned to the vm.
+This setting tells the simulator how many CPU's it should use to compile.
 
 ## Building the source
 The source code is located in ~/ardupilut and is linked to [my repository, develop branch](https://github.com/Inkromind/ardupilot/tree/develop).
