@@ -6,6 +6,7 @@
  */
 
 #include "MAD_Task_Nav.h"
+#include "AC_Facade.h"
 
 MAD_Task_Nav::MAD_Task_Nav(Vector3f* destination) {
     this->destination = destination;
@@ -19,7 +20,7 @@ void MAD_Task_Nav::runTask() {
     if (this->running)
         return;
 
-    if (MAD_Facade::startNav(this->destination))
+    if (AC_Facade::startNav(this->destination))
         this->running = true;
 }
 
@@ -29,7 +30,7 @@ bool MAD_Task_Nav::isComplete() {
     if (!this->running)
         return false;
 
-    if (MAD_Facade::destinationReached(this->destination)) {
+    if (AC_Facade::destinationReached(this->destination)) {
         this->completed = true;
         return true;
     }

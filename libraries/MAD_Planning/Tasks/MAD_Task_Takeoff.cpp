@@ -6,7 +6,7 @@
  */
 
 #include "MAD_Task_Takeoff.h"
-#include "MAD_Facade.h"
+#include "AC_Facade.h"
 
 MAD_Task_Takeoff::MAD_Task_Takeoff(uint8_t altitude) {
     this->altitude = altitude;
@@ -19,7 +19,7 @@ void MAD_Task_Takeoff::runTask() {
     if (this->running)
         return;
 
-    if (MAD_Facade::startTakeOff(this->altitude))
+    if (AC_Facade::startTakeOff(this->altitude))
         this->running = true;
 }
 
@@ -29,7 +29,7 @@ bool MAD_Task_Takeoff::isComplete() {
     if (!this->running)
         return false;
 
-    if (MAD_Facade::getAltitude() >= this->altitude) {
+    if (AC_Facade::getAltitude() >= this->altitude) {
         this->completed = true;
         return true;
     }

@@ -10,11 +10,15 @@
 
 class MAD_Task_Delay: public MAD_Task {
 public:
-    MAD_Task_Delay();
+    MAD_Task_Delay(uint32_t delay);
     virtual ~MAD_Task_Delay();
 
     bool isComplete();
     void runTask();
+
+private:
+    uint32_t duration;
+    uint32_t start;
 };
 
 #endif /* MAD_TASK_DELAY_H_ */

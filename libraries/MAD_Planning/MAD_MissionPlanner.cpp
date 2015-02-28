@@ -7,7 +7,7 @@
 
 #include "MAD_MissionPlanner.h"
 #include "MAD_Task.h"
-#include "MAD_Facade.h"
+#include "AC_Facade.h"
 
 MAD_MissionPlanner::~MAD_MissionPlanner() {
     // TODO Auto-generated destructor stub
@@ -16,7 +16,6 @@ MAD_MissionPlanner::~MAD_MissionPlanner() {
 // Default constructor.
 MAD_MissionPlanner::MAD_MissionPlanner() {
     // TODO Auto-generated constructor stub
-
 }
 
 void MAD_MissionPlanner::init() {
@@ -33,7 +32,7 @@ void MAD_MissionPlanner::run() {
         return;
     }
     // Check if the mission is still on
-    if (!MAD_Facade::inControl()) {
+    if (!AC_Facade::inControl()) {
         return;
     }
 
