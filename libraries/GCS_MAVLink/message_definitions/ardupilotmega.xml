@@ -443,6 +443,12 @@
       <field type="uint16_t" name="voltage">voltage in millivolts</field>
       <field type="int16_t" name="current_battery">Battery current, in 10*milliamperes (1 = 10 milliampere), -1: autopilot does not measure the current</field>
     </message>
+    
+    <message name="MAD_INIT_PLANNER" id="190">
+      <description>Initialize the MAD Planner</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+    </message>
 
      </messages>
 </mavlink>

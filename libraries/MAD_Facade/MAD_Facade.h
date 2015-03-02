@@ -11,9 +11,11 @@
 class MAD_Facade {
 
 public:
+    static void initPlanner();
 
 private:
     MAD_Facade();
+    ~MAD_Facade();
 };
 
 #endif /* MAD_FACADE_H_ */

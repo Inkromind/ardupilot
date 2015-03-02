@@ -8,7 +8,7 @@
 #include "MAD_Task_Takeoff.h"
 #include "AC_Facade.h"
 
-MAD_Task_Takeoff::MAD_Task_Takeoff(uint8_t altitude) {
+MAD_Task_Takeoff::MAD_Task_Takeoff(float altitude) {
     this->altitude = altitude;
 }
 

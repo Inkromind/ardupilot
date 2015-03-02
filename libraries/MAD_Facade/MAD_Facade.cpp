@@ -6,8 +6,8 @@
  */
 
 #include "MAD_Facade.h"
-#include "ArduCopter"
+#include "MAD_MissionPlanner.h"
 
-bool inControl() {
-
+void MAD_Facade::initPlanner() {
+    MAD_MissionPlanner::getInstance()->init();
 }

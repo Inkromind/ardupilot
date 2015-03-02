@@ -12,14 +12,14 @@
 
 class MAD_Task_Takeoff: public MAD_Task {
 public:
-    MAD_Task_Takeoff(uint8_t alt);
+    MAD_Task_Takeoff(float alt);
     virtual ~MAD_Task_Takeoff();
 
     bool isComplete();
     void runTask();
 
 private:
-    uint8_t altitude;
+    float altitude;
 };
 
 #endif /* MAD_TASK_TAKEOFF_H_ */

@@ -14,7 +14,7 @@ class AC_Facade {
 public:
     static bool inControl();
 
-    static bool startTakeOff(uint8_t altitude);
+    static bool startTakeOff(float altitude);
     static bool startLand();
     static bool armMotors();
     static bool disarmMotors();
