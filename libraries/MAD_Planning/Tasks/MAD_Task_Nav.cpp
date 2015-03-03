@@ -8,7 +8,7 @@
 #include "MAD_Task_Nav.h"
 #include "AC_Facade.h"
 
-MAD_Task_Nav::MAD_Task_Nav(Vector3f* destination) {
+MAD_Task_Nav::MAD_Task_Nav(Vector3f destination) {
     this->destination = destination;
 }
 

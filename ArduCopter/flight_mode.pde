@@ -96,6 +96,7 @@ static bool set_mode(uint8_t mode)
 #endif
         case MAD:
             success = mad_init(ignore_checks);
+            break;
 
         default:
             success = false;

@@ -21,6 +21,11 @@ enum MadMode {
 
 static MadMode mad_mode;
 
+static void mad_loiter_run();
+static void mad_takeoff_run();
+static void mad_land_run();
+static void mad_nav_run();
+
 static bool mad_init(bool ignore_checks)
 {
     if (GPS_ok() || ignore_checks) {
@@ -56,11 +61,8 @@ static void mad_run()
     case Mad_Nav:
         mad_nav_run();
         break;
-#endif
     }
 }
-
-static void
 
 // mad_takeoff_start - initialises waypoint controller to implement take-off
 // based on auto_takeoff_start
@@ -147,3 +149,11 @@ static void mad_land_run()
 
 }
 
+
+static void mad_loiter_start() {
+
+}
+
+static void mad_loiter_run() {
+
+}

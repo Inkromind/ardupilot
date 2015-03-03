@@ -34,7 +34,7 @@ bool AC_Facade::disarmMotors() {
     return true;
 }
 
-bool AC_Facade::startNav(Vector3f* destination) {
+bool AC_Facade::startNav(const Vector3f& destination) {
     mad_nav_start(destination);
     return true;
 }
@@ -51,6 +51,6 @@ bool AC_Facade::areMotorsArmed() {
     return motors.armed();
 }
 
-bool AC_Facade::destinationReached(Vector3f* destination) {
+bool AC_Facade::destinationReached(const Vector3f& destination) {
     return false;
 }

@@ -18,12 +18,12 @@ public:
     static bool startLand();
     static bool armMotors();
     static bool disarmMotors();
-    static bool startNav(Vector3f* destination);
+    static bool startNav(const Vector3f& destination);
 
     static uint8_t getAltitude();
     static bool isLanded();
     static bool areMotorsArmed();
-    static bool destinationReached(Vector3f* destination);
+    static bool destinationReached(const Vector3f& destination);
 
 
 private:
