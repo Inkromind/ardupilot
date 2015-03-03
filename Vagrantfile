@@ -10,5 +10,4 @@ Vagrant.configure("2") do |config|
         v.customize ["modifyvm", :id, "--memory", "3072", "--cpus", "2"]
     end
     
-    config.vm.provision "shell",inline: "/home/vagrant/ardupilot/Tools/scripts/install-prereqs-ubuntu.sh -y"
 end
