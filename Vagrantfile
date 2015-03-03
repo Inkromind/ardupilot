@@ -10,4 +10,6 @@ Vagrant.configure("2") do |config|
         v.customize ["modifyvm", :id, "--memory", "3072", "--cpus", "2"]
     end
     
+    config.vm.provision "shell",inline: "/home/vagrant/ardupilot/vagrant_installer.sh -y", privileged: false
+    
 end

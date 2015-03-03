@@ -28,6 +28,10 @@
 .project
 .settings/
 .vagrant
+.Xauthority
+.bash_history
+.compiz/*
+.config/*
 /tmp/*
 /Tools/ArdupilotMegaPlanner/3DRRadio/bin
 /Tools/ArdupilotMegaPlanner/3DRRadio/obj
@@ -54,6 +58,7 @@ ArduCopter/Debug/
 ArduCopter/terrain/*.DAT
 ArduCopter/test.ArduCopter/
 ArduCopter/test/*
+ArduCopter/logs/*
 ArduPlane/terrain/*.DAT
 ArduPlane/test.ArduPlane/
 APMrover2/test.APMrover2/

@@ -5,7 +5,10 @@ sudo apt-get update && apt-get dist-upgrade
 sudo apt-get install -y dos2unix g++-4.7 git-core automake libexpat1-dev
 cd
 chmod +x ardupilot/Tools/scripts/install-prereqs-ubuntu.sh
-ardupilot/Tools/scripts/install-prereqs-ubuntu.sh
+ardupilot/Tools/scripts/install-prereqs-ubuntu.sh -y
+
+./ardupilot/update_px4firmware.sh
+
 echo "module load droneapi.module.api" >> ~/.mavinit.scr
 git clone git://github.com/tridge/jsbsim.git
 

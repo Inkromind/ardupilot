@@ -7,12 +7,14 @@ chmod +x ardupilot/Tools/scripts/install-prereqs-ubuntu.sh
 ardupilot/Tools/scripts/install-prereqs-ubuntu.sh -y
 
 cd
-echo 'export PATH=/usr/lib/ccache:$PATH' >>~/.bashrc
-export PATH=/usr/lib/ccache:$PATH
-. ~/.profile
+exportline="export PATH=/usr/lib/ccache:$PATH";
+if ! grep -Fxq "$exportline" ~/.bashrc ; then
+    echo $exportline >> ~/.bashrc
+    $exportline
+    . ~/.profile
+fi
+
+./ardupilot/update_px4firmware.sh
 
 cd ~/ardupilot/ArduCopter
 make configure
-make
-
-read -p "ArduPilot installation complete."
