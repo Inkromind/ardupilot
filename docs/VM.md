@@ -7,9 +7,11 @@
     * Based of stable releases of [https://github.com/diydrones/ardupilot](https://github.com/diydrones/ardupilot)
   * simpleExtension-UNSTABLE branch: [https://github.com/Inkromind/ardupilot/tree/simpleExtension-UNSTABLE](https://github.com/Inkromind/ardupilot/tree/simpleExtension-UNSTABLE)
 * PX4Firmware:
-  * Stable releases of [https://github.com/diydrones/PX4Firmware/tree/ArduCopter-3.2](https://github.com/diydrones/PX4Firmware/tree/ArduCopter-3.2)
+  * Stable releases of [https://github.com/diydrones/PX4Firmware](https://github.com/diydrones/PX4Firmware)
+  * Current Release: ArduCopter-3.2-apm-px4
 * PX4NuttX:
   * Stable releases of [https://github.com/diydrones/PX4NuttX](https://github.com/diydrones/PX4NuttX)
+  * Current Release: ArduCopter-3.2-apm-px4
 
 ## Installing VM
 
