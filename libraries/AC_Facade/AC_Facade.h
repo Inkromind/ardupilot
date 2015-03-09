@@ -12,13 +12,9 @@
 class AC_Facade {
 
 public:
-    static bool inControl();
-
-    static bool startTakeOff(float altitude);
-    static bool startLand();
-    static bool armMotors();
-    static bool disarmMotors();
-    static bool startNav(const Vector3f& destination);
+    static bool takeOff(float altitude);
+    static bool land();
+    static bool navigateTo(const Vector3f& destination);
 
     static uint8_t getAltitude();
     static bool isLanded();

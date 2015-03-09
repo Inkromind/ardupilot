@@ -6,12 +6,16 @@ bool AC_Facade::inControl() {
     return (control_mode == MAD);
 }
 
-bool AC_Facade::startTakeOff(float altitude) {
+bool AC_Facade::takeOff(float altitude) {
+    if (!inControl())
+        return false;
     mad_takeoff_start(altitude);
     return true;
 }
 
-bool AC_Facade::startLand() {
+bool AC_Facade::land() {
+    if (!inControl())
+        return false;
     mad_land_start();
     return true;
 }
@@ -34,7 +38,9 @@ bool AC_Facade::disarmMotors() {
     return true;
 }
 
-bool AC_Facade::startNav(const Vector3f& destination) {
+bool AC_Facade::navigateTo(const Vector3f& destination) {
+    if (!inControl())
+        return false;
     mad_nav_start(destination);
     return true;
 }
