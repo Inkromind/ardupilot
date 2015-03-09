@@ -83,6 +83,11 @@ static bool mad_takeoff_start(float final_alt)
     // initialise yaw
     set_auto_yaw_mode(AUTO_YAW_HOLD);
 
+    if (motors.armed()) {
+        if (!mad_arm_motors())
+            return false;
+    }
+
     // tell motors to do a slow start
     motors.slow_start(true);
 
