@@ -8,7 +8,8 @@
 #include "AMW_Planner_Task.h"
 
 AMW_Planner_Task::~AMW_Planner_Task() {
-    // TODO Auto-generated destructor stub
+    if (currentCommand)
+        delete currentCommand;
 }
 
 bool AMW_Planner_Task::isComplete() {

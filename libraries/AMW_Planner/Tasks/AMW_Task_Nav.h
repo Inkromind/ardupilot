@@ -15,8 +15,6 @@ public:
 
     void updateStatus();
     void runTask();
-private:
-    Vector3f destination;
 };
 
 #endif /* AMW_TASK_NAV_H_ */

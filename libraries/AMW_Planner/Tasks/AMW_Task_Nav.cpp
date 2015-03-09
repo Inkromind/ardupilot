@@ -9,29 +9,23 @@
 #include "AC_Facade.h"
 
 AMW_Task_Nav::AMW_Task_Nav(Vector3f destination) {
-    this->destination = destination;
-}
-
-AMW_Task_Nav::~AMW_Task_Nav() {
-    delete destination;
+    currentCommand = new AMW_Task_Command_Nav(destination);
 }
 
 void AMW_Task_Nav::runTask() {
     updateStatus();
 
-    if (this->completed)
+    if (completed)
         return;
 
-    AC_Facade::navigateTo(this->destination);
+    currentCommand->runCommand();
 }
 
 void AMW_Task_Nav::updateStatus() {
-    if (this->completed)
-        return;
-    if (!this->running)
+    if (completed)
         return;
 
-    if (AC_Facade::destinationReached(this->destination)) {
-        this->completed = true;
-    }
+    currentCommand->updateStatus();
+
+    completed = currentCommand->isComplete();
 }

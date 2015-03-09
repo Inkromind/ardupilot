@@ -10,31 +10,25 @@
 #include "AP_Math.h"
 
 AMW_Task_Delay::AMW_Task_Delay(uint32_t duration) {
-    this->duration = (uint32_t)max(duration, 0);
-    this->start = 0;
-}
-
-AMW_Task_Delay::~AMW_Task_Delay() {
-    // TODO Auto-generated destructor stub
+    currentCommand = new AMW_Task_Command_Delay(duration);
 }
 
 void AMW_Task_Delay::runTask() {
-    if (this->running)
+    updateStatus();
+
+    if (completed)
         return;
 
-    this->running = true;
-    this->start = hal.scheduler->millis();
+    currentCommand->runCommand();
 }
 
 void AMW_Task_Delay::updateStatus() {
-    if (this->completed)
-           return;
-    if (!this->running)
+    if (completed)
            return;
 
-    if (hal.scheduler->millis() - this->start > this->duration) {
-        this->completed = true;
-    }
+    currentCommand->updateStatus();
+
+    this->completed = currentCommand->isComplete();
 }
 
 

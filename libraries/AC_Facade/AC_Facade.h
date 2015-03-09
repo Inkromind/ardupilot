@@ -16,11 +16,12 @@ public:
     static bool land();
     static bool navigateTo(const Vector3f& destination);
 
-    static uint8_t getAltitude();
+    static float getAltitude();
     static bool isLanded();
     static bool areMotorsArmed();
     static bool destinationReached(const Vector3f& destination);
-
+    static bool takeOffComplete(float altitude);
+    static const Vector3f& getPosition();
 
 private:
 };

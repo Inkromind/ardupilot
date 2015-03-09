@@ -6,10 +6,10 @@
  */
 
 #include "AMW_Facade.h"
-#include "AMW_Planner_Sequencer.h"
-#include "AMW_Task_Planner.h"
+#include <AMW_Planner_Sequencer.h>
+#include <AMW_Task_Planner.h>
 
 void AMW_Facade::initPlanner() {
     AMW_Task_Planner::getInstance()->init();
-    AMW_Planner_Sequencer::getInstance()->init();
+    AMW_Sequencer::getInstance()->init();
 }

@@ -9,6 +9,8 @@
  *  Code in this file implements the navigation commands
  */
 
+#include "control_mad.h"
+
 
 // Auto modes
 enum MadMode {
@@ -29,6 +31,9 @@ static void mad_nav_run();
 static bool mad_init(bool ignore_checks)
 {
     if (GPS_ok() || ignore_checks) {
+        set_auto_armed(true);
+
+        poshold_init(ignore_checks);
         mad_mode = Mad_Loiter;
         mission.stop();
         wp_nav.wp_and_spline_init();
@@ -66,7 +71,7 @@ static void mad_run()
 
 // mad_takeoff_start - initialises waypoint controller to implement take-off
 // based on auto_takeoff_start
-static void mad_takeoff_start(float final_alt)
+static bool mad_takeoff_start(float final_alt)
 {
     mad_mode = Mad_TakeOff;
 
@@ -80,6 +85,8 @@ static void mad_takeoff_start(float final_alt)
 
     // tell motors to do a slow start
     motors.slow_start(true);
+
+    return true;
 }
 
 // mad_takeoff_run - takeoff in mad mode
@@ -87,19 +94,8 @@ static void mad_takeoff_start(float final_alt)
 // based on guided_takeoff_run
 static void mad_takeoff_run()
 {
-    // TODO: arm automatically
-    // if not auto armed set throttle to zero and exit immediately
-    if(!ap.auto_armed) {
-        // initialise wpnav targets
-        wp_nav.shift_wp_origin_to_current_pos();
-        // reset attitude control targets
-        attitude_control.relax_bf_rate_controller();
-        attitude_control.set_yaw_target_to_current_heading();
-        attitude_control.set_throttle_out(0, false);
-        // tell motors to do a slow start
-        motors.slow_start(true);
+    if (!motors.armed())
         return;
-    }
 
     // process pilot's yaw input
     float target_yaw_rate = 0;
@@ -119,57 +115,37 @@ static void mad_takeoff_run()
 }
 
 // mad_nav_start - initialises waypoint controller to implement flying to a particular destination
-static void mad_nav_start(const Vector3f& destination)
+static bool mad_nav_start(const Vector3f& destination)
 {
-    if (ap.land_complete)
+    if (ap.land_complete || !motors.armed())
         return false;
+
+    guided_init(true);
+    wp_nav.set_wp_destination(destination);
+    return true;
 
 }
 
 // mad_nav_run - runs the mad nav controller
 //      called by mad_run at 100hz or more
-// based on auto_wp_run
 static void mad_nav_run()
 {
     if (ap.land_complete)
         return;
 
-    // process pilot's yaw input
-    float target_yaw_rate = 0;
-    if (!failsafe.radio) {
-        // get pilot's desired yaw rate
-        target_yaw_rate = get_pilot_desired_yaw_rate(g.rc_4.control_in);
-        if (target_yaw_rate != 0) {
-            set_auto_yaw_mode(AUTO_YAW_HOLD);
-        }
-    }
-
-    // run waypoint controller
-    wp_nav.update_wpnav();
-
-    // call z-axis position controller (wpnav should have already updated it's alt target)
-    pos_control.update_z_controller();
-
-    // call attitude controller
-    if (auto_yaw_mode == AUTO_YAW_HOLD) {
-        // roll & pitch from waypoint controller, yaw rate from pilot
-        attitude_control.angle_ef_roll_pitch_rate_ef_yaw(wp_nav.get_roll(), wp_nav.get_pitch(), target_yaw_rate);
-    }else{
-        // roll, pitch from waypoint controller, yaw heading from auto_heading()
-        attitude_control.angle_ef_roll_pitch_yaw(wp_nav.get_roll(), wp_nav.get_pitch(), get_auto_heading(), true);
-    }
+    guided_pos_control_run();
 
 }
 
 // mad_land_start - initialises controller to implement a landing
-static void mad_land_start()
+static bool mad_land_start()
 {
     if (mad_mode == Mad_Land)
         return true;
     if (ap.land_complete)
         return true;
     mad_mode = Mad_Land;
-    return land_init();
+    return land_init(false);
 
 }
 
@@ -186,13 +162,29 @@ static bool mad_loiter_start() {
         return true;
     if (ap.land_complete)
         return false;
-    mad_mode = Mad_Loiter;
-    return poshold_init();
+    if (poshold_init(false)) {
+        mad_mode = Mad_Loiter;
+        return true;
+    }
+    return false;
 }
 
 static void mad_loiter_run() {
-    if (ap.land_complete)
-        return;
-
     poshold_run();
+}
+
+static bool mad_arm_motors() {
+    if (motors.armed())
+        return true;
+
+    pre_arm_checks(true);
+    if (ap.pre_arm_check && arm_checks(true)) {
+        if (init_arm_motors()) {
+            return true;
+        } else {
+            return false;
+        }
+    }else{
+        return false;
+    }
 }

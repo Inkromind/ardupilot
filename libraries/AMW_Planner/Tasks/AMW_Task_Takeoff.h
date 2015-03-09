@@ -11,13 +11,10 @@
 class AMW_Task_Takeoff: public AMW_Planner_Task {
 public:
     AMW_Task_Takeoff(float alt);
-    virtual ~AMW_Task_Takeoff();
 
     void updateStatus();
     void runTask();
 
-private:
-    float altitude;
 };
 
 #endif /* AMW_TASK_TAKEOFF_H_ */

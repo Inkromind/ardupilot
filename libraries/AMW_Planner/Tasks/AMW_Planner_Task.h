@@ -21,6 +21,7 @@ public:
 private:
     bool running = false;
     bool completed = false;
+    AMW_Task_Command* currentCommand;
 };
 
 #endif /* AMW_PLANNER_TASK_H_ */

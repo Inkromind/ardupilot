@@ -13,6 +13,14 @@ class AMW_Facade {
 public:
     static void initPlanner();
 
+    static void run100Hz();
+
+    static void run50Hz();
+
+    static void run10Hz();
+
+    static void run1Hz();
+
 private:
     AMW_Facade();
     ~AMW_Facade();

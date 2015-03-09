@@ -1,5 +1,7 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
+#include <AMW_Facade.h>
+
 #ifdef USERHOOK_INIT
 void userhook_init()
 {

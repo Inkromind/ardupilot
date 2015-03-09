@@ -1,52 +1,39 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include <AC_Facade.h>
+#include "control_mad.h"
 
-bool AC_Facade::inControl() {
+static bool inControl() {
     return (control_mode == MAD);
 }
 
 bool AC_Facade::takeOff(float altitude) {
     if (!inControl())
         return false;
-    mad_takeoff_start(altitude);
-    return true;
+    return mad_takeoff_start(altitude);
 }
 
 bool AC_Facade::land() {
     if (!inControl())
         return false;
-    mad_land_start();
-    return true;
-}
-
-bool AC_Facade::armMotors() {
-    pre_arm_checks(true);
-    if(ap.pre_arm_check && arm_checks(true)) {
-        if (init_arm_motors()) {
-            return true;
-        } else {
-            return false;
-        }
-    }else{
-        return false;
-    }
-}
-
-bool AC_Facade::disarmMotors() {
-    init_disarm_motors();
-    return true;
+    return mad_land_start();
 }
 
 bool AC_Facade::navigateTo(const Vector3f& destination) {
     if (!inControl())
         return false;
-    mad_nav_start(destination);
-    return true;
+    return mad_nav_start(destination);
 }
 
-uint8_t AC_Facade::getAltitude() {
-    return 0;
+float AC_Facade::getAltitude() {
+    return inertial_nav.get_altitude();
+}
+
+bool AC_Facade::takeOffComplete(float altitude) {
+    if (!wp_nav.reached_wp_destination())
+        return false;
+    Vector3f wp = wp_nav.get_wp_destination();
+    return (wp.z == altitude);
 }
 
 bool AC_Facade::isLanded() {
@@ -58,5 +45,12 @@ bool AC_Facade::areMotorsArmed() {
 }
 
 bool AC_Facade::destinationReached(const Vector3f& destination) {
-    return false;
+    if (!wp_nav.reached_wp_destination())
+        return true;
+    Vector3f wp = wp_nav.get_wp_destination();
+    return (destination == wp);
+}
+
+const Vector3f& AC_Facade::getPosition() {
+    return inertial_nav.get_position();
 }
