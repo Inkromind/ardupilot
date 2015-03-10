@@ -8,9 +8,9 @@
 #ifndef AMW_TASK_DISARM_H_
 #define AMW_TASK_DISARM_H_
 
-#include "AMW_Planner_Task.h"
+#include "AMW_Task.h"
 
-class AMW_Task_Disarm: public AMW_Planner_Task {
+class AMW_Task_Disarm: public AMW_Task {
 public:
     AMW_Task_Disarm();
 

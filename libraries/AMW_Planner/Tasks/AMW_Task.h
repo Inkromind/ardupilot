@@ -1,16 +1,16 @@
 /*
- * AMW_Planner_Task.h
+ * AMW_Task.h
  *
  *  Created on: 8-mrt.-2015
  *      Author: Arne
  */
 
-#ifndef AMW_PLANNER_TASK_H_
-#define AMW_PLANNER_TASK_H_
+#ifndef AMW_TASK_H_
+#define AMW_TASK_H_
 
-class AMW_Planner_Task {
+class AMW_Task {
 public:
-    virtual ~AMW_Planner_Task();
+    virtual ~AMW_Task();
 
     virtual void updateStatus(void) = 0;
 
@@ -25,4 +25,4 @@ private:
     bool completed = false;
 };
 
-#endif /* AMW_PLANNER_TASK_H_ */
+#endif /* AMW_TASK_H_ */

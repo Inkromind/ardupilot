@@ -1,19 +1,19 @@
 /*
- * AMW_Planner_Task_State_With_Subtask.h
+ * AMW_Task_State_With_Subtask.h
  *
  *  Created on: 10-mrt.-2015
  *      Author: Arne
  */
 
-#ifndef AMW_PLANNER_TASK_STATE_WITH_SUBTASK_H_
-#define AMW_PLANNER_TASK_STATE_WITH_SUBTASK_H_
+#ifndef AMW_TASK_STATE_WITH_SUBTASK_H_
+#define AMW_TASK_STATE_WITH_SUBTASK_H_
 
-#include "AMW_Planner_Task_State.h"
-#include "AMW_Planner_Task.h"
+#include "AMW_Task_State.h"
+#include "AMW_Task.h"
 
-class AMW_Planner_Task_State_With_Subtask : public AMW_Planner_Task_State {
+class AMW_Task_State_With_Subtask : public AMW_Task_State {
 public:
-    virtual ~AMW_Planner_Task_State_With_Subtask() {
+    virtual ~AMW_Task_State_With_Subtask() {
         if (subTask)
             delete subTask;
     }
@@ -59,15 +59,15 @@ public:
         return completed;
     }
 
-    virtual AMW_Planner_Task_State& getNextState(void) = 0;
-
 private:
     bool running = false;
     bool completed = false;
 
-    AMW_Planner_Task& subTask;
+    AMW_Task& subTask;
+
+    virtual AMW_Task_State& getNextState(void) = 0;
 };
 
 
 
-#endif /* AMW_PLANNER_TASK_STATE_WITH_SUBTASK_H_ */
+#endif /* AMW_TASK_STATE_WITH_SUBTASK_H_ */

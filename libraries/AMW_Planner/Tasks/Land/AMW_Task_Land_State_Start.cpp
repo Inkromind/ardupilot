@@ -14,7 +14,7 @@ AMW_Task_Land_State_Start::AMW_Task_Land_State_Start(AMW_Task_Land& parentTask) 
     subTask = new AMW_Task_Land_Command();
 }
 
-AMW_Planner_Task_State& AMW_Task_Land_State_Start::getNextState(void) {
+AMW_Task_State& AMW_Task_Land_State_Start::getNextState(void) {
     return new AMW_Task_Land_State_Disarm((AMW_Task_Land) parentTask);
 }
 

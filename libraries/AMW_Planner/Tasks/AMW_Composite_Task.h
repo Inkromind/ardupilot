@@ -1,19 +1,19 @@
 /*
- * AMW_Planner_Composite_Task.h
+ * AMW_Composite_Task.h
  *
  *  Created on: 10-mrt.-2015
  *      Author: Arne
  */
 
-#ifndef AMW_PLANNER_COMPOSITE_TASK_H_
-#define AMW_PLANNER_COMPOSITE_TASK_H_
+#ifndef AMW_COMPOSITE_TASK_H_
+#define AMW_COMPOSITE_TASK_H_
 
-#include "AMW_Planner_Task.h"
-#include "AMW_Planner_Task_State.h"
+#include "AMW_Task.h"
+#include "AMW_Task_State.h"
 
-class AMW_Planner_State_Task : public AMW_Planner_Task {
+class AMW_Composite_Task : public AMW_Task {
 public:
-    virtual ~AMW_Planner_State_Task() {
+    virtual ~AMW_Composite_Task() {
         if (currentState)
             delete currentState;
     }
@@ -46,14 +46,14 @@ public:
         currentState->runTask();
     }
 
-    virtual void setState(AMW_Planner_Task_State& state) {
+    virtual void setState(AMW_Task_State& state) {
         currentState = state;
     }
 
 private:
-    AMW_Planner_Task_State* currentState;
+    AMW_Task_State* currentState;
 };
 
 
 
-#endif /* AMW_PLANNER_COMPOSITE_TASK_H_ */
+#endif /* AMW_COMPOSITE_TASK_H_ */

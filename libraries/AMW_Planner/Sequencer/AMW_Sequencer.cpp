@@ -5,7 +5,7 @@
  *      Author: Arne
  */
 
-#include "AMW_Planner_Sequencer.h"
+#include "AMW_Sequencer.h"
 
 AMW_Sequencer::AMW_Sequencer() { }
 

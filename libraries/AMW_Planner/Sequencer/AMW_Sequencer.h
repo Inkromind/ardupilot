@@ -9,23 +9,23 @@
 #define AMW_SEQUENCER_H_
 
 #include "AMW_Task_Planner.h"
-#include "AMW_Planner_Task.h"
+#include "AMW_Task.h"
 
 class AMW_Sequencer {
 public:
     virtual void run();
     virtual void init();
+
+    static virtual AMW_Sequencer* getInstance(void);
 private:
 
     bool initialized = false;
     static AMW_Sequencer sequencer;
 
-    AMW_Planner_Task* currentTask = 0;
+    AMW_Task* currentTask = 0;
 
     AMW_Sequencer();
     virtual ~AMW_Sequencer();
-
-    static virtual AMW_Sequencer* getInstance(void);
 
     virtual void startNewTask(void);
 };
