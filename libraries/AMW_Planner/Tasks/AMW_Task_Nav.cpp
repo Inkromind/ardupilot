@@ -9,7 +9,7 @@
 #include "AC_Facade.h"
 
 AMW_Task_Nav::AMW_Task_Nav(Vector3f destination) {
-    currentCommand = new AMW_Task_Command_Nav(destination);
+    this->destination = destination;
 }
 
 void AMW_Task_Nav::runTask() {
@@ -18,14 +18,17 @@ void AMW_Task_Nav::runTask() {
     if (completed)
         return;
 
-    currentCommand->runCommand();
+    if (AC_Facade::navigateTo(destination))
+        running = true;
 }
 
 void AMW_Task_Nav::updateStatus() {
     if (completed)
         return;
+    if (!running)
+        return;
 
-    currentCommand->updateStatus();
-
-    completed = currentCommand->isComplete();
+    if (AC_Facade::destinationReached(destination)) {
+        this->completed = true;
+    }
 }

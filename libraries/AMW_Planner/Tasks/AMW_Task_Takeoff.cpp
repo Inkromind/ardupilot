@@ -9,20 +9,27 @@
 #include "AC_Facade.h"
 
 AMW_Task_Takeoff::AMW_Task_Takeoff(float altitude) {
-    currentCommand = new AMW_Task_Command_Takeoff(altitude);
+    this->altitude = altitude;
 }
 
-
 void AMW_Task_Takeoff::runTask() {
-    currentCommand->runCommand();
+    updateStatus();
+
+    if (completed)
+        return;
+
+    if (AC_Facade::takeOff(altitude))
+        running = true;
 }
 
 void AMW_Task_Takeoff::updateStatus() {
-    if (this->completed)
+    if (completed)
         return;
 
-    currentCommand->updateStatus();
+    if (!running)
+        return;
 
-    if (currentCommand->isComplete())
-        this->completed = true;
+    if (AC_Facade::takeOffComplete(altitude)) {
+        completed = true;
+    }
 }

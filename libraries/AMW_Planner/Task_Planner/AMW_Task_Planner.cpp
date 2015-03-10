@@ -27,11 +27,13 @@ void AMW_Task_Planner::init() {
 }
 
 void AMW_Task_Planner::run() {
+    if (!initialized)
+        return;
 }
 
 
 AMW_Planner_Task* AMW_Task_Planner::getFirstTask() {
-    if (plan.empty())
+    if (!initialized || plan.empty())
         return nullptr;
 
     return plan.front();
@@ -41,7 +43,6 @@ void AMW_Task_Planner::completeFirstTask(void) {
     if (plan.empty())
         return;
 
-    AMW_Planner_Task* task = plan.front();
+    delete plan.front();
     plan.pop();
-    delete task;
 }

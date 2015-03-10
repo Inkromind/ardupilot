@@ -16,12 +16,13 @@ public:
 
     virtual void runTask(void) = 0;
 
-    virtual bool isComplete(void);
+    virtual bool isComplete(void) {
+        return completed;
+    }
 
 private:
     bool running = false;
     bool completed = false;
-    AMW_Task_Command* currentCommand;
 };
 
 #endif /* AMW_PLANNER_TASK_H_ */

@@ -13,3 +13,21 @@ void AMW_Facade::initPlanner() {
     AMW_Task_Planner::getInstance()->init();
     AMW_Sequencer::getInstance()->init();
 }
+
+
+void run100Hz() {
+
+}
+
+void run50Hz() {
+
+}
+
+void run10Hz() {
+    AMW_Task_Planner::getInstance()->run();
+    AMW_Sequencer::getInstance()->run();
+}
+
+void run1Hz() {
+
+}

@@ -15,6 +15,8 @@ public:
     void updateStatus();
     void runTask();
 
+private:
+    float altitude;
 };
 
 #endif /* AMW_TASK_TAKEOFF_H_ */

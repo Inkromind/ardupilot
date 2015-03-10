@@ -14,13 +14,14 @@ void userhook_init()
 void userhook_FastLoop()
 {
     // put your 100Hz code here
+    AMW_Facade::run100Hz();
 }
 #endif
 
 #ifdef USERHOOK_50HZLOOP
 void userhook_50Hz()
 {
-    // put your 50Hz code here
+    AMW_Facade::run50Hz();
 }
 #endif
 
@@ -28,6 +29,7 @@ void userhook_50Hz()
 void userhook_MediumLoop()
 {
     // put your 10Hz code here
+    AMW_Facade::run10Hz();
 }
 #endif
 
@@ -41,6 +43,7 @@ void userhook_SlowLoop()
 #ifdef USERHOOK_SUPERSLOWLOOP
 void userhook_SuperSlowLoop()
 {
+    AMW_Facade::run1Hz();
     // put your 1Hz code here
 }
 #endif

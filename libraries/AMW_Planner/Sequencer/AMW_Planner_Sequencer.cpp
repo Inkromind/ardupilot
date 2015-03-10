@@ -7,13 +7,10 @@
 
 #include "AMW_Planner_Sequencer.h"
 
-AMW_Sequencer::AMW_Sequencer() {
-    // TODO Auto-generated constructor stub
-
-}
+AMW_Sequencer::AMW_Sequencer() { }
 
 AMW_Sequencer::~AMW_Sequencer() {
-    // TODO Auto-generated destructor stub
+    delete currentTask;
 }
 
 static AMW_Sequencer* AMW_Sequencer::getInstance() {
@@ -25,6 +22,9 @@ void AMW_Sequencer::init() {
 }
 
 void AMW_Sequencer::run() {
+    if (!initialized)
+        return;
+
     if (!currentTask) {
         startNewTask();
     }
