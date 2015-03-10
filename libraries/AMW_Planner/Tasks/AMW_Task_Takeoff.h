@@ -8,6 +8,8 @@
 #ifndef AMW_TASK_TAKEOFF_H_
 #define AMW_TASK_TAKEOFF_H_
 
+#include "AMW_Planner_Task.h"
+
 class AMW_Task_Takeoff: public AMW_Planner_Task {
 public:
     AMW_Task_Takeoff(float alt);

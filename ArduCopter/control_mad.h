@@ -10,12 +10,14 @@
 
 static bool mad_takeoff_start(float final_alt);
 
-static bool mad_land_start();
+static bool mad_land_start(void);
 
-static bool mad_loiter_start();
+static bool mad_loiter_start(void);
 
 static bool mad_nav_start(const Vector3f& destination);
 
-static bool mad_arm_motors();
+static bool mad_arm_motors(void);
+
+static bool mad_disarm_motors(void);
 
 #endif /* CONTROL_MAD_H_ */

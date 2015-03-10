@@ -8,14 +8,11 @@
 #ifndef AMW_TASK_LAND_H_
 #define AMW_TASK_LAND_H_
 
-#include "AMW_Planner_Task.h"
+#include "AMW_Planner_State_Task.h"
 
-class AMW_Task_Land: public AMW_Planner_Task {
+class AMW_Task_Land: public AMW_Planner_State_Task {
 public:
     AMW_Task_Land(void);
-
-    void updateStatus(void);
-    void runTask(void);
 };
 
 #endif /* AMW_TASK_LAND_H_ */

@@ -6,15 +6,13 @@
  */
 
 #include "AMW_Task_Nav.h"
-#include "AC_Facade.h"
+#include <AC_Facade.h>
 
 AMW_Task_Nav::AMW_Task_Nav(Vector3f destination) {
     this->destination = destination;
 }
 
 void AMW_Task_Nav::runTask() {
-    updateStatus();
-
     if (completed)
         return;
 

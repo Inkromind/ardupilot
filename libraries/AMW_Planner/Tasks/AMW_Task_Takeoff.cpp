@@ -6,15 +6,13 @@
  */
 
 #include "AMW_Task_Takeoff.h"
-#include "AC_Facade.h"
+#include <AC_Facade.h>
 
 AMW_Task_Takeoff::AMW_Task_Takeoff(float altitude) {
     this->altitude = altitude;
 }
 
 void AMW_Task_Takeoff::runTask() {
-    updateStatus();
-
     if (completed)
         return;
 

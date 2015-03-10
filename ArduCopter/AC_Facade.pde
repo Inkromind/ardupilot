@@ -3,26 +3,38 @@
 #include <AC_Facade.h>
 #include "control_mad.h"
 
-static bool inControl() {
+static bool AMW_inControl() {
     return (control_mode == MAD);
 }
 
 bool AC_Facade::takeOff(float altitude) {
-    if (!inControl())
+    if (!AMW_inControl())
         return false;
     return mad_takeoff_start(altitude);
 }
 
 bool AC_Facade::land() {
-    if (!inControl())
+    if (!AMW_inControl())
         return false;
     return mad_land_start();
 }
 
 bool AC_Facade::navigateTo(const Vector3f& destination) {
-    if (!inControl())
+    if (!AMW_inControl())
         return false;
     return mad_nav_start(destination);
+}
+
+bool AC_Facade::armMotors() {
+    if (!AMW_inControl())
+        return false;
+    return mad_arm_motors();
+}
+
+bool AC_Facade::disarmMotors() {
+    if (!AMW_inControl())
+        return false;
+    return mad_disarm_motors();
 }
 
 float AC_Facade::getAltitude() {

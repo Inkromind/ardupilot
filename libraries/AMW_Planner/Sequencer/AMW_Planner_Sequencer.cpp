@@ -34,6 +34,9 @@ void AMW_Sequencer::run() {
             AMW_Task_Planner::getInstance()->completeFirstTask();
             startNewTask();
         }
+        else {
+            currentTask->runTask();
+        }
     }
 }
 

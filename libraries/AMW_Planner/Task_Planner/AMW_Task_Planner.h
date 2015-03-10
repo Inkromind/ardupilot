@@ -12,8 +12,8 @@
 
 class AMW_Task_Planner {
 public:
-    virtual void run();
-    virtual void init();
+    virtual void run(void);
+    virtual void init(void);
 
     virtual AMW_Planner_Task* getFirstTask(void);
     virtual void completeFirstTask(void);

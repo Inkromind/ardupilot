@@ -22,6 +22,7 @@ enum MadMode {
 
 
 static MadMode mad_mode;
+static bool mad_arming = false;
 
 static void mad_loiter_run();
 static void mad_takeoff_run();
@@ -179,17 +180,46 @@ static void mad_loiter_run() {
 }
 
 static bool mad_arm_motors() {
+    if (mad_arming)
+        return false;
+
     if (motors.armed())
         return true;
 
+    mad_arming = true;
     pre_arm_checks(true);
     if (ap.pre_arm_check && arm_checks(true)) {
         if (init_arm_motors()) {
+            set_auto_armed(true);
+            mad_arming = false;
             return true;
         } else {
+            mad_arming = false;
             return false;
         }
-    }else{
+    } else{
+        mad_arming = false;
+        return false;
+    }
+}
+
+static bool mad_disarm_motors() {
+    if (mad_arming)
+        return false;
+
+    if (!motors.armed())
+        return true;
+
+    if (!ap.land_complete)
+        return false;
+
+    mad_arming = true;
+    if (init_disarm_motors()) {
+        mad_arming = false;
+        return true;
+    }
+    else {
+        mad_arming = false;
         return false;
     }
 }

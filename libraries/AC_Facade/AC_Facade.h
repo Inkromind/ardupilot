@@ -13,17 +13,18 @@ class AC_Facade {
 
 public:
     static bool takeOff(float altitude);
-    static bool land();
+    static bool land(void);
     static bool navigateTo(const Vector3f& destination);
+    static bool armMotors(void);
+    static bool disarmMotors(void);
 
-    static float getAltitude();
-    static bool isLanded();
-    static bool areMotorsArmed();
+    static float getAltitude(void);
+    static bool isLanded(void);
+    static bool areMotorsArmed(void);
     static bool destinationReached(const Vector3f& destination);
     static bool takeOffComplete(float altitude);
-    static const Vector3f& getPosition();
+    static const Vector3f& getPosition(void);
 
-private:
 };
 
 

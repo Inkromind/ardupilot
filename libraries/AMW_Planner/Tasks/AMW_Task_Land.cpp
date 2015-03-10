@@ -6,26 +6,9 @@
  */
 
 #include "AMW_Task_Land.h"
-#include "AC_Facade.h"
+#include <AC_Facade.h>
+#include <AMW_Task_Land_State_Start.h>
 
 AMW_Task_Land::AMW_Task_Land() {
-}
-
-void AMW_Task_Land::runTask() {
-    updateStatus();
-
-    if (completed)
-        return;
-
-    if (AC_Facade::land())
-        running = true;
-}
-
-void AMW_Task_Land::updateStatus() {
-    if (completed)
-        return;
-
-    if (AC_Facade::isLanded()) {
-        this->completed = true;
-    }
+    currentState = new AMW_Task_Land_State_Start(this);
 }
