@@ -1,29 +1,28 @@
 /*
- * AMW_Task_Nav.cpp
+ * AMW_Command_Nav.cpp
  *
  *  Created on: 16-feb.-2015
  *      Author: Arne
  */
 
-#include "AMW_Task_Nav.h"
+#include "AMW_Command_Nav.h"
 #include <AC_Facade.h>
 
-AMW_Task_Nav::AMW_Task_Nav(Vector3f destination) {
+AMW_Command_Nav::AMW_Command_Nav(Vector3f destination) {
     this->destination = destination;
 }
 
-void AMW_Task_Nav::runTask() {
+void AMW_Command_Nav::runCommand() {
+    updateStatus();
+
     if (completed)
         return;
 
-    if (AC_Facade::navigateTo(destination))
-        running = true;
+    AC_Facade::navigateTo(destination);
 }
 
-void AMW_Task_Nav::updateStatus() {
+void AMW_Command_Nav::updateStatus() {
     if (completed)
-        return;
-    if (!running)
         return;
 
     if (AC_Facade::destinationReached(destination)) {

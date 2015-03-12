@@ -27,15 +27,22 @@ void AMW_Sequencer::run() {
 
     if (!currentTask) {
         startNewTask();
+        return;
+    }
+    else if (!currentPlan) {
+        startNewTask();
+        return;
     }
     else {
-        currentTask->updateStatus();
-        if (currentTask->isComplete()) {
+        currentPlan->executePlan();
+        if (currentPlan->isCompleted()) {
+            delete currentPlan;
             AMW_Task_Planner::getInstance()->completeFirstTask();
-            startNewTask();
         }
-        else {
-            currentTask->runTask();
+        else if (currentPlan->hasFailed()) {
+            // TODO: Abort Plan
+            delete currentPlan;
+            AMW_Task_Planner::getInstance()->completeFirstTask();
         }
     }
 }
@@ -46,5 +53,7 @@ void AMW_Sequencer::startNewTask() {
     if (!currentTask)
         return;
 
-    currentTask->runTask();
+    currentPlan = currentTask->generatePlan();
+
+    run();
 }

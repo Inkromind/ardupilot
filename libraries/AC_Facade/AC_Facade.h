@@ -23,7 +23,7 @@ public:
     static bool areMotorsArmed(void) = 0;
     static bool destinationReached(const Vector3f& destination) = 0;
     static bool takeOffComplete(float altitude) = 0;
-    static const Vector3f& getPosition(void) = 0;
+    static Vector3f getPosition(void) = 0;
 
 };
 

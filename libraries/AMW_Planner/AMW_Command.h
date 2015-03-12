@@ -8,13 +8,13 @@
 #ifndef AMW_TASK_H_
 #define AMW_TASK_H_
 
-class AMW_Task {
+class AMW_Command {
 public:
-    virtual ~AMW_Task();
+    virtual ~AMW_Command();
 
     virtual void updateStatus(void) = 0;
 
-    virtual void runTask(void) = 0;
+    virtual void runCommand(void) = 0;
 
     virtual bool isComplete(void) {
         return completed;

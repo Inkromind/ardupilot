@@ -12,6 +12,7 @@
 
 class AMW_Task_Planner {
 public:
+
     virtual void run(void);
     virtual void init(void);
 
@@ -25,6 +26,7 @@ private:
     std::queue<AMW_Task*> plan;
 
     AMW_Task_Planner();
+protected:
     virtual ~AMW_Task_Planner();
 
 };
