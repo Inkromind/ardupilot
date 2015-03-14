@@ -7,22 +7,31 @@
 
 #include "AMW_Sequencer.h"
 
-AMW_Sequencer::AMW_Sequencer() { }
+AMW_Sequencer* AMW_Sequencer::sequencer = 0;
+
+AMW_Sequencer::AMW_Sequencer() {
+    currentTask = 0;
+    sequencerInitialized = false;
+    currentPlan = 0;
+}
 
 AMW_Sequencer::~AMW_Sequencer() {
     delete currentTask;
 }
 
-static AMW_Sequencer* AMW_Sequencer::getInstance() {
-    return &this->sequencer;
+AMW_Sequencer* AMW_Sequencer::getInstance() {
+    if (!AMW_Sequencer::sequencer) {
+        AMW_Sequencer::sequencer = new AMW_Sequencer();
+    }
+    return AMW_Sequencer::sequencer;
 }
 
 void AMW_Sequencer::init() {
-    initialized = true;
+    sequencerInitialized = true;
 }
 
 void AMW_Sequencer::run() {
-    if (!initialized)
+    if (!sequencerInitialized)
         return;
 
     if (!currentTask) {

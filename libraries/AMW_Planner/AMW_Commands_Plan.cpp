@@ -7,14 +7,16 @@
 
 #include "AMW_Commands_Plan.h"
 
-AMW_Commands_Plan::AMW_Commands_Plan(AMW_Task& parentTask) {
-    this->parentTask = parentTask;
+AMW_Commands_Plan::AMW_Commands_Plan() {
+    this->failed = false;
+    this->completed = false;
+    this->currentCommand = 0;
 }
 
 AMW_Commands_Plan::~AMW_Commands_Plan(void) {
-    while (!plan.empty()) {
-        delete plan.front();
-        plan.pop();
+    while (!this->plan.empty()) {
+        delete this->plan.front();
+        this->plan.pop();
     }
 }
 

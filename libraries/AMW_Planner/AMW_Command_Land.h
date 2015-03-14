@@ -8,7 +8,7 @@
 #ifndef AMW_COMMAND_LAND_H_
 #define AMW_COMMAND_LAND_H_
 
-#include <AMW_Command.h>
+#include "AMW_Command.h"
 
 class AMW_Command_Land : public AMW_Command {
 public:

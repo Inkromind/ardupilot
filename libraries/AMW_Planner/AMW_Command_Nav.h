@@ -8,14 +8,12 @@
 #ifndef AMW_COMMAND_NAV_H_
 #define AMW_COMMAND_NAV_H_
 
-#include <AMW_Command.h>
+#include "AMW_Command.h"
+#include <AP_Math.h>
 
 class AMW_Command_Nav: public AMW_Command {
 public:
     AMW_Command_Nav(Vector3f destination);
-    virtual ~AMW_Command_Nav(void) {
-        delete destination;
-    }
 
     void updateStatus(void);
     void runCommand(void);

@@ -1,16 +1,16 @@
 /*
- * AMW_Task.h
+ * AMW_Command.h
  *
  *  Created on: 8-mrt.-2015
  *      Author: Arne
  */
 
-#ifndef AMW_TASK_H_
-#define AMW_TASK_H_
+#ifndef AMW_COMMAND_H_
+#define AMW_COMMAND_H_
 
 class AMW_Command {
 public:
-    virtual ~AMW_Command();
+    virtual ~AMW_Command() {};
 
     virtual void updateStatus(void) = 0;
 
@@ -20,9 +20,9 @@ public:
         return completed;
     }
 
-private:
-    bool running = false;
-    bool completed = false;
+protected:
+    bool commandStarted;
+    bool completed;
 };
 
-#endif /* AMW_TASK_H_ */
+#endif /* AMW_COMMAND_H_ */

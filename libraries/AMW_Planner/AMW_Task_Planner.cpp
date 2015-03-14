@@ -6,9 +6,12 @@
  */
 
 #include "AMW_Task_Planner.h"
-#include <AMW_Task_Test_Flight.h>
+#include "AMW_Task_Test_Flight.h"
+
+AMW_Task_Planner* AMW_Task_Planner::planner = 0;
 
 AMW_Task_Planner::AMW_Task_Planner() {
+    plannerInitialized = false;
     plan.push(new AMW_Task_Test_Flight());
 }
 
@@ -16,26 +19,27 @@ AMW_Task_Planner::~AMW_Task_Planner() {
     while (!plan.empty()) {
         completeFirstTask();
     }
-    delete plan;
 }
 
-static AMW_Task_Planner* AMW_Task_Planner::getInstance() {
-    return &this->planner;
+AMW_Task_Planner* AMW_Task_Planner::getInstance() {
+    if (!planner)
+      planner = new AMW_Task_Planner();
+    return planner;
 }
 
 void AMW_Task_Planner::init() {
-    initialized = true;
+    plannerInitialized = true;
 }
 
 void AMW_Task_Planner::run() {
-    if (!initialized)
+    if (!plannerInitialized)
         return;
 }
 
 
 AMW_Task* AMW_Task_Planner::getFirstTask() {
-    if (!initialized || plan.empty())
-        return nullptr;
+    if (!plannerInitialized || plan.empty())
+        return 0;
 
     return plan.front();
 }

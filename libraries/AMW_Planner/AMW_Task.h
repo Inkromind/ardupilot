@@ -8,11 +8,11 @@
 #ifndef AMW_TASK_H_
 #define AMW_TASK_H_
 
-#include <AMW_Commands_Plan.h>
+#include "AMW_Commands_Plan.h"
 
 class AMW_Task {
 public:
-    virtual ~AMW_Task();
+    virtual ~AMW_Task() {};
 
     virtual AMW_Commands_Plan* generatePlan(void) = 0;
 };

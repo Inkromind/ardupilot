@@ -8,7 +8,8 @@
 #ifndef AMW_COMMAND_DELAY_H_
 #define AMW_COMMAND_DELAY_H_
 
-#include <AMW_Command.h>
+#include "AMW_Command.h"
+#include <stdint.h>
 
 class AMW_Command_Delay: public AMW_Command {
 public:

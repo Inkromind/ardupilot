@@ -6,10 +6,10 @@
  */
 
 #include "AMW_Command_Takeoff.h"
-#include <AC_Facade.h>
+#include "AC_Facade.h"
 
-AMW_Command_Takeoff::AMW_Command_Takeoff(float altitude) {
-    this->altitude = altitude;
+AMW_Command_Takeoff::AMW_Command_Takeoff(float targetAltitude) {
+    this->altitude = targetAltitude;
 }
 
 void AMW_Command_Takeoff::runCommand() {

@@ -9,28 +9,30 @@
 #include <AP_HAL.h>
 #include <AP_Math.h>
 
-AMW_Command_Delay::AMW_Command_Delay(uint32_t duration) {
-    this->duration = (uint32_t)max(duration, 0);
+extern const AP_HAL::HAL& hal;
+
+AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) {
+    this->duration = (uint32_t)max(delay, 0);
     this->start = 0;
 }
 
 void AMW_Command_Delay::runCommand() {
     updateStatus();
 
-    if (running)
+    if (commandStarted)
         return;
 
     if (completed)
         return;
 
     this->start = hal.scheduler->millis();
-    this->running = true;
+    this->commandStarted = true;
 }
 
 void AMW_Command_Delay::updateStatus() {
     if (completed)
            return;
-    if (running)
+    if (commandStarted)
            return;
 
     if (hal.scheduler->millis() - start > duration) {

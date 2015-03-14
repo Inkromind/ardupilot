@@ -8,11 +8,12 @@
 #ifndef AMW_COMMANDS_PLAN_H_
 #define AMW_COMMANDS_PLAN_H_
 
-#include <AMW_Command.h>
+#include "AMW_Command.h"
+#include <AMW_Queue.h>
 
 class AMW_Commands_Plan {
 public:
-    AMW_Commands_Plan(AMW_Task& parentTask);
+    AMW_Commands_Plan();
     virtual ~AMW_Commands_Plan();
 
     virtual void executePlan(void);
@@ -22,12 +23,11 @@ public:
     virtual void addNewCommand(AMW_Command* command);
 
 private:
-    bool completed = false;
-    bool failed = false;
+    bool completed;
+    bool failed;
 
-    AMW_Task& parentTask;
-    std::queue<AMW_Command*> plan;
-    AMW_Command* currentCommand = 0;
+    AMW_Queue<AMW_Command*> plan;
+    AMW_Command* currentCommand;
 
     virtual void completeCurrentCommand(void);
 };

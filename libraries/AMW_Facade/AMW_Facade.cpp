@@ -6,28 +6,25 @@
  */
 
 #include "AMW_Facade.h"
-#include <AMW_Sequencer.h>
-#include <AMW_Task_Planner.h>
+#include <AMW_Planner.h>
 
 void AMW_Facade::initPlanner() {
-    AMW_Task_Planner::getInstance()->init();
-    AMW_Sequencer::getInstance()->init();
+    AMW_Planner::initPlanner();
 }
 
 
-void run100Hz() {
-
+void AMW_Facade::run100Hz() {
+    AMW_Planner::run100Hz();
 }
 
-void run50Hz() {
-
+void AMW_Facade::run50Hz() {
+    AMW_Planner::run50Hz();
 }
 
-void run10Hz() {
-    AMW_Task_Planner::getInstance()->run();
-    AMW_Sequencer::getInstance()->run();
+void AMW_Facade::run10Hz() {
+    AMW_Planner::run10Hz();
 }
 
-void run1Hz() {
-
+void AMW_Facade::run1Hz() {
+    AMW_Planner::run1Hz();
 }

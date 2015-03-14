@@ -6,17 +6,17 @@
  */
 
 #include "AMW_Task_Test_Flight.h"
-#include <AMW_Command_Takeoff.h>
-#include <AMW_Command_Delay.h>
-#include <AMW_Command_Nav.h>
-#include <AMW_Command_Land.h>
-#include <AMW_Command_Disarm.h>
+#include "AMW_Command_Takeoff.h"
+#include "AMW_Command_Delay.h"
+#include "AMW_Command_Nav.h"
+#include "AMW_Command_Land.h"
+#include "AMW_Command_Disarm.h"
 
 
 AMW_Task_Test_Flight::AMW_Task_Test_Flight() { }
 
 AMW_Commands_Plan* AMW_Task_Test_Flight::generatePlan(void) {
-    AMW_Commands_Plan* plan = new AMW_Commands_Plan(this);
+    AMW_Commands_Plan* plan = new AMW_Commands_Plan();
 
     plan->addNewCommand(new AMW_Command_Takeoff(2000));
     plan->addNewCommand(new AMW_Command_Delay(20000));

@@ -214,12 +214,7 @@ static bool mad_disarm_motors() {
         return false;
 
     mad_arming = true;
-    if (init_disarm_motors()) {
-        mad_arming = false;
-        return true;
-    }
-    else {
-        mad_arming = false;
-        return false;
-    }
+    init_disarm_motors();
+    mad_arming = false;
+    return true;
 }

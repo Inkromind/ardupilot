@@ -8,8 +8,8 @@
 #include "AMW_Command_Nav.h"
 #include <AC_Facade.h>
 
-AMW_Command_Nav::AMW_Command_Nav(Vector3f destination) {
-    this->destination = destination;
+AMW_Command_Nav::AMW_Command_Nav(Vector3f waypoint) {
+    this->destination = waypoint;
 }
 
 void AMW_Command_Nav::runCommand() {
@@ -26,6 +26,6 @@ void AMW_Command_Nav::updateStatus() {
         return;
 
     if (AC_Facade::destinationReached(destination)) {
-        this->completed = true;
+        completed = true;
     }
 }

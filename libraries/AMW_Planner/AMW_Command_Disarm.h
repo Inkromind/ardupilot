@@ -8,7 +8,7 @@
 #ifndef AMW_COMMAND_DISARM_H_
 #define AMW_COMMAND_DISARM_H_
 
-#include <AMW_Command.h>
+#include "AMW_Command.h"
 
 class AMW_Command_Disarm: public AMW_Command {
 public:
@@ -17,8 +17,6 @@ public:
     void updateStatus(void);
     void runCommand(void);
 
-private:
-    Vector3f destination;
 };
 
 #endif /* AMW_COMMAND_DISARM_H_ */

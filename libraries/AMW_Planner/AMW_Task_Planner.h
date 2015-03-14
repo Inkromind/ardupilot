@@ -9,6 +9,7 @@
 #define AMW_TASK_PLANNER_H_
 
 #include "AMW_Task.h"
+#include <AMW_Queue.h>
 
 class AMW_Task_Planner {
 public:
@@ -19,11 +20,11 @@ public:
     virtual AMW_Task* getFirstTask(void);
     virtual void completeFirstTask(void);
 
-    static virtual AMW_Task_Planner* getInstance(void);
+    static AMW_Task_Planner* getInstance(void);
 private:
-    bool initialized = false;
-    static AMW_Task_Planner planner;
-    std::queue<AMW_Task*> plan;
+    bool plannerInitialized;
+    static AMW_Task_Planner* planner;
+    AMW_Queue<AMW_Task*> plan;
 
     AMW_Task_Planner();
 protected:
