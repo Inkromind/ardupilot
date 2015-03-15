@@ -16,6 +16,7 @@ public:
     static bool takeOff(float altitude);
     static bool land(void);
     static bool navigateTo(const Vector3f& destination);
+    static bool navigateToAltitude(float altitude);
     static bool armMotors(void);
     static bool disarmMotors(void);
 
@@ -23,7 +24,7 @@ public:
     static bool isLanded(void);
     static bool areMotorsArmed(void);
     static bool destinationReached(const Vector3f& destination);
-    static bool takeOffComplete(float altitude);
+    static bool altitudeReached(float altitude);
     static Vector3f getPosition(void);
 };
 

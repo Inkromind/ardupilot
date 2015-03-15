@@ -8,8 +8,8 @@
 #include "AMW_Command_Takeoff.h"
 #include "AC_Facade.h"
 
-AMW_Command_Takeoff::AMW_Command_Takeoff(float targetAltitude) {
-    this->altitude = targetAltitude;
+AMW_Command_Takeoff::AMW_Command_Takeoff(float alt) {
+    this->altitude = alt;
 }
 
 void AMW_Command_Takeoff::runCommand() {
@@ -25,7 +25,7 @@ void AMW_Command_Takeoff::updateStatus() {
     if (completed)
         return;
 
-    if (AC_Facade::takeOffComplete(altitude)) {
+    if (AC_Facade::altitudeReached(altitude)) {
         completed = true;
     }
 }

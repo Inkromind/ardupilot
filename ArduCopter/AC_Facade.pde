@@ -29,6 +29,14 @@ bool AC_Facade::navigateTo(const Vector3f& destination) {
     return mad_nav_start(destination);
 }
 
+bool AC_Facade::navigateToAltitude(float altitude) {
+    if (!MAD_inControl())
+        return false;
+    Vector3f dest = AC_Facade::getPosition();
+    dest.y = altitude;
+    return mad_nav_start(dest);
+}
+
 bool AC_Facade::armMotors() {
     if (!MAD_inControl())
         return false;
@@ -45,7 +53,7 @@ float AC_Facade::getAltitude() {
     return inertial_nav.get_altitude();
 }
 
-bool AC_Facade::takeOffComplete(float altitude) {
+bool AC_Facade::altitudeReached(float altitude) {
     Vector3f dest = AC_Facade::getPosition();
     dest.y = altitude;
 
