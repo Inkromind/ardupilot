@@ -20,6 +20,7 @@ REVERSE_THROTTLE=0
 NO_REBUILD=0
 START_HIL=0
 TRACKER_ARGS=""
+EXTERNAL_SIM=0
 
 usage()
 {
@@ -45,6 +46,7 @@ Options:
                      for planes can choose elevon or vtail
     -j NUM_PROC      number of processors to use during build (default 1)
     -H               start HIL
+    -e               use external simulator
 
 mavproxy_options:
     --map            start with a map
@@ -61,7 +63,7 @@ EOF
 
 
 # parse options. Thanks to http://wiki.bash-hackers.org/howto/getopts_tutorial
-while getopts ":I:VgGcj:TA:t:L:v:hwf:RNH" opt; do
+while getopts ":I:VgGcj:TA:t:L:v:hwf:RNHe" opt; do
   case $opt in
     v)
       VEHICLE=$OPTARG
@@ -113,6 +115,9 @@ while getopts ":I:VgGcj:TA:t:L:v:hwf:RNH" opt; do
     w)
       WIPE_EEPROM=1
       ;;
+    e)
+      EXTERNAL_SIM=1
+      ;;
     h)
       usage
       exit 0
@@ -163,29 +168,32 @@ EXTRA_SIM=""
 # modify build target based on copter frame type
 case $FRAME in
     +|quad)
-	BUILD_TARGET="sitl"
+    BUILD_TARGET="sitl"
         EXTRA_SIM="--frame=quad"
-	;;
+    ;;
     X)
-	BUILD_TARGET="sitl"
+    BUILD_TARGET="sitl"
         EXTRA_PARM="param set FRAME 1;"
         EXTRA_SIM="--frame=X"
-	;;
+    ;;
     octa)
-	BUILD_TARGET="sitl-octa"
+    BUILD_TARGET="sitl-octa"
         EXTRA_SIM="--frame=octa"
-	;;
+    ;;
     elevon*)
         EXTRA_PARM="param set ELEVON_OUTPUT 4;"
         EXTRA_SIM="--elevon"
-	;;
+    ;;
     vtail)
         EXTRA_PARM="param set VTAIL_OUTPUT 4;"
         EXTRA_SIM="--vtail"
-	;;
+    ;;
+    skid)
+        EXTRA_SIM="--skid-steering"
+    ;;
     obc)
         BUILD_TARGET="sitl-obc"
-	;;
+    ;;
     "")
         ;;
     *)
@@ -242,9 +250,9 @@ if [ $START_ANTENNA_TRACKER == 1 ]; then
     TRACKIN_PORT="127.0.0.1:"$((5502+10*$TRACKER_INSTANCE))
     TRACKOUT_PORT="127.0.0.1:"$((5501+10*$TRACKER_INSTANCE))
     TRACKER_UARTA="tcp:127.0.0.1:"$((5760+10*$TRACKER_INSTANCE))
-    cmd="nice /tmp/AntennaTracker.build/AntennaTracker.elf -I1"
+    cmd="python /tmp/AntennaTracker.build/AntennaTracker.elf -I1"
     $autotest/run_in_terminal_window.sh "AntennaTracker" $cmd || exit 1
-    $autotest/run_in_terminal_window.sh "pysim(Tracker)" nice $autotest/pysim/sim_tracker.py --home=$TRACKER_HOME --simin=$TRACKIN_PORT --simout=$TRACKOUT_PORT $TRACKER_ARGS || exit 1
+    $autotest/run_in_terminal_window.sh "pysim(Tracker)" python $autotest/pysim/sim_tracker.py --home=$TRACKER_HOME --simin=$TRACKIN_PORT --simout=$TRACKOUT_PORT $TRACKER_ARGS || exit 1
     popd
 fi
 
@@ -258,18 +266,18 @@ case $VEHICLE in
         [ "$REVERSE_THROTTLE" == 1 ] && {
             EXTRA_SIM="$EXTRA_SIM --revthr"
         }
-        RUNSIM="nice $autotest/jsbsim/runsim.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
+        RUNSIM="python $autotest/jsbsim/runsim.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
         PARMS="ArduPlane.parm"
         if [ $WIPE_EEPROM == 1 ]; then
             cmd="$cmd -PFORMAT_VERSION=13 -PSKIP_GYRO_CAL=1 -PRC3_MIN=1000 -PRC3_TRIM=1000"
         fi
         ;;
     ArduCopter)
-        RUNSIM="nice $autotest/pysim/sim_multicopter.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
+        RUNSIM="python $autotest/pysim/sim_multicopter.py --home=$SIMHOME --simin=$SIMIN_PORT --simout=$SIMOUT_PORT --fgout=$FG_PORT $EXTRA_SIM"
         PARMS="copter_params.parm"
         ;;
     APMrover2)
-        RUNSIM="nice $autotest/pysim/sim_rover.py --home=$SIMHOME --rate=400 $EXTRA_SIM"
+        RUNSIM="python $autotest/pysim/sim_rover.py --home=$SIMHOME --rate=400 $EXTRA_SIM"
         PARMS="Rover.parm"
         ;;
     *)
@@ -299,11 +307,15 @@ trap kill_tasks SIGINT
 
 sleep 2
 rm -f $tfile
-$autotest/run_in_terminal_window.sh "Simulator" $RUNSIM || {
-    echo "Failed to start simulator: $RUNSIM"
-    exit 1
-}
-sleep 2
+if [ $EXTERNAL_SIM == 0 ]; then
+    $autotest/run_in_terminal_window.sh "Simulator" $RUNSIM || {
+        echo "Failed to start simulator: $RUNSIM"
+        exit 1
+    }
+    sleep 2
+else
+    echo "Using external simulator"
+fi
 
 # mavproxy.py --master tcp:127.0.0.1:5760 --sitl 127.0.0.1:5501 --out 127.0.0.1:14550 --out 127.0.0.1:14551 
 options=""
