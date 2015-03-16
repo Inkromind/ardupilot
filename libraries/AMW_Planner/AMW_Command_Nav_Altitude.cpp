@@ -6,6 +6,7 @@
  */
 
 #include "AMW_Command_Nav_Altitude.h"
+#include <AC_Facade.h>
 
 AMW_Command_Nav_Altitude::AMW_Command_Nav_Altitude(float alt) {
     this->altitude = alt;
