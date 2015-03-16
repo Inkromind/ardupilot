@@ -4,6 +4,13 @@ set -e
 CWD=$(pwd)
 OPT="/opt"
 
+read -p "Using VirtualBox Shared Folders? (y/n)" RESP
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+    ARDUPILOT_DIR="ardupilot"
+else
+    ARDUPILOT_DIR="sf_ardupilot"
+fi
+
 BASE_PKGS="gawk make git arduino-core curl"
 SITL_PKGS="g++ python-pip python-matplotlib python-serial python-wxgtk2.8 python-scipy python-opencv python-numpy python-pyparsing ccache"
 PYTHON_PKGS="pymavlink MAVProxy droneapi"
@@ -20,7 +27,7 @@ ARM_TARBALL="$ARM_ROOT-20140408-linux.tar.bz2"
 ARM_TARBALL_URL="http://firmware.diydrones.com/Tools/PX4-tools/$ARM_TARBALL"
 
 # Ardupilot Tools
-ARDUPILOT_TOOLS="ardupilot/Tools/autotest"
+ARDUPILOT_TOOLS="$ARDUPILOT_DIR/Tools/autotest"
 
 function maybe_prompt_user() {
     if $ASSUME_YES; then
