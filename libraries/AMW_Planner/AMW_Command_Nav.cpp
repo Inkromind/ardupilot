@@ -21,7 +21,7 @@ void AMW_Command_Nav::runCommand() {
     AC_Facade::navigateTo(destination);
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
-        AC_Facade::sendDebug("Starting nav...");
+        AC_Facade::sendDebug(PSTR("Starting nav..."));
     }
     else {
         commandStarted = true;
@@ -36,7 +36,7 @@ void AMW_Command_Nav::updateStatus() {
     if (AC_Facade::destinationReached(destination)) {
         completed = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug("Nav Completed");
+        AC_Facade::sendDebug(PSTR("Nav Completed"));
 #endif
     }
 }

@@ -19,7 +19,7 @@ void AMW_Command_Disarm::runCommand() {
     AC_Facade::disarmMotors();
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
-        AC_Facade::sendDebug("Starting disarm...");
+        AC_Facade::sendDebug(PSTR("Starting disarm..."));
     }
     else {
         commandStarted = true;
@@ -36,7 +36,7 @@ void AMW_Command_Disarm::updateStatus() {
     if (!AC_Facade::areMotorsArmed()) {
         this->completed = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug("Disarming Completed");
+        AC_Facade::sendDebug(PSTR("Disarming Completed"));
 #endif
     }
 }

@@ -7,6 +7,7 @@
 
 #ifndef AMW_PLANNER_H_
 #define AMW_PLANNER_H_
+#define AMW_PLANNER_DEBUG
 
 class AMW_Planner {
 public:
