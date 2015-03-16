@@ -9,6 +9,7 @@
 #define AC_FACADE_H_
 
 #include <AP_Math.h>
+#include <AP_Progmem.h>
 
 class AC_Facade {
 
@@ -19,6 +20,8 @@ public:
     static bool navigateToAltitude(float altitude);
     static bool armMotors(void);
     static bool disarmMotors(void);
+
+    static void sendDebug(const prog_char_t *str);
 
     static float getAltitude(void);
     static bool isLanded(void);

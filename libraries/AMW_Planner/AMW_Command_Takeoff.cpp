@@ -19,6 +19,14 @@ void AMW_Command_Takeoff::runCommand() {
         return;
 
     AC_Facade::takeOff(altitude);
+#ifdef AMW_PLANNER_DEBUG
+    if (!commandStarted) {
+        AC_Facade::sendDebug("Starting takeoff...");
+    }
+    else {
+        commandStarted = true;
+    }
+#endif
 }
 
 void AMW_Command_Takeoff::updateStatus() {
@@ -27,5 +35,8 @@ void AMW_Command_Takeoff::updateStatus() {
 
     if (AC_Facade::altitudeReached(altitude)) {
         completed = true;
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::sendDebug("Takeoff Completed");
+#endif
     }
 }

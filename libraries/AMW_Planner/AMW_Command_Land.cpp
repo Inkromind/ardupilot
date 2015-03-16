@@ -17,6 +17,14 @@ void AMW_Command_Land::runCommand() {
         return;
 
     AC_Facade::land();
+#ifdef AMW_PLANNER_DEBUG
+    if (!commandStarted) {
+        AC_Facade::sendDebug("Starting landing...");
+    }
+    else {
+        commandStarted = true;
+    }
+#endif
 }
 
 void AMW_Command_Land::updateStatus() {
@@ -25,5 +33,8 @@ void AMW_Command_Land::updateStatus() {
 
     if (AC_Facade::isLanded()) {
         completed = true;
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::sendDebug("Landing Completed");
+#endif
     }
 }

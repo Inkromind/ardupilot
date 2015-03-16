@@ -19,6 +19,14 @@ void AMW_Command_Nav_Altitude::runCommand() {
         return;
 
     AC_Facade::navigateToAltitude(altitude);
+#ifdef AMW_PLANNER_DEBUG
+    if (!commandStarted) {
+        AC_Facade::sendDebug("Starting ascend/descend...");
+    }
+    else {
+        commandStarted = true;
+    }
+#endif
 }
 
 void AMW_Command_Nav_Altitude::updateStatus() {
@@ -27,5 +35,8 @@ void AMW_Command_Nav_Altitude::updateStatus() {
 
     if (AC_Facade::altitudeReached(altitude)) {
         completed = true;
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::sendDebug("Ascend/Descend Completed");
+#endif
     }
 }

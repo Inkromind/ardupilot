@@ -8,6 +8,7 @@
 #include "AMW_Command_Delay.h"
 #include <AP_HAL.h>
 #include <AP_Math.h>
+#include <AC_Facade.h>
 
 extern const AP_HAL::HAL& hal;
 
@@ -27,6 +28,9 @@ void AMW_Command_Delay::runCommand() {
 
     this->start = hal.scheduler->millis();
     this->commandStarted = true;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::sendDebug(PSTR("Starting delay"));
+#endif
 }
 
 void AMW_Command_Delay::updateStatus() {
@@ -37,6 +41,9 @@ void AMW_Command_Delay::updateStatus() {
 
     if (hal.scheduler->millis() - start > duration) {
         completed = true;
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::sendDebug(PSTR("Delay Completed"));
+#endif
     }
 }
 

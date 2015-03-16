@@ -28,6 +28,9 @@ AMW_Sequencer* AMW_Sequencer::getInstance() {
 
 void AMW_Sequencer::init() {
     sequencerInitialized = true;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::sendDebug("Initializing Sequencer...");
+#endif
 }
 
 void AMW_Sequencer::run() {
@@ -61,6 +64,10 @@ void AMW_Sequencer::startNewTask() {
 
     if (!currentTask)
         return;
+
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::sendDebug("Got next task");
+#endif
 
     currentPlan = currentTask->generatePlan();
 

@@ -80,3 +80,7 @@ bool AC_Facade::destinationReached(const Vector3f& destination) {
 Vector3f AC_Facade::getPosition() {
     return Vector3f() + inertial_nav.get_position();
 }
+
+void AC_Facade::sendDebug(const prog_char_t *str) {
+    gcs_send_text_P(SEVERITY_LOW, str);
+}

@@ -29,6 +29,9 @@ AMW_Task_Planner* AMW_Task_Planner::getInstance() {
 
 void AMW_Task_Planner::init() {
     plannerInitialized = true;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::sendDebug("Initializing Task Planner...");
+#endif
 }
 
 void AMW_Task_Planner::run() {
