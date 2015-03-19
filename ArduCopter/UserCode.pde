@@ -43,6 +43,13 @@ void userhook_SlowLoop()
 #ifdef USERHOOK_SUPERSLOWLOOP
 void userhook_SuperSlowLoop()
 {
+    ap.CH8_flag = read_3pos_switch(g.rc_8.radio_in);
+    if (ap.CH8_flag == AUX_SWITCH_HIGH) {
+        AMW_Facade::initPlanner();
+        if (control_mode != MAD) {
+            set_mode(MAD);
+        }
+    }
     AMW_Facade::run1Hz();
     // put your 1Hz code here
 }

@@ -16,8 +16,20 @@ static bool mad_loiter_start(void);
 
 static bool mad_nav_start(const Vector3f& destination);
 
+static bool mad_nav_altitude_start(float target_altitude);
+
 static bool mad_arm_motors(void);
 
 static bool mad_disarm_motors(void);
+
+enum MadMode {
+    Mad_Loiter,
+    Mad_TakeOff,
+    Mad_Land,
+    Mad_Nav,
+    Mad_Nav_Altitude,
+};
+
+static MadMode mad_mode;
 
 #endif /* CONTROL_MAD_H_ */

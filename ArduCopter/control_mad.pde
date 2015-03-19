@@ -11,23 +11,13 @@
 
 #include "control_mad.h"
 
-
-// Auto modes
-enum MadMode {
-    Mad_Loiter,
-    Mad_TakeOff,
-    Mad_Land,
-    Mad_Nav
-};
-
-
-static MadMode mad_mode;
 static bool mad_arming = false;
 
 static void mad_loiter_run();
 static void mad_takeoff_run();
 static void mad_land_run();
 static void mad_nav_run();
+static void mad_nav_altitude_run();
 
 static bool mad_init(bool ignore_checks)
 {
@@ -38,6 +28,8 @@ static bool mad_init(bool ignore_checks)
         mad_mode = Mad_Loiter;
         mission.stop();
         wp_nav.wp_and_spline_init();
+
+        gcs_send_text_P(SEVERITY_LOW, PSTR("MAD Flight mode enabled"));
 
         return true;
     }
@@ -67,6 +59,9 @@ static void mad_run()
     case Mad_Nav:
         mad_nav_run();
         break;
+    case Mad_Nav_Altitude:
+        mad_nav_altitude_run();
+        break;
     }
 }
 
@@ -74,6 +69,13 @@ static void mad_run()
 // based on auto_takeoff_start
 static bool mad_takeoff_start(float final_alt)
 {
+
+    if (mad_mode == Mad_TakeOff) {
+        Vector3f destination = wp_nav.get_wp_destination();
+        if (destination.z == final_alt)
+            return true;
+    }
+
     mad_mode = Mad_TakeOff;
 
     // initialise wpnav destination
@@ -84,7 +86,7 @@ static bool mad_takeoff_start(float final_alt)
     // initialise yaw
     set_auto_yaw_mode(AUTO_YAW_HOLD);
 
-    if (motors.armed()) {
+    if (!motors.armed()) {
         if (!mad_arm_motors())
             return false;
     }
@@ -126,22 +128,114 @@ static bool mad_nav_start(const Vector3f& destination)
     if (ap.land_complete || !motors.armed())
         return false;
 
-    guided_init(true);
+    if (mad_mode == Mad_Nav) {
+        Vector3f currentDestination = wp_nav.get_wp_destination();
+        if (currentDestination == destination)
+            return true;
+    }
+
+    mad_mode = Mad_Nav;
+
+    // initialise wpnav
     wp_nav.set_wp_destination(destination);
+
+    // initialise yaw
+    // To-Do: reset the yaw only when the previous navigation command is not a WP.  this would allow removing the special check for ROI
+    if (auto_yaw_mode != AUTO_YAW_ROI) {
+        set_auto_yaw_mode(get_default_auto_yaw_mode(false));
+    }
+
     return true;
+
 
 }
 
 // mad_nav_run - runs the mad nav controller
 //      called by mad_run at 100hz or more
+// based on auto_nav_run
 static void mad_nav_run()
 {
     if (ap.land_complete)
         return;
 
-    guided_pos_control_run();
+    // process pilot's yaw input
+    float target_yaw_rate = 0;
+    if (!failsafe.radio) {
+        // get pilot's desired yaw rate
+        target_yaw_rate = get_pilot_desired_yaw_rate(g.rc_4.control_in);
+        if (target_yaw_rate != 0) {
+            set_auto_yaw_mode(AUTO_YAW_HOLD);
+        }
+    }
+
+    // run waypoint controller
+    wp_nav.update_wpnav();
+
+    // call z-axis position controller (wpnav should have already updated it's alt target)
+    pos_control.update_z_controller();
+
+    // call attitude controller
+    if (auto_yaw_mode == AUTO_YAW_HOLD) {
+        // roll & pitch from waypoint controller, yaw rate from pilot
+        attitude_control.angle_ef_roll_pitch_rate_ef_yaw(wp_nav.get_roll(), wp_nav.get_pitch(), target_yaw_rate);
+    }else{
+        // roll, pitch from waypoint controller, yaw heading from auto_heading()
+        attitude_control.angle_ef_roll_pitch_yaw(wp_nav.get_roll(), wp_nav.get_pitch(), get_auto_heading(),true);
+    }
 
 }
+
+static bool mad_nav_altitude_start(float targetAltitude)
+{
+    if (ap.land_complete || !motors.armed())
+        return false;
+
+    if (mad_mode == Mad_Nav_Altitude) {
+        Vector3f destination = wp_nav.get_wp_destination();
+        if (destination.z == targetAltitude)
+            return true;
+    }
+
+    Vector3f target_pos = inertial_nav.get_position();
+    target_pos.z = targetAltitude;
+    mad_mode = Mad_Nav_Altitude;
+
+    // initialise wpnav
+    wp_nav.set_wp_destination(target_pos);
+
+    // initialise yaw
+    // To-Do: reset the yaw only when the previous navigation command is not a WP.  this would allow removing the special check for ROI
+    if (auto_yaw_mode != AUTO_YAW_ROI) {
+        set_auto_yaw_mode(get_default_auto_yaw_mode(false));
+    }
+
+    return true;
+
+}
+
+static void mad_nav_altitude_run() {
+
+    if (ap.land_complete)
+            return;
+
+    // process pilot's yaw input
+    float target_yaw_rate = 0;
+    if (!failsafe.radio) {
+        // get pilot's desired yaw rate
+        target_yaw_rate = get_pilot_desired_yaw_rate(g.rc_4.control_in);
+    }
+
+    // run waypoint controller
+    wp_nav.update_wpnav();
+
+    // call z-axis position controller (wpnav should have already updated it's alt target)
+    pos_control.update_z_controller();
+
+    // roll & pitch from waypoint controller, yaw rate from pilot
+    attitude_control.angle_ef_roll_pitch_rate_ef_yaw(wp_nav.get_roll(), wp_nav.get_pitch(), target_yaw_rate);
+}
+
+
 
 // mad_land_start - initialises controller to implement a landing
 static bool mad_land_start()

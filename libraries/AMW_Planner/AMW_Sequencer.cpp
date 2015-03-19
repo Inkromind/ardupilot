@@ -6,6 +6,8 @@
  */
 
 #include "AMW_Sequencer.h"
+#include <AC_Facade.h>
+#include "AMW_Planner.h"
 
 AMW_Sequencer* AMW_Sequencer::sequencer = 0;
 
@@ -27,6 +29,9 @@ AMW_Sequencer* AMW_Sequencer::getInstance() {
 }
 
 void AMW_Sequencer::init() {
+    if (AMW_Sequencer::sequencerInitialized) {
+        return;
+    }
     sequencerInitialized = true;
 #ifdef AMW_PLANNER_DEBUG
     AC_Facade::sendDebug(PSTR("Initializing Sequencer..."));
@@ -34,8 +39,9 @@ void AMW_Sequencer::init() {
 }
 
 void AMW_Sequencer::run() {
-    if (!sequencerInitialized)
+    if (!sequencerInitialized) {
         return;
+    }
 
     if (!currentTask) {
         startNewTask();
@@ -49,12 +55,22 @@ void AMW_Sequencer::run() {
         currentPlan->executePlan();
         if (currentPlan->isCompleted()) {
             delete currentPlan;
+            currentPlan = 0;
+            currentTask = 0;
+#ifdef AMW_PLANNER_DEBUG
+            AC_Facade::sendDebug(PSTR("Plan completed"));
+#endif
             AMW_Task_Planner::getInstance()->completeFirstTask();
         }
         else if (currentPlan->hasFailed()) {
             // TODO: Abort Plan
             delete currentPlan;
+            currentPlan = 0;
+            currentTask = 0;
             AMW_Task_Planner::getInstance()->completeFirstTask();
+#ifdef AMW_PLANNER_DEBUG
+            AC_Facade::sendDebug(PSTR("Plan failed"));
+#endif
         }
     }
 }
@@ -70,6 +86,12 @@ void AMW_Sequencer::startNewTask() {
 #endif
 
     currentPlan = currentTask->generatePlan();
+    if (!currentPlan) {
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::sendDebug(PSTR("No Plan for task"));
+#endif
+        return;
+    }
 
     run();
 }

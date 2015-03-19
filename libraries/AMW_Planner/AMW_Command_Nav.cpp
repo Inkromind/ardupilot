@@ -7,9 +7,12 @@
 
 #include "AMW_Command_Nav.h"
 #include <AC_Facade.h>
+#include "AMW_Planner.h"
 
 AMW_Command_Nav::AMW_Command_Nav(Vector3f waypoint) {
     this->destination = waypoint;
+    this->commandStarted = false;
+    this->completed = false;
 }
 
 void AMW_Command_Nav::runCommand() {
@@ -22,8 +25,6 @@ void AMW_Command_Nav::runCommand() {
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
         AC_Facade::sendDebug(PSTR("Starting nav..."));
-    }
-    else {
         commandStarted = true;
     }
 #endif

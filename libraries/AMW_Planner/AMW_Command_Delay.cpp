@@ -9,12 +9,15 @@
 #include <AP_HAL.h>
 #include <AP_Math.h>
 #include <AC_Facade.h>
+#include "AMW_Planner.h"
 
 extern const AP_HAL::HAL& hal;
 
 AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) {
     this->duration = (uint32_t)max(delay, 0);
     this->start = 0;
+    this->completed = false;
+    this->commandStarted = false;
 }
 
 void AMW_Command_Delay::runCommand() {
@@ -36,7 +39,7 @@ void AMW_Command_Delay::runCommand() {
 void AMW_Command_Delay::updateStatus() {
     if (completed)
            return;
-    if (commandStarted)
+    if (!commandStarted)
            return;
 
     if (hal.scheduler->millis() - start > duration) {

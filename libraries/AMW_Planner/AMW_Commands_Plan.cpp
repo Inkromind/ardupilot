@@ -6,6 +6,8 @@
  */
 
 #include "AMW_Commands_Plan.h"
+#include "AMW_Planner.h"
+#include <AC_Facade.h>
 
 AMW_Commands_Plan::AMW_Commands_Plan() {
     this->failed = false;
@@ -26,6 +28,9 @@ void AMW_Commands_Plan::executePlan(void) {
     if (currentCommand) {
         currentCommand->runCommand();
         if (currentCommand->isComplete()) {
+#ifdef AMW_PLANNER_DEBUG
+            AC_Facade::sendDebug(PSTR("Command completed"));
+#endif
             completeCurrentCommand();
             executePlan();
         }
@@ -35,7 +40,11 @@ void AMW_Commands_Plan::executePlan(void) {
         return;
     }
     else {
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::sendDebug(PSTR("Got next command"));
+#endif
         currentCommand = plan.front();
+        executePlan();
     }
 
 }
