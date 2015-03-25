@@ -1438,6 +1438,14 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         set_mode(MAD);
         break;
     }
+    case MAVLINK_MSG_ID_MAD_PAUSE_MISSION: {
+        AMW_Facade::pauseMission();
+        break;
+    }
+    case MAVLINK_MSG_ID_MAD_RESUME_MISSION: {
+        AMW_Facade::resumeMission();
+        break;
+    }
 
     }     // end switch
 } // end handle mavlink

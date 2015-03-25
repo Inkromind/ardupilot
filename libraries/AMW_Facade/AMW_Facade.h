@@ -13,6 +13,10 @@ class AMW_Facade {
 public:
     static void initPlanner();
 
+    static void resumeMission();
+
+    static void pauseMission();
+
     static void run100Hz();
 
     static void run50Hz();

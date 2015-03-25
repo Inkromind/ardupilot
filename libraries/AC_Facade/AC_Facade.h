@@ -29,6 +29,9 @@ public:
     static bool destinationReached(const Vector3f& destination);
     static bool altitudeReached(float altitude);
     static Vector3f getPosition(void);
+
+    static uint32_t getCH8Position(void);
+    static uint32_t getCH7Position(void);
 };
 
 

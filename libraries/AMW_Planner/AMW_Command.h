@@ -20,6 +20,9 @@ public:
         return completed;
     }
 
+    virtual void pauseCommand() {};
+    virtual void resumeCommand() {};
+
 protected:
     bool commandStarted;
     bool completed;

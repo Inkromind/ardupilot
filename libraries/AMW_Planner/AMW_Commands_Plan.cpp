@@ -13,6 +13,7 @@ AMW_Commands_Plan::AMW_Commands_Plan() {
     this->failed = false;
     this->completed = false;
     this->currentCommand = 0;
+    this->paused = false;
 }
 
 AMW_Commands_Plan::~AMW_Commands_Plan(void) {
@@ -23,7 +24,7 @@ AMW_Commands_Plan::~AMW_Commands_Plan(void) {
 }
 
 void AMW_Commands_Plan::executePlan(void) {
-    if (completed || failed)
+    if (completed || failed || paused)
         return;
     if (currentCommand) {
         currentCommand->runCommand();
@@ -67,4 +68,20 @@ void AMW_Commands_Plan::addNewCommand(AMW_Command* command) {
     if (!command)
         return;
     plan.push(command);
+}
+
+void AMW_Commands_Plan::pausePlan() {
+    if (paused)
+        return;
+    paused = true;
+    if (currentCommand)
+        currentCommand->pauseCommand();
+}
+
+void AMW_Commands_Plan::resumePlan() {
+    if (!paused)
+        return;
+    paused = false;
+    if (currentCommand)
+        currentCommand->resumeCommand();
 }

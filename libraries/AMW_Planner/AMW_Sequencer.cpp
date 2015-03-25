@@ -15,6 +15,7 @@ AMW_Sequencer::AMW_Sequencer() {
     currentTask = 0;
     sequencerInitialized = false;
     currentPlan = 0;
+    paused = false;
 }
 
 AMW_Sequencer::~AMW_Sequencer() {
@@ -94,4 +95,27 @@ void AMW_Sequencer::startNewTask() {
     }
 
     run();
+}
+
+void AMW_Sequencer::pauseMission() {
+    if (paused)
+        return;
+    paused = true;
+    if (currentPlan)
+        currentPlan->pausePlan();
+}
+
+void AMW_Sequencer::resumeMission(void) {
+    if (!paused)
+        return;
+    paused = false;
+    if (currentPlan)
+            currentPlan->resumePlan();
+}
+
+void AMW_Sequencer::toggleMission(void) {
+    if (paused)
+        resumeMission();
+    else
+        pauseMission();
 }

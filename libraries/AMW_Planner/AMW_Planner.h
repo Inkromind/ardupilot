@@ -7,7 +7,7 @@
 
 #ifndef AMW_PLANNER_H_
 #define AMW_PLANNER_H_
-#define AMW_PLANNER_DEBUG
+//#define AMW_PLANNER_DEBUG
 
 class AMW_Planner {
 public:
@@ -21,9 +21,18 @@ public:
 
     static void run1Hz();
 
+    static void pauseMission(void);
+
+    static void resumeMission(void);
+
 private:
     AMW_Planner();
     ~AMW_Planner();
+
+    static void toggleMission(void);
+    static void checkMissionToggle(void);
+
+    static bool previousToggleState;
 
 };
 

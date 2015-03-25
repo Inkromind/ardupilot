@@ -449,6 +449,18 @@
       <field type="uint8_t" name="target_system">System which should execute the command</field>
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
     </message>
+    
+    <message name="MAD_PAUSE_MISSION" id="191">
+      <description>Pause the current MAD Mission</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+    </message>
+    
+    <message name="MAD_RESUME_MISSION" id="192">
+      <description>Resume the current MAD Mission</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+    </message>
 
      </messages>
 </mavlink>

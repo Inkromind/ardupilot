@@ -92,3 +92,11 @@ Vector3f AC_Facade::getPosition() {
 void AC_Facade::sendDebug(const prog_char_t *str) {
     gcs_send_text_P(SEVERITY_LOW, str);
 }
+
+uint32_t getCH8Position(void) {
+    return ap.CH8_flag;
+}
+
+uint32_t getCH7Position(void) {
+    return ap.CH7_flag;
+}

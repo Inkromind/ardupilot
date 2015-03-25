@@ -12,6 +12,7 @@ AMW_Task_Planner* AMW_Task_Planner::planner = 0;
 
 AMW_Task_Planner::AMW_Task_Planner() {
     plannerInitialized = false;
+    paused = false;
     plan.push(new AMW_Task_Test_Flight());
 }
 
@@ -35,22 +36,34 @@ void AMW_Task_Planner::init() {
 }
 
 void AMW_Task_Planner::run() {
-    if (!plannerInitialized)
+    if (!plannerInitialized || paused)
         return;
 }
 
 
 AMW_Task* AMW_Task_Planner::getFirstTask() {
-    if (!plannerInitialized || plan.empty())
+    if (!plannerInitialized || paused || plan.empty())
         return 0;
 
     return plan.front();
 }
 
-void AMW_Task_Planner::completeFirstTask(void) {
+void AMW_Task_Planner::completeFirstTask() {
     if (plan.empty())
         return;
 
     delete plan.front();
     plan.pop();
+}
+
+void AMW_Task_Planner::pauseMission() {
+    paused = true;
+}
+
+void AMW_Task_Planner::resumeMission(void) {
+    paused = false;
+}
+
+void AMW_Task_Planner::toggleMission(void) {
+    paused = !paused;
 }

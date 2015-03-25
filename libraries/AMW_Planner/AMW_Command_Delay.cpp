@@ -50,5 +50,11 @@ void AMW_Command_Delay::updateStatus() {
     }
 }
 
+void AMW_Command_Delay::pauseCommand() {
+    this->duration -= hal.scheduler->millis() - start;
+    start = 0;
+}
 
-
+void AMW_Command_Delay::resumeCommand() {
+    this->start = hal.scheduler->millis();
+}

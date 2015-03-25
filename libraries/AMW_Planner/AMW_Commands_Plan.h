@@ -22,9 +22,13 @@ public:
 
     virtual void addNewCommand(AMW_Command* command);
 
+    virtual void pausePlan(void);
+    virtual void resumePlan(void);
+
 private:
     bool completed;
     bool failed;
+    bool paused;
 
     AMW_Queue<AMW_Command*> plan;
     AMW_Command* currentCommand;

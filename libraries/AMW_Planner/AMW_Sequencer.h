@@ -18,10 +18,17 @@ public:
     virtual void init();
 
     static AMW_Sequencer* getInstance(void);
+
+    void pauseMission(void);
+
+    void toggleMission(void);
+
+    void resumeMission(void);
 private:
 
     bool sequencerInitialized;
     static AMW_Sequencer* sequencer;
+    bool paused;
 
     AMW_Task* currentTask;
     AMW_Commands_Plan* currentPlan;

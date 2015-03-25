@@ -10,6 +10,8 @@
 #include "AMW_Task_Planner.h"
 #include <AC_Facade.h>
 
+bool AMW_Planner::previousToggleState = true;
+
 void AMW_Planner::initPlanner() {
     AMW_Task_Planner::getInstance()->init();
     AMW_Sequencer::getInstance()->init();
@@ -30,5 +32,31 @@ void AMW_Planner::run10Hz() {
 }
 
 void AMW_Planner::run1Hz() {
+    AMW_Planner::checkMissionToggle();
+}
 
+void AMW_Planner::pauseMission() {
+    AMW_Task_Planner::getInstance()->pauseMission();
+    AMW_Sequencer::getInstance()->pauseMission();
+}
+
+void AMW_Planner::resumeMission() {
+    AMW_Task_Planner::getInstance()->resumeMission();
+    AMW_Sequencer::getInstance()->resumeMission();
+}
+
+void AMW_Planner::toggleMission() {
+    AMW_Task_Planner::getInstance()->toggleMission();
+    AMW_Sequencer::getInstance()->toggleMission();
+}
+
+
+void AMW_Planner::checkMissionToggle() {
+    if (AC_Facade::getCH8Position()) {
+        if (!AMW_Planner::previousToggleState)
+            AMW_Planner::toggleMission();
+        AMW_Planner::previousToggleState = true;
+    }
+    else
+        AMW_Planner::previousToggleState = false;
 }

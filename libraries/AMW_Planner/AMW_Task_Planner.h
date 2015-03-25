@@ -17,12 +17,17 @@ public:
     virtual void run(void);
     virtual void init(void);
 
+    void pauseMission(void);
+    void toggleMission(void);
+    void resumeMission(void);
+
     virtual AMW_Task* getFirstTask(void);
     virtual void completeFirstTask(void);
 
     static AMW_Task_Planner* getInstance(void);
 private:
     bool plannerInitialized;
+    bool paused;
     static AMW_Task_Planner* planner;
     AMW_Queue<AMW_Task*> plan;
 

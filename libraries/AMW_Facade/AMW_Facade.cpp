@@ -28,3 +28,11 @@ void AMW_Facade::run10Hz() {
 void AMW_Facade::run1Hz() {
     AMW_Planner::run1Hz();
 }
+
+void resumeMission() {
+    AMW_Planner::resumeMission();
+}
+
+void pauseMission() {
+    AMW_Planner::pauseMission();
+}

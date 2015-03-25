@@ -18,6 +18,9 @@ public:
     void runCommand(void);
     void updateStatus(void);
 
+    void pauseCommand(void);
+    void resumeCommand(void);
+
 private:
     uint32_t duration;
     uint32_t start;
