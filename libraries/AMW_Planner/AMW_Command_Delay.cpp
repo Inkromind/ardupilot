@@ -23,6 +23,8 @@ AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) {
 void AMW_Command_Delay::runCommand() {
     updateStatus();
 
+    AC_Facade::loiter();
+
     if (commandStarted)
         return;
 

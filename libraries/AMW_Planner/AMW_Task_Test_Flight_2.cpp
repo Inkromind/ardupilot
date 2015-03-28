@@ -19,13 +19,12 @@ AMW_Commands_Plan* AMW_Task_Test_Flight_2::generatePlan(void) {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
 
     plan->addNewCommand(new AMW_Command_Takeoff(1500));
-    plan->addNewCommand(new AMW_Command_Delay(10000));
-    plan->addNewCommand(new AMW_Command_Nav(Vector3f(5000, 0, 1500)));
     plan->addNewCommand(new AMW_Command_Nav(Vector3f(5000, -5000, 1500)));
-    plan->addNewCommand(new AMW_Command_Nav_Altitude(500));
-    plan->addNewCommand(new AMW_Command_Nav(Vector3f(0, -5000, 500)));
-    plan->addNewCommand(new AMW_Command_Nav_Altitude(3500));
-    plan->addNewCommand(new AMW_Command_Nav(Vector3f(0, 0, 3500)));
+    plan->addNewCommand(new AMW_Command_Land());
+    plan->addNewCommand(new AMW_Command_Disarm());
+    plan->addNewCommand(new AMW_Command_Delay(5000));
+    plan->addNewCommand(new AMW_Command_Takeoff(1500));
+    plan->addNewCommand(new AMW_Command_Nav(Vector3f(0, 0, 1500)));
     plan->addNewCommand(new AMW_Command_Land());
     plan->addNewCommand(new AMW_Command_Disarm());
 

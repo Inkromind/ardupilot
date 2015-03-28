@@ -14,7 +14,6 @@ AMW_Task_Planner* AMW_Task_Planner::planner = 0;
 AMW_Task_Planner::AMW_Task_Planner() {
     plannerInitialized = false;
     paused = true;
-    plan.push(new AMW_Task_Test_Flight());
     plan.push(new AMW_Task_Test_Flight_2());
 }
 

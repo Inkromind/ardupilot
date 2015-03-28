@@ -52,7 +52,7 @@ bool AC_Facade::disarmMotors() {
 bool AC_Facade::loiter() {
     if (!MAD_inControl())
         return false;
-    return mad_loiter_start();
+    return mad_loiter_start(false);
 }
 
 float AC_Facade::getAltitude() {
