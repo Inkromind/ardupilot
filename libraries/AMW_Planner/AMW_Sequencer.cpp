@@ -15,7 +15,7 @@ AMW_Sequencer::AMW_Sequencer() {
     currentTask = 0;
     sequencerInitialized = false;
     currentPlan = 0;
-    paused = false;
+    paused = true;
 }
 
 AMW_Sequencer::~AMW_Sequencer() {
@@ -101,6 +101,7 @@ void AMW_Sequencer::pauseMission() {
     if (paused)
         return;
     paused = true;
+    AC_Facade::loiter();
     if (currentPlan)
         currentPlan->pausePlan();
 }
@@ -110,7 +111,7 @@ void AMW_Sequencer::resumeMission(void) {
         return;
     paused = false;
     if (currentPlan)
-            currentPlan->resumePlan();
+        currentPlan->resumePlan();
 }
 
 void AMW_Sequencer::toggleMission(void) {

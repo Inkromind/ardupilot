@@ -49,6 +49,12 @@ bool AC_Facade::disarmMotors() {
     return mad_disarm_motors();
 }
 
+bool AC_Facade::loiter() {
+    if (!MAD_inControl())
+        return false;
+    return mad_loiter_start();
+}
+
 float AC_Facade::getAltitude() {
     return inertial_nav.get_altitude();
 }
@@ -93,10 +99,10 @@ void AC_Facade::sendDebug(const prog_char_t *str) {
     gcs_send_text_P(SEVERITY_LOW, str);
 }
 
-uint32_t getCH8Position(void) {
+uint32_t AC_Facade::getCH8Position(void) {
     return ap.CH8_flag;
 }
 
-uint32_t getCH7Position(void) {
+uint32_t AC_Facade::getCH7Position(void) {
     return ap.CH7_flag;
 }

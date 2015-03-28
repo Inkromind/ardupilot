@@ -11,8 +11,11 @@
 #include <AC_Facade.h>
 
 bool AMW_Planner::previousToggleState = true;
+bool AMW_Planner::initialized = false;
 
 void AMW_Planner::initPlanner() {
+    if (initialized)
+        return;
     AMW_Task_Planner::getInstance()->init();
     AMW_Sequencer::getInstance()->init();
 }
@@ -46,8 +49,12 @@ void AMW_Planner::resumeMission() {
 }
 
 void AMW_Planner::toggleMission() {
-    AMW_Task_Planner::getInstance()->toggleMission();
-    AMW_Sequencer::getInstance()->toggleMission();
+    if (!initialized)
+        initPlanner();
+    else {
+        AMW_Task_Planner::getInstance()->toggleMission();
+        AMW_Sequencer::getInstance()->toggleMission();
+    }
 }
 
 

@@ -33,6 +33,7 @@ private:
     static void checkMissionToggle(void);
 
     static bool previousToggleState;
+    static bool initialized;
 
 };
 

@@ -20,6 +20,7 @@ public:
     static bool navigateToAltitude(float altitude);
     static bool armMotors(void);
     static bool disarmMotors(void);
+    static bool loiter(void);
 
     static void sendDebug(const prog_char_t *str);
 
