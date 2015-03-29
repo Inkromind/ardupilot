@@ -16,6 +16,12 @@ bool MAD_inControl() {
     return (control_mode == MAD);
 }
 
+bool AC_Facade::initFlightMode() {
+    if (control_mode == MAD)
+        return true;
+    return set_mode(MAD);
+}
+
 bool AC_Facade::takeOff(float altitude) {
     if (!MAD_inControl()) {
         return false;
@@ -92,8 +98,6 @@ bool MAD_relativeDestinationReached(const Vector3f& destination) {
     if (control_mode != MAD)
         return false;
 
-    Vector3f relativeDestination = destination + MAD_origin;
-
     Vector3f currentDistToDest = inertial_nav.get_position() - destination;
     if (currentDistToDest.length() > NEAR_DESTINATION_RADIUS) {
         return false;
@@ -129,3 +133,4 @@ void MAD_updateOrigin(void) {
     else
         MAD_navInitialized = true;
 }
+

@@ -21,6 +21,7 @@ public:
     static bool armMotors(void);
     static bool disarmMotors(void);
     static bool loiter(void);
+    static bool initFlightMode(void);
 
     static void sendDebug(const prog_char_t *str);
 
@@ -33,6 +34,9 @@ public:
 
     static uint32_t getCH8Position(void);
     static uint32_t getCH7Position(void);
+
+    //TODO: Remove from AC_Facade
+    static AP_BattMonitor* getBattery(void);
 };
 
 

@@ -1435,7 +1435,6 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
 #endif // AC_RALLY == ENABLED
     case MAVLINK_MSG_ID_MAD_INIT_PLANNER: {
         AMW_Facade::initPlanner();
-        set_mode(MAD);
         break;
     }
     case MAVLINK_MSG_ID_MAD_PAUSE_MISSION: {

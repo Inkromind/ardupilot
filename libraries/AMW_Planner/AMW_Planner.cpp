@@ -16,8 +16,11 @@ bool AMW_Planner::initialized = false;
 void AMW_Planner::initPlanner() {
     if (initialized)
         return;
-    AMW_Task_Planner::getInstance()->init();
-    AMW_Sequencer::getInstance()->init();
+    if (AC_Facade::initFlightMode()) {
+        AMW_Task_Planner::getInstance()->init();
+        AMW_Sequencer::getInstance()->init();
+        initialized = true;
+    }
 }
 
 
