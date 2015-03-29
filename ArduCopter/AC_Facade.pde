@@ -5,9 +5,14 @@
 
 #define NEAR_DESTINATION_RADIUS     100.0f
 
-bool MAD_inControl(void);
+bool MAD_navInitialized = false;
+Vector3f MAD_origin;
 
-static bool MAD_inControl() {
+void MAD_updateOrigin(void);
+bool MAD_inControl(void);
+bool MAD_relativeDestinationReached(const Vector3f& destination);
+
+bool MAD_inControl() {
     return (control_mode == MAD);
 }
 
@@ -28,7 +33,7 @@ bool AC_Facade::land() {
 bool AC_Facade::navigateTo(const Vector3f& destination) {
     if (!MAD_inControl())
         return false;
-    return mad_nav_start(destination);
+    return mad_nav_start(destination + MAD_origin);
 }
 
 bool AC_Facade::navigateToAltitude(float altitude) {
@@ -60,10 +65,10 @@ float AC_Facade::getAltitude() {
 }
 
 bool AC_Facade::altitudeReached(float altitude) {
-    Vector3f dest = AC_Facade::getPosition();
+    Vector3f dest = getPosition();
     dest.z = altitude;
 
-    return AC_Facade::destinationReached(dest);
+    return MAD_relativeDestinationReached(dest);
 }
 
 bool AC_Facade::isLanded() {
@@ -77,6 +82,17 @@ bool AC_Facade::areMotorsArmed() {
 bool AC_Facade::destinationReached(const Vector3f& destination) {
     if (control_mode != MAD)
         return false;
+
+    Vector3f relativeDestination = destination + MAD_origin;
+
+    return MAD_relativeDestinationReached(relativeDestination);
+}
+
+bool MAD_relativeDestinationReached(const Vector3f& destination) {
+    if (control_mode != MAD)
+        return false;
+
+    Vector3f relativeDestination = destination + MAD_origin;
 
     Vector3f currentDistToDest = inertial_nav.get_position() - destination;
     if (currentDistToDest.length() > NEAR_DESTINATION_RADIUS) {
@@ -92,7 +108,7 @@ bool AC_Facade::destinationReached(const Vector3f& destination) {
 }
 
 Vector3f AC_Facade::getPosition() {
-    return Vector3f() + inertial_nav.get_position();
+    return inertial_nav.get_position();
 }
 
 void AC_Facade::sendDebug(const prog_char_t *str) {
@@ -105,4 +121,11 @@ uint32_t AC_Facade::getCH8Position(void) {
 
 uint32_t AC_Facade::getCH7Position(void) {
     return ap.CH7_flag;
+}
+
+void MAD_updateOrigin(void) {
+    if (MAD_navInitialized)
+        MAD_origin = MAD_origin - inertial_nav.get_position();
+    else
+        MAD_navInitialized = true;
 }

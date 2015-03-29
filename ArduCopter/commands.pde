@@ -11,6 +11,8 @@ static void init_home()
 
     ahrs.set_home(loc);
 
+    MAD_updateOrigin();
+
     inertial_nav.setup_home_position();
 
     // log new home position which mission library will pull from ahrs
