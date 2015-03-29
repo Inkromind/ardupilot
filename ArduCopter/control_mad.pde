@@ -77,11 +77,6 @@ static bool mad_takeoff_start(float final_alt)
 
     mad_mode = Mad_TakeOff;
 
-    // initialise wpnav destination
-    Vector3f target_pos = inertial_nav.get_position();
-    target_pos.z = final_alt;
-    wp_nav.set_wp_destination(target_pos);
-
     // initialise yaw
     set_auto_yaw_mode(AUTO_YAW_HOLD);
 
@@ -89,6 +84,11 @@ static bool mad_takeoff_start(float final_alt)
         if (!mad_arm_motors())
             return false;
     }
+
+    // initialise wpnav destination
+    Vector3f target_pos = inertial_nav.get_position();
+    target_pos.z = final_alt;
+    wp_nav.set_wp_destination(target_pos);
 
     // tell motors to do a slow start
     motors.slow_start(true);
