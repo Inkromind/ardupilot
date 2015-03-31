@@ -23,7 +23,7 @@ AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) {
 void AMW_Command_Delay::runCommand() {
     updateStatus();
 
-    AC_Facade::loiter();
+    AC_Facade::getFacade()->loiter();
 
     if (commandStarted)
         return;
@@ -34,7 +34,7 @@ void AMW_Command_Delay::runCommand() {
     this->start = hal.scheduler->millis();
     this->commandStarted = true;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::sendDebug(PSTR("Starting delay"));
+    AC_Facade::getFacade()->sendDebug(PSTR("Starting delay"));
 #endif
 }
 
@@ -47,7 +47,7 @@ void AMW_Command_Delay::updateStatus() {
     if (hal.scheduler->millis() - start > duration) {
         completed = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug(PSTR("Delay Completed"));
+        AC_Facade::getFacade()->sendDebug(PSTR("Delay Completed"));
 #endif
     }
 }

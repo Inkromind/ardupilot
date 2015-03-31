@@ -257,9 +257,9 @@ static void mad_land_run()
 
 
 static bool mad_loiter_start(bool ignore_checks) {
-    if (mad_mode == Mad_Loiter && !ignore_checks)
+    if (!ignore_checks && mad_mode == Mad_Loiter)
         return true;
-    if (ap.land_complete && !ignore_checks)
+    if (!ignore_checks && ap.land_complete)
         return false;
 
     // set target to current position

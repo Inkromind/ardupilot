@@ -20,10 +20,10 @@ void AMW_Command_Land::runCommand() {
     if (completed)
         return;
 
-    AC_Facade::land();
+    AC_Facade::getFacade()->land();
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
-        AC_Facade::sendDebug(PSTR("Starting landing..."));
+        AC_Facade::getFacade()->sendDebug(PSTR("Starting landing..."));
         commandStarted = true;
     }
 #endif
@@ -33,10 +33,10 @@ void AMW_Command_Land::updateStatus() {
     if (completed)
         return;
 
-    if (AC_Facade::isLanded()) {
+    if (AC_Facade::getFacade()->isLanded()) {
         completed = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug(PSTR("Landing Completed"));
+        AC_Facade::getFacade()->sendDebug(PSTR("Landing Completed"));
 #endif
     }
 }

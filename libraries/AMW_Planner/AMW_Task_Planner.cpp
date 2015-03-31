@@ -15,6 +15,15 @@ AMW_Task_Planner::AMW_Task_Planner() {
     plannerInitialized = false;
     paused = true;
     plan.push(new AMW_Task_Test_Flight_2());
+    plan.push(new AMW_Task_Test_Flight());
+    plan.push(new AMW_Task_Test_Flight_2());
+    plan.push(new AMW_Task_Test_Flight());
+    plan.push(new AMW_Task_Test_Flight_2());
+    plan.push(new AMW_Task_Test_Flight());
+    plan.push(new AMW_Task_Test_Flight_2());
+    plan.push(new AMW_Task_Test_Flight());
+    plan.push(new AMW_Task_Test_Flight_2());
+    plan.push(new AMW_Task_Test_Flight());
 }
 
 AMW_Task_Planner::~AMW_Task_Planner() {
@@ -32,7 +41,7 @@ AMW_Task_Planner* AMW_Task_Planner::getInstance() {
 void AMW_Task_Planner::init() {
     plannerInitialized = true;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::sendDebug(PSTR("Initializing Task Planner..."));
+    AC_Facade::getFacade()->sendDebug(PSTR("Initializing Task Planner..."));
 #endif
 }
 

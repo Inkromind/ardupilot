@@ -30,7 +30,7 @@ void AMW_Commands_Plan::executePlan(void) {
         currentCommand->runCommand();
         if (currentCommand->isComplete()) {
 #ifdef AMW_PLANNER_DEBUG
-            AC_Facade::sendDebug(PSTR("Command completed"));
+            AC_Facade::getFacade()->sendDebug(PSTR("Command completed"));
 #endif
             completeCurrentCommand();
             executePlan();
@@ -42,7 +42,7 @@ void AMW_Commands_Plan::executePlan(void) {
     }
     else {
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug(PSTR("Got next command"));
+        AC_Facade::getFacade()->sendDebug(PSTR("Got next command"));
 #endif
         currentCommand = plan.front();
         executePlan();

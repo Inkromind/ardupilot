@@ -21,10 +21,10 @@ void AMW_Command_Nav::runCommand() {
     if (completed)
         return;
 
-    AC_Facade::navigateTo(destination);
+    AC_Facade::getFacade()->navigateTo(destination);
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
-        AC_Facade::sendDebug(PSTR("Starting nav..."));
+        AC_Facade::getFacade()->sendDebug(PSTR("Starting nav..."));
         commandStarted = true;
     }
 #endif
@@ -34,10 +34,10 @@ void AMW_Command_Nav::updateStatus() {
     if (completed)
         return;
 
-    if (AC_Facade::destinationReached(destination)) {
+    if (AC_Facade::getFacade()->destinationReached(destination)) {
         completed = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug(PSTR("Nav Completed"));
+        AC_Facade::getFacade()->sendDebug(PSTR("Nav Completed"));
 #endif
     }
 }

@@ -12,7 +12,7 @@ static bool mad_takeoff_start(float final_alt);
 
 static bool mad_land_start(void);
 
-static bool mad_loiter_start(void);
+static bool mad_loiter_start(bool ignore_checks);
 
 static bool mad_nav_start(const Vector3f& destination);
 

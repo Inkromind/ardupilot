@@ -35,7 +35,7 @@ void AMW_Sequencer::init() {
     }
     sequencerInitialized = true;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::sendDebug(PSTR("Initializing Sequencer..."));
+    AC_Facade::getFacade()->sendDebug(PSTR("Initializing Sequencer..."));
 #endif
 }
 
@@ -59,7 +59,7 @@ void AMW_Sequencer::run() {
             currentPlan = 0;
             currentTask = 0;
 #ifdef AMW_PLANNER_DEBUG
-            AC_Facade::sendDebug(PSTR("Plan completed"));
+            AC_Facade::getFacade()->sendDebug(PSTR("Plan completed"));
 #endif
             AMW_Task_Planner::getInstance()->completeFirstTask();
         }
@@ -70,7 +70,7 @@ void AMW_Sequencer::run() {
             currentTask = 0;
             AMW_Task_Planner::getInstance()->completeFirstTask();
 #ifdef AMW_PLANNER_DEBUG
-            AC_Facade::sendDebug(PSTR("Plan failed"));
+            AC_Facade::getFacade()->sendDebug(PSTR("Plan failed"));
 #endif
         }
     }
@@ -83,13 +83,13 @@ void AMW_Sequencer::startNewTask() {
         return;
 
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::sendDebug(PSTR("Got next task"));
+    AC_Facade::getFacade()->sendDebug(PSTR("Got next task"));
 #endif
 
     currentPlan = currentTask->generatePlan();
     if (!currentPlan) {
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug(PSTR("No Plan for task"));
+        AC_Facade::getFacade()->sendDebug(PSTR("No Plan for task"));
 #endif
         return;
     }
@@ -101,7 +101,7 @@ void AMW_Sequencer::pauseMission() {
     if (paused)
         return;
     paused = true;
-    AC_Facade::loiter();
+    AC_Facade::getFacade()->loiter();
     if (currentPlan)
         currentPlan->pausePlan();
 }

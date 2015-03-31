@@ -16,7 +16,7 @@ bool AMW_Planner::initialized = false;
 void AMW_Planner::initPlanner() {
     if (initialized)
         return;
-    if (AC_Facade::initFlightMode()) {
+    if (AC_Facade::getFacade()->initFlightMode()) {
         AMW_Task_Planner::getInstance()->init();
         AMW_Sequencer::getInstance()->init();
         initialized = true;
@@ -62,7 +62,7 @@ void AMW_Planner::toggleMission() {
 
 
 void AMW_Planner::checkMissionToggle() {
-    if (AC_Facade::getCH8Position()) {
+    if (AC_Facade::getFacade()->getCH8Position()) {
         if (!AMW_Planner::previousToggleState)
             AMW_Planner::toggleMission();
         AMW_Planner::previousToggleState = true;

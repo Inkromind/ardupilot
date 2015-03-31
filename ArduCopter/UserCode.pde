@@ -1,12 +1,14 @@
 /// -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include <AMW_Facade.h>
+#include <AC_SafetyControl.h>
 
 #ifdef USERHOOK_INIT
 void userhook_init()
 {
     // put your initialisation code here
     // this will be called once at start-up
+    AC_SafetyControl::getInstance()->init();
 }
 #endif
 
@@ -15,6 +17,7 @@ void userhook_FastLoop()
 {
     // put your 100Hz code here
     AMW_Facade::run100Hz();
+    AC_SafetyControl::getInstance()->run();
 }
 #endif
 

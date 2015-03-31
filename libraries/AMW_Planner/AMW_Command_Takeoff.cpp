@@ -20,7 +20,7 @@ void AMW_Command_Takeoff::runCommand() {
 
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
-        AC_Facade::sendDebug(PSTR("Starting takeoff..."));
+        AC_Facade::getFacade()->sendDebug(PSTR("Starting takeoff..."));
         commandStarted = true;
     }
 #endif
@@ -28,17 +28,17 @@ void AMW_Command_Takeoff::runCommand() {
     if (completed)
         return;
 
-    AC_Facade::takeOff(altitude);
+    AC_Facade::getFacade()->takeOff(altitude);
 }
 
 void AMW_Command_Takeoff::updateStatus() {
     if (completed)
         return;
 
-    if (AC_Facade::altitudeReached(altitude)) {
+    if (AC_Facade::getFacade()->altitudeReached(altitude)) {
         completed = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::sendDebug(PSTR("Takeoff Completed"));
+        AC_Facade::getFacade()->sendDebug(PSTR("Takeoff Completed"));
 #endif
     }
 }
