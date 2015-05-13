@@ -14,11 +14,11 @@ class AMW_Command_Takeoff: public AMW_Command {
 public:
     AMW_Command_Takeoff(float alt);
 
-    void updateStatus();
     void runCommand();
 
 private:
     float altitude;
+    void updateStatus();
 };
 
 #endif /* AMW_TASK_TAKEOFF_H_ */

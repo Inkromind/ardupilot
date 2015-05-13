@@ -17,6 +17,8 @@ public:
 
     static void pauseMission();
 
+    static void addPackage(uint8_t id, Vector3f pickupLocation, Vector3f deliveryLocation);
+
     static void run100Hz();
 
     static void run50Hz();

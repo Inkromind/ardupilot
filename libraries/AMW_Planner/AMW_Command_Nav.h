@@ -15,11 +15,11 @@ class AMW_Command_Nav: public AMW_Command {
 public:
     AMW_Command_Nav(Vector3f destination);
 
-    void updateStatus(void);
     void runCommand(void);
 
 private:
     Vector3f destination;
+    void updateStatus(void);
 };
 
 #endif /* AMW_COMMAND_NAV_H_ */

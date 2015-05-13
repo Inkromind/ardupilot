@@ -14,8 +14,10 @@ class AMW_Command_Disarm: public AMW_Command {
 public:
     AMW_Command_Disarm();
 
-    void updateStatus(void);
     void runCommand(void);
+
+private:
+    void updateStatus(void);
 
 };
 

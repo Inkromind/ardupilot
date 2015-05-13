@@ -16,7 +16,6 @@ public:
     AMW_Command_Delay(uint32_t delay);
 
     void runCommand(void);
-    void updateStatus(void);
 
     void pauseCommand(void);
     void resumeCommand(void);
@@ -25,6 +24,7 @@ private:
     uint32_t duration;
     uint32_t start;
 
+    void updateStatus(void);
 };
 
 #endif /* AMW_COMMAND_DELAY_H_ */

@@ -461,6 +461,15 @@
       <field type="uint8_t" name="target_system">System which should execute the command</field>
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
     </message>
+    
+    <message name="MAD_REQUEST_PACKAGE" id="193">
+      <description>Resume the current MAD Mission</description>
+      <field type="uint8_t" name="package_id">Unique package id</field>
+      <field type="float" name="pickup_x">X Coordinate of pickup location</field>
+      <field type="float" name="pickup_y">Y Coordinate of pickup location</field>
+      <field type="float" name="delivery_x">X Coordinate of delivery location</field>
+      <field type="float" name="delivery_y">Y Coordinate of delivery location</field>
+    </message>
 
      </messages>
 </mavlink>

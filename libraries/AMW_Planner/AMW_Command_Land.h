@@ -14,8 +14,10 @@ class AMW_Command_Land : public AMW_Command {
 public:
     AMW_Command_Land();
 
-    void updateStatus(void);
     void runCommand(void);
+
+private:
+    void updateStatus(void);
 };
 
 #endif /* AMW_COMMAND_LAND_H_ */

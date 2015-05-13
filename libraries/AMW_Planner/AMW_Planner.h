@@ -9,6 +9,8 @@
 #define AMW_PLANNER_H_
 //#define AMW_PLANNER_DEBUG
 
+#include "AMW_Task_Planner.h";
+
 class AMW_Planner {
 public:
     static void initPlanner(void);

@@ -12,8 +12,6 @@ class AMW_Command {
 public:
     virtual ~AMW_Command() {};
 
-    virtual void updateStatus(void) = 0;
-
     virtual void runCommand(void) = 0;
 
     virtual bool isComplete(void) {
@@ -26,6 +24,7 @@ public:
 protected:
     bool commandStarted;
     bool completed;
+
 };
 
 #endif /* AMW_COMMAND_H_ */

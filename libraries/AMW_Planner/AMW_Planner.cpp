@@ -7,7 +7,6 @@
 
 #include "AMW_Planner.h"
 #include "AMW_Sequencer.h"
-#include "AMW_Task_Planner.h"
 #include <AC_Facade.h>
 
 bool AMW_Planner::previousToggleState = true;

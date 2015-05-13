@@ -9,7 +9,8 @@
 #define AMW_TASK_PLANNER_H_
 
 #include "AMW_Task.h"
-#include <AMW_Queue.h>
+#include <AMW_List.h>
+#include <AP_Math.h>
 
 class AMW_Task_Planner {
 public:
@@ -23,13 +24,22 @@ public:
 
     virtual AMW_Task* getFirstTask(void);
     virtual void completeFirstTask(void);
+    virtual void addTask(AMW_Task* task);
+    virtual float addPackage(AMW_Task_Package* task, bool estimate = false);
+
+    float getAssignedAltitude(void) {
+        return assignedAltitude;
+    }
 
     static AMW_Task_Planner* getInstance(void);
 private:
     bool plannerInitialized;
     bool paused;
     static AMW_Task_Planner* planner;
-    AMW_Queue<AMW_Task*> plan;
+    AMW_List<AMW_Task*> plan;
+    Vector3f homeBase;
+
+    float assignedAltitude;
 
     AMW_Task_Planner();
 protected:

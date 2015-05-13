@@ -1445,6 +1445,14 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         AMW_Facade::resumeMission();
         break;
     }
+    case MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE: {
+        mavlink_mad_request_package_t packet;
+        mavlink_msg_mad_request_package_decode(msg, &packet);
+        Vector2f pickupLocation = Vector2f(packet.pickup_x, packet.pickup_y);
+        Vector2f deliveryLocation = Vector2f(packet.delivery_x, packet.delivery_y);
+        AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation);
+        break;
+    }
 
     }     // end switch
 } // end handle mavlink

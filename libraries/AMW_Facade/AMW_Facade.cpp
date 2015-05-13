@@ -12,7 +12,6 @@ void AMW_Facade::initPlanner() {
     AMW_Planner::initPlanner();
 }
 
-
 void AMW_Facade::run100Hz() {
     AMW_Planner::run100Hz();
 }
@@ -35,4 +34,8 @@ void AMW_Facade::resumeMission() {
 
 void AMW_Facade::pauseMission() {
     AMW_Planner::pauseMission();
+}
+
+void AMW_Facade::addPackage(uint8_t id, Vector3f pickupLocation, Vector3f deliveryLocation) {
+    AMW_Task_Planner::getInstance()->addPackage(new AMW_Task_Package(id, pickupLocation, deliveryLocation));
 }

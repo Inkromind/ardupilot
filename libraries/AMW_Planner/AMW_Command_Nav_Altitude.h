@@ -14,11 +14,11 @@ class AMW_Command_Nav_Altitude: public AMW_Command {
 public:
     AMW_Command_Nav_Altitude(float alt);
 
-    void updateStatus();
     void runCommand();
 
 private:
     float altitude;
+    void updateStatus();
 };
 
 #endif /* AMW_COMMAND_NAV_ALTITUDE_H_ */
