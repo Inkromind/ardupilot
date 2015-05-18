@@ -30,7 +30,8 @@ public:
     virtual bool areMotorsArmed(void);
     virtual bool destinationReached(const Vector3f& destination);
     virtual bool altitudeReached(float altitude);
-    virtual Vector3f getPosition(void);
+    virtual Vector3f getRelativePosition(void);
+    virtual Vector3f getRealPosition(void);
 
     virtual uint32_t getCH8Position(void);
     virtual uint32_t getCH7Position(void);

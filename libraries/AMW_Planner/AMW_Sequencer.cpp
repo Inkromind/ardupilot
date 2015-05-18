@@ -13,6 +13,7 @@ AMW_Sequencer* AMW_Sequencer::sequencer = 0;
 
 AMW_Sequencer::AMW_Sequencer() {
     currentTask = 0;
+    newTask = 0;
     sequencerInitialized = false;
     currentPlan = 0;
     paused = true;
@@ -43,47 +44,34 @@ void AMW_Sequencer::run() {
     if (!sequencerInitialized) {
         return;
     }
-
-    if (!currentTask) {
-        startNewTask();
+    
+    newTask = AMW_Task_Planner::getInstance()->getFirstTask();
+    
+    if (!currentTask && !newTask) {
         return;
     }
-    else if (!currentPlan) {
+    else if (newTask && newTask != currentTask) {
         startNewTask();
         return;
     }
     else {
-        currentPlan->executePlan();
-        if (currentPlan->isCompleted()) {
-            delete currentPlan;
-            currentPlan = 0;
-            currentTask = 0;
-#ifdef AMW_PLANNER_DEBUG
-            AC_Facade::getFacade()->sendDebug(PSTR("Plan completed"));
-#endif
-            AMW_Task_Planner::getInstance()->completeFirstTask();
-        }
-        else if (currentPlan->hasFailed()) {
-            // TODO: Abort Plan
-            delete currentPlan;
-            currentPlan = 0;
-            currentTask = 0;
-            AMW_Task_Planner::getInstance()->completeFirstTask();
-#ifdef AMW_PLANNER_DEBUG
-            AC_Facade::getFacade()->sendDebug(PSTR("Plan failed"));
-#endif
-        }
+        executeCurrentTask();
     }
 }
 
 void AMW_Sequencer::startNewTask() {
-    currentTask = AMW_Task_Planner::getInstance()->getFirstTask();
-
-    if (!currentTask)
+    if (!newTask)
         return;
+    
+    if (currentPlan)
+        delete currentPlan;
+    currentPlan = 0;
+
+    currentTask = newTask;
+    newTask = 0;
 
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Got next task"));
+    AC_Facade::getFacade()->sendDebug(PSTR("Got new task"));
 #endif
 
     currentPlan = currentTask->generatePlan();
@@ -94,7 +82,30 @@ void AMW_Sequencer::startNewTask() {
         return;
     }
 
-    run();
+    executeCurrentTask();
+}
+
+void AMW_Sequencer::executeCurrentTask() {
+    currentPlan->executePlan();
+    if (currentPlan->isCompleted()) {
+        delete currentPlan;
+        currentPlan = 0;
+        AMW_Task_Planner::getInstance()->completeFirstTask(currentTask);
+        currentTask = 0;
+        #ifdef AMW_PLANNER_DEBUG
+            AC_Facade::getFacade()->sendDebug(PSTR("Plan completed"));
+        #endif
+    }
+    else if (currentPlan->hasFailed()) {
+        // TODO: Abort Plan
+        delete currentPlan;
+        currentPlan = 0;
+        AMW_Task_Planner::getInstance()->completeFirstTask(currentTask);
+        currentTask = 0;
+        #ifdef AMW_PLANNER_DEBUG
+            AC_Facade::getFacade()->sendDebug(PSTR("Plan failed"));
+        #endif
+    }
 }
 
 void AMW_Sequencer::pauseMission() {

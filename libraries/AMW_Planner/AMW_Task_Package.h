@@ -19,18 +19,16 @@ public:
 
     AMW_Commands_Plan* generatePlan(void);
 
-    Vector3f getEndPosition(Vector3f currentPosition) {
+    Vector2f getEndPosition(Vector2f currentPosition) {
         return deliveryLocation;
     }
 
-    Vector3f getStartPosition(Vector3f currentPosition) {
+    Vector2f getStartPosition(Vector2f currentPosition) {
         return pickupLocation;
     }
 
-private:
     Vector2f pickupLocation;
     Vector2f deliveryLocation;
-
     uint8_t id;
 };
 

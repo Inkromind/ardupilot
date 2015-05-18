@@ -9,6 +9,7 @@
 #define AMW_TASK_H_
 
 #include "AMW_Commands_Plan.h"
+#include <AP_Math.h>
 
 class AMW_Task {
 public:
@@ -16,12 +17,12 @@ public:
 
     virtual AMW_Commands_Plan* generatePlan(void) = 0;
 
-    virtual Vector3f getStartPosition(Vector3f currentPosition) {
-        return NULL;
+    virtual Vector2f getStartPosition(Vector2f currentPosition) {
+        return currentPosition;
     }
 
-    virtual Vector3f getEndPosition(Vector3f currentPosition) {
-        return NULL;
+    virtual Vector2f getEndPosition(Vector2f currentPosition) {
+        return currentPosition;
     }
 };
 

@@ -113,7 +113,7 @@ float AC_Facade::getAltitude() {
 }
 
 bool AC_Facade::altitudeReached(float altitude) {
-    Vector3f dest = getPosition();
+    Vector3f dest = getRelativePosition();
     dest.z = altitude;
 
     return MAD_relativeDestinationReached(dest);
@@ -153,8 +153,12 @@ bool MAD_relativeDestinationReached(const Vector3f& destination) {
     return (wpDistToDest.length() <= NEAR_DESTINATION_RADIUS);
 }
 
-Vector3f AC_Facade::getPosition() {
+Vector3f AC_Facade::getRelativePosition() {
     return inertial_nav.get_position();
+}
+
+Vector3f AC_Facade::getRealPosition() {
+    return inertial_nav.get_position() - MAD_origin;
 }
 
 void AC_Facade::sendDebug(const prog_char_t *str) {

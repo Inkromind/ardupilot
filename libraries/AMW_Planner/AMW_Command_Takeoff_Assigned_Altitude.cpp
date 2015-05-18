@@ -6,7 +6,8 @@
  */
 
 #include "AMW_Command_Takeoff_Assigned_Altitude.h"
-
+#include "AMW_Task_Planner.h"
+#include <AC_Facade.h>
 
 void AMW_Command_Takeoff_Assigned_Altitude::runCommand() {
 

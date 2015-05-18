@@ -8,6 +8,7 @@
 #include "AMW_Commands_Plan.h"
 #include "AMW_Planner.h"
 #include <AC_Facade.h>
+#include <AP_Math.h>
 
 AMW_Commands_Plan::AMW_Commands_Plan() {
     this->failed = false;

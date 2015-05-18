@@ -31,10 +31,12 @@ private:
     bool paused;
 
     AMW_Task* currentTask;
+    AMW_Task* newTask;
     AMW_Commands_Plan* currentPlan;
 
     AMW_Sequencer();
     virtual void startNewTask(void);
+    virtual void executeCurrentTask(void);
 protected:
     virtual ~AMW_Sequencer();
 

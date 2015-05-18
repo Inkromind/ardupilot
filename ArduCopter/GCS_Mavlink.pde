@@ -1453,6 +1453,11 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation);
         break;
     }
+    case MAVLINK_MSG_ID_MAD_GET_CURRENT_LOCATION: {
+        Vector3f currentLocation = AC_Facade::getFacade()->getRealPosition();
+        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x, currentLocation.y, currentLocation.z);
+        break;
+    }
 
     }     // end switch
 } // end handle mavlink

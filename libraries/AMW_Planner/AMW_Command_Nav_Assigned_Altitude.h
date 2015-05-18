@@ -8,13 +8,13 @@
 #ifndef AMW_COMMAND_NAV_ASSIGNED_ALTITUDE_H_
 #define AMW_COMMAND_NAV_ASSIGNED_ALTITUDE_H_
 
-#include "AMW_Command.h"
+#include "AMW_Command_Nav.h"
 #include <AP_Math.h>
 
-class AMW_Command_Nav_Assigned_Altitude: public AMW_Command_Nav {
+class AMW_Command_Nav_Assigned_Altitude : public AMW_Command_Nav {
 public:
-    virtual AMW_Command_Nav_Assigned_Altitude(Vector2f destination) :
-        AMW_Command_Nav(Vector3f(destination.x, destination.y, 0)) {};
+    AMW_Command_Nav_Assigned_Altitude(Vector2f newDestination) :
+        AMW_Command_Nav(Vector3f(newDestination.x, newDestination.y, 0)) {};
 
     void runCommand(void);
 

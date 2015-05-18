@@ -6,16 +6,17 @@
  */
 
 #include "AMW_Task_Planner.h"
-#include "AMW_Task_Package.h"
 #include "AMW_Task_Test_Flight.h"
 #include "AMW_Task_Test_Flight_2.h"
+#include "AMW_Task_RTL.h"
 
 AMW_Task_Planner* AMW_Task_Planner::planner = 0;
 
 AMW_Task_Planner::AMW_Task_Planner() {
     plannerInitialized = false;
     paused = true;
-    homeBase = new Vector3f();
+    homeBase = Vector2f();
+    idleTask = 0;
     assignedAltitude = 1500;
     plan.push_back(new AMW_Task_Test_Flight_2());
     plan.push_back(new AMW_Task_Test_Flight());
@@ -31,7 +32,8 @@ AMW_Task_Planner::AMW_Task_Planner() {
 
 AMW_Task_Planner::~AMW_Task_Planner() {
     while (!plan.empty()) {
-        completeFirstTask();
+        delete plan.front();
+        plan.pop_front();
     }
 }
 
@@ -51,22 +53,38 @@ void AMW_Task_Planner::init() {
 void AMW_Task_Planner::run() {
     if (!plannerInitialized || paused)
         return;
+    return;
 }
 
 
 AMW_Task* AMW_Task_Planner::getFirstTask() {
-    if (!plannerInitialized || paused || plan.empty())
+    if (!plannerInitialized || paused)
         return 0;
+
+    if (plan.empty())
+        return idleTask;
 
     return plan.front();
 }
 
-void AMW_Task_Planner::completeFirstTask() {
-    if (plan.empty())
+void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
+    if (plan.empty()) {
+        if (idleTask && idleTask == task) {
+            delete idleTask;
+            idleTask = 0;
+        }
+        return;
+    }
+
+    AMW_Task* firstTask = plan.front();
+    if (firstTask != task)
         return;
 
-    delete plan.front();
     plan.pop_front();
+    delete firstTask;
+
+    if (plan.empty())
+        idleTask = new AMW_Task_RTL();
 }
 
 void AMW_Task_Planner::pauseMission() {
@@ -83,14 +101,18 @@ void AMW_Task_Planner::toggleMission(void) {
 
 void AMW_Task_Planner::addTask(AMW_Task *task) {
     plan.push_back(task);
+    if (idleTask) {
+        delete idleTask;
+        idleTask = 0;
+    }
 }
 
-float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate = false) {
+float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
     uint32_t currentIndex = 0;
     uint32_t bestPosition = 1;
-    Vector3f position = homeBase;
-    Vector3f pickupLocation = Vector3f(package->pickupLocation.x, package->pickupLocation.y, 0);
-    Vector3f deliveryLocation = Vector3f(package->deliveryLocation.x, package->deliveryLocation.y, 0);
+    Vector2f position = homeBase;
+    Vector2f pickupLocation = package->pickupLocation;
+    Vector2f deliveryLocation = package->deliveryLocation;
     float minDistance = -1;
 
     AMW_List<AMW_Task*>::Iterator* iterator = plan.iterator();
@@ -99,7 +121,7 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate = fa
         if (currentIndex > 0) {
             float distance =
                     (position - pickupLocation).length() +
-                    (deliveryLocation - nextTask->getStartPosition(deliveryLocation)).length() -
+                    (deliveryLocation - nextTask->getStartPosition(position)).length() -
                     (position - nextTask->getStartPosition(position)).length();
             if (minDistance == -1 || distance <= minDistance) {
                 minDistance = distance;
@@ -107,13 +129,10 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate = fa
             }
         }
         currentIndex++;
-        Vector3f nextEnd = nextTask->getEndPosition(position);
-        if (nextEnd != NULL)
-            position = nextEnd;
+        position = nextTask->getEndPosition(position);
     }
 
-    Vector3f finalTask = plan.tail;
-    float distance = (position - pickupLocation).length();
+    float distance = (position - pickupLocation).length() + (deliveryLocation - homeBase).length();
     if (minDistance == -1 || distance <= minDistance) {
         minDistance = distance;
         bestPosition = currentIndex;

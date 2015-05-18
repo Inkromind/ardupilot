@@ -6,6 +6,8 @@
  */
 
 #include "AMW_Command_Nav_Assigned_Altitude.h"
+#include "AMW_Task_Planner.h"
+#include <AC_Facade.h>
 
 void AMW_Command_Nav_Assigned_Altitude::runCommand() {
     if (!commandStarted)
@@ -16,8 +18,6 @@ void AMW_Command_Nav_Assigned_Altitude::runCommand() {
     if (completed)
         return;
 
-
-
     AC_Facade::getFacade()->navigateTo(destination);
 #ifdef AMW_PLANNER_DEBUG
     if (!commandStarted) {
@@ -27,7 +27,7 @@ void AMW_Command_Nav_Assigned_Altitude::runCommand() {
 #endif
 }
 
-void AMW_Command_Nav::updateStatus() {
+void AMW_Command_Nav_Assigned_Altitude::updateStatus() {
     if (completed)
         return;
 

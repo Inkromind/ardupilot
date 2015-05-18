@@ -11,6 +11,7 @@
 #include "AMW_Task.h"
 #include <AMW_List.h>
 #include <AP_Math.h>
+#include "AMW_Task_Package.h"
 
 class AMW_Task_Planner {
 public:
@@ -23,25 +24,33 @@ public:
     void resumeMission(void);
 
     virtual AMW_Task* getFirstTask(void);
-    virtual void completeFirstTask(void);
+    virtual void completeFirstTask(AMW_Task* task);
     virtual void addTask(AMW_Task* task);
-    virtual float addPackage(AMW_Task_Package* task, bool estimate = false);
+    virtual float addPackage(AMW_Task_Package* task, bool estimate);
 
     float getAssignedAltitude(void) {
         return assignedAltitude;
     }
 
+    Vector2f getHomeBase(void) {
+        return homeBase;
+    }
+
     static AMW_Task_Planner* getInstance(void);
+
 private:
     bool plannerInitialized;
     bool paused;
     static AMW_Task_Planner* planner;
     AMW_List<AMW_Task*> plan;
-    Vector3f homeBase;
+    AMW_Task* idleTask;
+    Vector2f homeBase;
 
     float assignedAltitude;
 
     AMW_Task_Planner();
+
+    AMW_Task* getIdleTask(void);
 protected:
     virtual ~AMW_Task_Planner();
 

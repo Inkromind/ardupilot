@@ -8,6 +8,8 @@
 #ifndef AMW_FACADE_H_
 #define AMW_FACADE_H_
 
+#include <AP_Math.h>
+
 class AMW_Facade {
 
 public:
@@ -17,7 +19,7 @@ public:
 
     static void pauseMission();
 
-    static void addPackage(uint8_t id, Vector3f pickupLocation, Vector3f deliveryLocation);
+    static void addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation);
 
     static void run100Hz();
 
