@@ -25,13 +25,16 @@ AMW_Sequencer::~AMW_Sequencer() {
 
 AMW_Sequencer* AMW_Sequencer::getInstance() {
     if (!AMW_Sequencer::sequencer) {
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Creating Sequencer..."));
+#endif
         AMW_Sequencer::sequencer = new AMW_Sequencer();
     }
     return AMW_Sequencer::sequencer;
 }
 
 void AMW_Sequencer::init() {
-    if (AMW_Sequencer::sequencerInitialized) {
+    if (sequencerInitialized) {
         return;
     }
     sequencerInitialized = true;
@@ -44,6 +47,9 @@ void AMW_Sequencer::run() {
     if (!sequencerInitialized) {
         return;
     }
+#ifdef AMW_PLANNER_DEBUG
+    //AC_Facade::getFacade()->sendDebug(PSTR("Running Sequencer..."));
+#endif
     
     newTask = AMW_Task_Planner::getInstance()->getFirstTask();
     

@@ -25,12 +25,12 @@ AMW_Commands_Plan* AMW_Task_Package::generatePlan(void) {
     plan->addNewCommand(new AMW_Command_Nav_Assigned_Altitude(pickupLocation));
     plan->addNewCommand(new AMW_Command_Land());
     plan->addNewCommand(new AMW_Command_Disarm());
-    plan->addNewCommand(new AMW_Command_Delay(30));
+    plan->addNewCommand(new AMW_Command_Delay(15000));
     plan->addNewCommand(new AMW_Command_Takeoff_Assigned_Altitude());
     plan->addNewCommand(new AMW_Command_Nav_Assigned_Altitude(deliveryLocation));
     plan->addNewCommand(new AMW_Command_Land());
     plan->addNewCommand(new AMW_Command_Disarm());
-    plan->addNewCommand(new AMW_Command_Delay(30));
+    plan->addNewCommand(new AMW_Command_Delay(15000));
 
     return plan;
 }

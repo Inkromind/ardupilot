@@ -1,6 +1,7 @@
 // -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include <AMW_Facade.h>
+#include <stdio.h>
 
 // default sensors are present and healthy: gyro, accelerometer, barometer, rate_control, attitude_stabilization, yaw_position, altitude control, x/y position control, motor_control
 #define MAVLINK_SENSOR_PRESENT_DEFAULT (MAV_SYS_STATUS_SENSOR_3D_GYRO | MAV_SYS_STATUS_SENSOR_3D_ACCEL | MAV_SYS_STATUS_SENSOR_ABSOLUTE_PRESSURE | MAV_SYS_STATUS_SENSOR_ANGULAR_RATE_CONTROL | MAV_SYS_STATUS_SENSOR_ATTITUDE_STABILIZATION | MAV_SYS_STATUS_SENSOR_YAW_POSITION | MAV_SYS_STATUS_SENSOR_Z_ALTITUDE_CONTROL | MAV_SYS_STATUS_SENSOR_XY_POSITION_CONTROL | MAV_SYS_STATUS_SENSOR_MOTOR_OUTPUTS | MAV_SYS_STATUS_AHRS)
@@ -1448,14 +1449,16 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     case MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE: {
         mavlink_mad_request_package_t packet;
         mavlink_msg_mad_request_package_decode(msg, &packet);
-        Vector2f pickupLocation = Vector2f(packet.pickup_x, packet.pickup_y);
-        Vector2f deliveryLocation = Vector2f(packet.delivery_x, packet.delivery_y);
+        Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
+        Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
         AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation);
         break;
     }
     case MAVLINK_MSG_ID_MAD_GET_CURRENT_LOCATION: {
         Vector3f currentLocation = AC_Facade::getFacade()->getRealPosition();
-        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x, currentLocation.y, currentLocation.z);
+        char locationbuffer[50];
+        snprintf(locationbuffer, 50, "Location: <%.2f,%.2f> | Altitude: %.2f", currentLocation.x / 100, currentLocation.y / 100, currentLocation.z / 100);
+        gcs_send_text_P(SEVERITY_LOW, PSTR(locationbuffer));
         break;
     }
 

@@ -66,7 +66,7 @@ public:
         else {
             head = listItem;
         }
-        head = listItem;
+        tail = listItem;
         length++;
     }
 

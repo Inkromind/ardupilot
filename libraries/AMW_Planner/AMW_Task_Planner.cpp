@@ -9,6 +9,8 @@
 #include "AMW_Task_Test_Flight.h"
 #include "AMW_Task_Test_Flight_2.h"
 #include "AMW_Task_RTL.h"
+#include "AMW_Planner.h"
+#include <AC_Facade.h>
 
 AMW_Task_Planner* AMW_Task_Planner::planner = 0;
 
@@ -18,16 +20,6 @@ AMW_Task_Planner::AMW_Task_Planner() {
     homeBase = Vector2f();
     idleTask = 0;
     assignedAltitude = 1500;
-    plan.push_back(new AMW_Task_Test_Flight_2());
-    plan.push_back(new AMW_Task_Test_Flight());
-    plan.push_back(new AMW_Task_Test_Flight_2());
-    plan.push_back(new AMW_Task_Test_Flight());
-    plan.push_back(new AMW_Task_Test_Flight_2());
-    plan.push_back(new AMW_Task_Test_Flight());
-    plan.push_back(new AMW_Task_Test_Flight_2());
-    plan.push_back(new AMW_Task_Test_Flight());
-    plan.push_back(new AMW_Task_Test_Flight_2());
-    plan.push_back(new AMW_Task_Test_Flight());
 }
 
 AMW_Task_Planner::~AMW_Task_Planner() {
@@ -38,9 +30,13 @@ AMW_Task_Planner::~AMW_Task_Planner() {
 }
 
 AMW_Task_Planner* AMW_Task_Planner::getInstance() {
-    if (!planner)
-      planner = new AMW_Task_Planner();
-    return planner;
+    if (!AMW_Task_Planner::planner) {
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Creating Task Planner..."));
+#endif
+        AMW_Task_Planner::planner = new AMW_Task_Planner();
+    }
+    return AMW_Task_Planner::planner;
 }
 
 void AMW_Task_Planner::init() {
@@ -68,6 +64,9 @@ AMW_Task* AMW_Task_Planner::getFirstTask() {
 }
 
 void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
+    if (!plannerInitialized)
+        return;
+
     if (plan.empty()) {
         if (idleTask && idleTask == task) {
             delete idleTask;
@@ -108,6 +107,9 @@ void AMW_Task_Planner::addTask(AMW_Task *task) {
 }
 
 float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Attempting to add new package"));
+#endif
     uint32_t currentIndex = 0;
     uint32_t bestPosition = 1;
     Vector2f position = homeBase;
@@ -117,6 +119,9 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
 
     AMW_List<AMW_Task*>::Iterator* iterator = plan.iterator();
     while (iterator->hasNext()) {
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Checking next index"));
+#endif
         AMW_Task *nextTask = iterator->next();
         if (currentIndex > 0) {
             float distance =
@@ -131,15 +136,24 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
         currentIndex++;
         position = nextTask->getEndPosition(position);
     }
-
     float distance = (position - pickupLocation).length() + (deliveryLocation - homeBase).length();
     if (minDistance == -1 || distance <= minDistance) {
         minDistance = distance;
         bestPosition = currentIndex;
     }
 
-    if (!estimate)
+    if (!estimate) {
         plan.insert(bestPosition, package);
+        if (idleTask) {
+            delete idleTask;
+            idleTask = 0;
+        }
+#ifdef AMW_PLANNER_DEBUG
+        char debugbuffer[50];
+        snprintf(debugbuffer, 50, "Added new package #%d at index %d", package->id, bestPosition);
+        AC_Facade::getFacade()->sendDebug(PSTR(debugbuffer));
+#endif
+    }
 
     return minDistance;
 }

@@ -12,7 +12,7 @@ pickupY = int(raw_input('Pickup Location - Y Coordinate: '))
 deliveryX = int(raw_input('Delivery Location - X Coordinate: '))
 deliveryY = int(raw_input('Delivery Location - Y Coordinate: '))
 
-msg = v.message_factory.mad_request_pacakge_encode(id, pickupX, pickupX, deliveryX, deliveryY)
+msg = v.message_factory.mad_request_package_encode(id, pickupX, pickupY, deliveryX, deliveryY)
 
-print("Requesting Package #{} to be moved from <{},{}> to <{},{}>".format(id, pickupX, pickupX, deliveryX, deliveryY))
+print("Requesting Package #{} to be moved from <{},{}> to <{},{}>".format(id, pickupX, pickupY, deliveryX, deliveryY))
 v.send_mavlink(msg)
