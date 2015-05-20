@@ -24,6 +24,8 @@ public:
     Vector2f getStartPosition(Vector3f currentPosition) {
         return getEndPosition(currentPosition);
     }
+
+    void completeTask(void);
 };
 
 #endif /* AMW_TASK_RTL_H_ */

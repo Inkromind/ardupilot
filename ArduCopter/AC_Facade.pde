@@ -165,6 +165,13 @@ void AC_Facade::sendDebug(const prog_char_t *str) {
     gcs_send_text_P(SEVERITY_LOW, str);
 }
 
+void AC_Facade::sendFormattedDebug(const prog_char_t *str, ...) {
+    va_list args;
+    va_start(args, str);
+    gcs_send_text_fmt2(str, args);
+    va_end(args);
+}
+
 uint32_t AC_Facade::getCH8Position(void) {
     return ap.CH8_flag;
 }

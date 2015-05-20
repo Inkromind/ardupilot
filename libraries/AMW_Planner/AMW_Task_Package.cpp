@@ -12,11 +12,14 @@
 #include "AMW_Command_Land.h"
 #include "AMW_Command_Disarm.h"
 #include "AMW_Commands_Plan.h"
+#include <AC_Facade.h>
+#include "AMW_Planner.h"
 
 AMW_Task_Package::AMW_Task_Package(uint8_t newId, Vector2f newPickupLocation, Vector2f newDeliveryLocation) {
     this->id = newId;
     this->pickupLocation = newPickupLocation;
     this->deliveryLocation = newDeliveryLocation;
+    this->taskId = newId * 10 + 1;
 }
 
 AMW_Commands_Plan* AMW_Task_Package::generatePlan(void) {
@@ -33,5 +36,11 @@ AMW_Commands_Plan* AMW_Task_Package::generatePlan(void) {
     plan->addNewCommand(new AMW_Command_Delay(15000));
 
     return plan;
+}
+
+void AMW_Task_Package::completeTask(void) {
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendFormattedDebug(PSTR("Completed package #%d"), id);
+#endif
 }
 

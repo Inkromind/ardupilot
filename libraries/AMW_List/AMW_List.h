@@ -115,6 +115,7 @@ public:
             listItem->next = nextItem;
             nextItem->prev->next = listItem;
             nextItem->prev = listItem;
+            length++;
         }
     }
 
@@ -132,6 +133,7 @@ public:
             }
             item->prev->next = item->next;
             item->next->prev = item->prev;
+            length--;
             delete item;
         }
     }
@@ -149,6 +151,7 @@ public:
             }
             item->prev->next = item->next;
             item->next->prev = item->prev;
+            length--;
             delete item->item;
             delete item;
         }
@@ -175,6 +178,7 @@ public:
         while (head != 0) {
             item = head;
             head = item->next;
+            length--;
             delete item->item;
             delete item;
         }
@@ -184,6 +188,7 @@ public:
         while (head != 0) {
             item = head;
             head = item->next;
+            length--;
             delete item;
         }
     }

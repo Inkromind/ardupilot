@@ -27,6 +27,8 @@ public:
         return pickupLocation;
     }
 
+    void completeTask(void);
+
     Vector2f pickupLocation;
     Vector2f deliveryLocation;
     uint8_t id;

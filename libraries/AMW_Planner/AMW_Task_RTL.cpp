@@ -11,8 +11,12 @@
 #include "AMW_Command_Nav_Assigned_Altitude.h"
 #include "AMW_Command_Land.h"
 #include "AMW_Command_Disarm.h"
+#include <AC_Facade.h>
+#include "AMW_Planner.h"
 
-AMW_Task_RTL::AMW_Task_RTL() { }
+AMW_Task_RTL::AMW_Task_RTL() {
+    taskId = 9;
+}
 
 AMW_Commands_Plan* AMW_Task_RTL::generatePlan() {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
@@ -23,3 +27,8 @@ AMW_Commands_Plan* AMW_Task_RTL::generatePlan() {
     return plan;
 }
 
+void AMW_Task_RTL::completeTask(void) {
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendFormattedDebug(PSTR("Returned to home at <%.2f,%.2f>"), AMW_Task_Planner::getInstance()->getHomeBase().x, AMW_Task_Planner::getInstance()->getHomeBase().y);
+#endif
+}

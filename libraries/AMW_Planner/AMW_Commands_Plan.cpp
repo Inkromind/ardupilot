@@ -43,7 +43,7 @@ void AMW_Commands_Plan::executePlan(void) {
     }
     else {
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Got next command"));
+        //AC_Facade::getFacade()->sendDebug(PSTR("Got next command"));
 #endif
         currentCommand = plan.front();
         executePlan();

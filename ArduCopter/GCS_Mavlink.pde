@@ -1456,9 +1456,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     }
     case MAVLINK_MSG_ID_MAD_GET_CURRENT_LOCATION: {
         Vector3f currentLocation = AC_Facade::getFacade()->getRealPosition();
-        char locationbuffer[50];
-        snprintf(locationbuffer, 50, "Location: <%.2f,%.2f> | Altitude: %.2f", currentLocation.x / 100, currentLocation.y / 100, currentLocation.z / 100);
-        gcs_send_text_P(SEVERITY_LOW, PSTR(locationbuffer));
+        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x / 100, currentLocation.y / 100, currentLocation.z / 100);
         break;
     }
 
@@ -1563,6 +1561,19 @@ void gcs_send_text_fmt(const prog_char_t *fmt, ...)
     hal.util->vsnprintf_P((char *)gcs[0].pending_status.text,
             sizeof(gcs[0].pending_status.text), fmt, arg_list);
     va_end(arg_list);
+    gcs[0].send_message(MSG_STATUSTEXT);
+    for (uint8_t i=1; i<num_gcs; i++) {
+        if (gcs[i].initialised) {
+            gcs[i].pending_status = gcs[0].pending_status;
+            gcs[i].send_message(MSG_STATUSTEXT);
+        }
+    }
+}
+void gcs_send_text_fmt2(const prog_char_t *fmt, va_list arg_list)
+{
+    gcs[0].pending_status.severity = (uint8_t)SEVERITY_LOW;
+    hal.util->vsnprintf_P((char *)gcs[0].pending_status.text,
+            sizeof(gcs[0].pending_status.text), fmt, arg_list);
     gcs[0].send_message(MSG_STATUSTEXT);
     for (uint8_t i=1; i<num_gcs; i++) {
         if (gcs[i].initialised) {

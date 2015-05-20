@@ -24,6 +24,12 @@ public:
     virtual Vector2f getEndPosition(Vector2f currentPosition) {
         return currentPosition;
     }
+
+    virtual void completeTask(void) {
+        return;
+    }
+
+    int32_t taskId;
 };
 
 #endif /* AMW_TASK_H_ */

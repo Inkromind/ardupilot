@@ -69,6 +69,7 @@ void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
 
     if (plan.empty()) {
         if (idleTask && idleTask == task) {
+            idleTask->completeTask();
             delete idleTask;
             idleTask = 0;
         }
@@ -79,10 +80,11 @@ void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
     if (firstTask != task)
         return;
 
+    firstTask->completeTask();
     plan.pop_front();
     delete firstTask;
 
-    if (plan.empty())
+    if (plan.empty() && !idleTask)
         idleTask = new AMW_Task_RTL();
 }
 
@@ -103,6 +105,9 @@ void AMW_Task_Planner::addTask(AMW_Task *task) {
     if (idleTask) {
         delete idleTask;
         idleTask = 0;
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::getFacade()->sendDebug(PSTR("Deleted idleTask"));
+#endif
     }
 }
 
@@ -120,7 +125,7 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
     AMW_List<AMW_Task*>::Iterator* iterator = plan.iterator();
     while (iterator->hasNext()) {
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Checking next index"));
+    //AC_Facade::getFacade()->sendDebug(PSTR("Checking next index"));
 #endif
         AMW_Task *nextTask = iterator->next();
         if (currentIndex > 0) {
@@ -136,7 +141,7 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
         currentIndex++;
         position = nextTask->getEndPosition(position);
     }
-    float distance = (position - pickupLocation).length() + (deliveryLocation - homeBase).length();
+    float distance = (position - pickupLocation).length() + (deliveryLocation - homeBase).length() - (position - homeBase).length();
     if (minDistance == -1 || distance <= minDistance) {
         minDistance = distance;
         bestPosition = currentIndex;
@@ -147,11 +152,12 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
         if (idleTask) {
             delete idleTask;
             idleTask = 0;
+#ifdef AMW_PLANNER_DEBUG
+            AC_Facade::getFacade()->sendDebug(PSTR("Deleted idleTask"));
+#endif
         }
 #ifdef AMW_PLANNER_DEBUG
-        char debugbuffer[50];
-        snprintf(debugbuffer, 50, "Added new package #%d at index %d", package->id, bestPosition);
-        AC_Facade::getFacade()->sendDebug(PSTR(debugbuffer));
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Added new package #%d at index %d/%d"), package->id, bestPosition, plan.size());
 #endif
     }
 

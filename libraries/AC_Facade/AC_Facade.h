@@ -10,6 +10,7 @@
 
 #include <AP_Math.h>
 #include <AP_Progmem.h>
+#include <AP_HAL.h>
 
 class AC_Facade {
 
@@ -24,6 +25,7 @@ public:
     virtual bool initFlightMode(void);
 
     virtual void sendDebug(const prog_char_t *str);
+    virtual void sendFormattedDebug(const prog_char_t *str, ...);
 
     virtual float getAltitude(void);
     virtual bool isLanded(void);
