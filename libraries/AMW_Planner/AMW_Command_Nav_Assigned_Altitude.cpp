@@ -9,7 +9,7 @@
 #include "AMW_Task_Planner.h"
 #include <AC_Facade.h>
 
-void AMW_Command_Nav_Assigned_Altitude::runCommand() {
+void AMW_Command_Nav_Assigned_Altitude::run() {
     if (!commandStarted)
         this->destination.z = AMW_Task_Planner::getInstance()->getAssignedAltitude();
 
@@ -19,9 +19,9 @@ void AMW_Command_Nav_Assigned_Altitude::runCommand() {
         return;
 
     AC_Facade::getFacade()->navigateTo(destination);
-#ifdef AMW_PLANNER_DEBUG
+#ifdef AMW_COMMAND_DEBUG
     if (!commandStarted) {
-        AC_Facade::getFacade()->sendDebug(PSTR("Starting nav..."));
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting nav to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
         commandStarted = true;
     }
 #endif
@@ -33,8 +33,8 @@ void AMW_Command_Nav_Assigned_Altitude::updateStatus() {
 
     if (AC_Facade::getFacade()->destinationReached(destination)) {
         completed = true;
-#ifdef AMW_PLANNER_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Nav Completed"));
+#ifdef AMW_COMMAND_DEBUG
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Nav Completed to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
 #endif
     }
 }

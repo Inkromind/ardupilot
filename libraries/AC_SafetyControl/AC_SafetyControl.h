@@ -11,6 +11,8 @@
 #include "AC_Behaviour.h"
 #include <AMW_List.h>
 
+#define AC_SAFETYCONTROL_DEBUG
+
 class AC_SafetyControl {
 
 public:

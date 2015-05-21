@@ -17,7 +17,7 @@ class AMW_Task_Package: public AMW_Task {
 public:
     AMW_Task_Package(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation);
 
-    AMW_Commands_Plan* generatePlan(void);
+    AMW_Command* generatePlan(void);
 
     Vector2f getEndPosition(Vector2f currentPosition) {
         return deliveryLocation;

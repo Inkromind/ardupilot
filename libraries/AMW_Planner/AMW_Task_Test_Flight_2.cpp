@@ -12,10 +12,11 @@
 #include "AMW_Command_Nav_Altitude.h"
 #include "AMW_Command_Land.h"
 #include "AMW_Command_Disarm.h"
+#include "AMW_Commands_Plan.h"
 
 AMW_Task_Test_Flight_2::AMW_Task_Test_Flight_2() { }
 
-AMW_Commands_Plan* AMW_Task_Test_Flight_2::generatePlan(void) {
+AMW_Command* AMW_Task_Test_Flight_2::generatePlan(void) {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
 
     plan->addNewCommand(new AMW_Command_Takeoff(1500));

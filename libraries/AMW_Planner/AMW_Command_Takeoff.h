@@ -14,7 +14,7 @@ class AMW_Command_Takeoff: public AMW_Command {
 public:
     AMW_Command_Takeoff(float alt);
 
-    virtual void runCommand();
+    virtual void run();
 
 protected:
     float altitude;

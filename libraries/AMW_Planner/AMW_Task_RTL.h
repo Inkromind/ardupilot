@@ -15,7 +15,7 @@ class AMW_Task_RTL: public AMW_Task {
 public:
     AMW_Task_RTL();
 
-    AMW_Commands_Plan* generatePlan(void);
+    AMW_Command* generatePlan(void);
 
     Vector2f getEndPosition(Vector3f currentPosition) {
         return AMW_Task_Planner::getInstance()->getHomeBase();

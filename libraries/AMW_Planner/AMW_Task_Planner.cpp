@@ -90,14 +90,23 @@ void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
 
 void AMW_Task_Planner::pauseMission() {
     paused = true;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Pausing Task Planner"));
+#endif
 }
 
 void AMW_Task_Planner::resumeMission(void) {
     paused = false;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Resuming Task Planner"));
+#endif
 }
 
 void AMW_Task_Planner::toggleMission(void) {
-    paused = !paused;
+    if (paused)
+        resumeMission();
+    else
+        pauseMission();
 }
 
 void AMW_Task_Planner::addTask(AMW_Task *task) {
@@ -112,9 +121,6 @@ void AMW_Task_Planner::addTask(AMW_Task *task) {
 }
 
 float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
-#ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Attempting to add new package"));
-#endif
     uint32_t currentIndex = 0;
     uint32_t bestPosition = 1;
     Vector2f position = homeBase;

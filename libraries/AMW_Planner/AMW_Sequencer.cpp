@@ -92,8 +92,8 @@ void AMW_Sequencer::startNewTask() {
 }
 
 void AMW_Sequencer::executeCurrentTask() {
-    currentPlan->executePlan();
-    if (currentPlan->isCompleted()) {
+    currentPlan->run();
+    if (currentPlan->isComplete()) {
         delete currentPlan;
         currentPlan = 0;
         AMW_Task_Planner::getInstance()->completeFirstTask(currentTask);
@@ -117,18 +117,24 @@ void AMW_Sequencer::executeCurrentTask() {
 void AMW_Sequencer::pauseMission() {
     if (paused)
         return;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Pausing Sequencer"));
+#endif
     paused = true;
     AC_Facade::getFacade()->loiter();
     if (currentPlan)
-        currentPlan->pausePlan();
+        currentPlan->pause();
 }
 
 void AMW_Sequencer::resumeMission(void) {
     if (!paused)
         return;
     paused = false;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Resuming Sequencer"));
+#endif
     if (currentPlan)
-        currentPlan->resumePlan();
+        currentPlan->resume();
 }
 
 void AMW_Sequencer::toggleMission(void) {

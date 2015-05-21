@@ -14,7 +14,7 @@ class AMW_Task_Test_Flight_2: public AMW_Task {
 public:
     AMW_Task_Test_Flight_2();
 
-    AMW_Commands_Plan* generatePlan(void);
+    AMW_Command* generatePlan(void);
 };
 
 #endif /* AMW_TASK_TEST_FLIGHT_2_H_ */

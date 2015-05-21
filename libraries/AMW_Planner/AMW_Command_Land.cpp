@@ -7,21 +7,17 @@
 
 #include "AMW_Command_Land.h"
 #include <AC_Facade.h>
-#include "AMW_Planner.h"
 
-AMW_Command_Land::AMW_Command_Land() {
-    this->commandStarted = false;
-    this->completed = false;
-}
+AMW_Command_Land::AMW_Command_Land() : AMW_Command() { }
 
-void AMW_Command_Land::runCommand() {
+void AMW_Command_Land::run() {
     updateStatus();
 
     if (completed)
         return;
 
     AC_Facade::getFacade()->land();
-#ifdef AMW_PLANNER_DEBUG
+#ifdef AMW_COMMAND_DEBUG
     if (!commandStarted) {
         AC_Facade::getFacade()->sendDebug(PSTR("Starting landing..."));
         commandStarted = true;
@@ -35,7 +31,7 @@ void AMW_Command_Land::updateStatus() {
 
     if (AC_Facade::getFacade()->isLanded()) {
         completed = true;
-#ifdef AMW_PLANNER_DEBUG
+#ifdef AMW_COMMAND_DEBUG
         AC_Facade::getFacade()->sendDebug(PSTR("Landing Completed"));
 #endif
     }

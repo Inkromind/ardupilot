@@ -32,7 +32,7 @@ private:
 
     AMW_Task* currentTask;
     AMW_Task* newTask;
-    AMW_Commands_Plan* currentPlan;
+    AMW_Command* currentPlan;
 
     AMW_Sequencer();
     virtual void startNewTask(void);

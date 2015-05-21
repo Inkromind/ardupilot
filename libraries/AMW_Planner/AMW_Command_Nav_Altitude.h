@@ -14,7 +14,7 @@ class AMW_Command_Nav_Altitude: public AMW_Command {
 public:
     AMW_Command_Nav_Altitude(float alt);
 
-    void runCommand();
+    virtual void run();
 
 private:
     float altitude;

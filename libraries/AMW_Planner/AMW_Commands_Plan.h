@@ -8,32 +8,19 @@
 #ifndef AMW_COMMANDS_PLAN_H_
 #define AMW_COMMANDS_PLAN_H_
 
-#include "AMW_Command.h"
-#include <AMW_Queue.h>
+//#define AMW_COMMANDS_PLAN_DEBUG
 
-class AMW_Commands_Plan {
+#include "AMW_Command_Composite.h"
+
+class AMW_Commands_Plan : public AMW_Command_Composite {
 public:
-    AMW_Commands_Plan();
-    virtual ~AMW_Commands_Plan();
+    AMW_Commands_Plan() : AMW_Command_Composite() {}
 
-    virtual void executePlan(void);
-    virtual bool isCompleted(void);
-    virtual bool hasFailed(void);
+    virtual ~AMW_Commands_Plan() {}
 
-    virtual void addNewCommand(AMW_Command* command);
+    void addNewCommand(AMW_Command* command);
 
-    virtual void pausePlan(void);
-    virtual void resumePlan(void);
-
-private:
-    bool completed;
-    bool failed;
-    bool paused;
-
-    AMW_Queue<AMW_Command*> plan;
-    AMW_Command* currentCommand;
-
-    virtual void completeCurrentCommand(void);
+    void updateStatus(void) {}
 };
 
 #endif /* AMW_COMMANDS_PLAN_H_ */

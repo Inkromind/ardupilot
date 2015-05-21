@@ -7,24 +7,21 @@
 
 #include "AMW_Command_Nav.h"
 #include <AC_Facade.h>
-#include "AMW_Planner.h"
 
-AMW_Command_Nav::AMW_Command_Nav(Vector3f waypoint) {
+AMW_Command_Nav::AMW_Command_Nav(Vector3f waypoint) : AMW_Command() {
     this->destination = waypoint;
-    this->commandStarted = false;
-    this->completed = false;
 }
 
-void AMW_Command_Nav::runCommand() {
+void AMW_Command_Nav::run() {
     updateStatus();
 
     if (completed)
         return;
 
     AC_Facade::getFacade()->navigateTo(destination);
-#ifdef AMW_PLANNER_DEBUG
+#ifdef AMW_COMMAND_DEBUG
     if (!commandStarted) {
-        AC_Facade::getFacade()->sendDebug(PSTR("Starting nav..."));
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting nav to <%.2f,%.2f> | Altitude: %.2fm"), destination.x / 100, destination.y / 100, destination.z / 100);
         commandStarted = true;
     }
 #endif
@@ -36,8 +33,8 @@ void AMW_Command_Nav::updateStatus() {
 
     if (AC_Facade::getFacade()->destinationReached(destination)) {
         completed = true;
-#ifdef AMW_PLANNER_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Nav Completed"));
+#ifdef AMW_COMMAND_DEBUG
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Nav Completed to <%.2f,%.2f> | Altitude: %.2fm"), destination.x / 100, destination.y / 100, destination.z / 100);
 #endif
     }
 }

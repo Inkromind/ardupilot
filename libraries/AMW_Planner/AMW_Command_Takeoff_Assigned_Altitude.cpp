@@ -9,23 +9,17 @@
 #include "AMW_Task_Planner.h"
 #include <AC_Facade.h>
 
-void AMW_Command_Takeoff_Assigned_Altitude::runCommand() {
+void AMW_Command_Takeoff_Assigned_Altitude::run() {
 
-    if (!commandStarted)
+    if (!commandStarted) {
         this->altitude = AMW_Task_Planner::getInstance()->getAssignedAltitude();
+        commandStarted = true;
+#ifdef AMW_COMMAND_DEBUG
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting takeoff to assigned altitude (%.2fm)"), altitude / 100);
+#endif
+    }
 
-    updateStatus();
 
-    #ifdef AMW_PLANNER_DEBUG
-        if (!commandStarted) {
-            AC_Facade::getFacade()->sendDebug(PSTR("Starting takeoff..."));
-            commandStarted = true;
-        }
-    #endif
-
-    if (completed)
-        return;
-
-    AC_Facade::getFacade()->takeOff(altitude);
+    AMW_Command_Takeoff::run();
 
 }

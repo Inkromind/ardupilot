@@ -15,10 +15,10 @@ class AMW_Command_Delay: public AMW_Command {
 public:
     AMW_Command_Delay(uint32_t delay);
 
-    void runCommand(void);
+    void run(void);
 
-    void pauseCommand(void);
-    void resumeCommand(void);
+    void pause(void);
+    void resume(void);
 
 private:
     uint32_t duration;

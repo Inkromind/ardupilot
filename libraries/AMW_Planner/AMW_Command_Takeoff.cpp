@@ -7,20 +7,17 @@
 
 #include "AMW_Command_Takeoff.h"
 #include <AC_Facade.h>
-#include "AMW_Planner.h"
 
-AMW_Command_Takeoff::AMW_Command_Takeoff(float alt) {
+AMW_Command_Takeoff::AMW_Command_Takeoff(float alt) : AMW_Command() {
     this->altitude = alt;
-    this->commandStarted = false;
-    this->completed = false;
 }
 
-void AMW_Command_Takeoff::runCommand() {
+void AMW_Command_Takeoff::run() {
     updateStatus();
 
-#ifdef AMW_PLANNER_DEBUG
+#ifdef AMW_COMMAND_DEBUG
     if (!commandStarted) {
-        AC_Facade::getFacade()->sendDebug(PSTR("Starting takeoff..."));
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting takeoff to %.2fm"), altitude / 100);
         commandStarted = true;
     }
 #endif
@@ -37,8 +34,8 @@ void AMW_Command_Takeoff::updateStatus() {
 
     if (AC_Facade::getFacade()->altitudeReached(altitude)) {
         completed = true;
-#ifdef AMW_PLANNER_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Takeoff Completed"));
+#ifdef AMW_COMMAND_DEBUG
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Takeoff Completed to %.2fm"), altitude / 100);
 #endif
     }
 }

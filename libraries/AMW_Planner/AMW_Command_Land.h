@@ -14,7 +14,7 @@ class AMW_Command_Land : public AMW_Command {
 public:
     AMW_Command_Land();
 
-    void runCommand(void);
+    void run(void);
 
 private:
     void updateStatus(void);

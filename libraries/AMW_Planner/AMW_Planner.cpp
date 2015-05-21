@@ -46,8 +46,10 @@ void AMW_Planner::pauseMission() {
 }
 
 void AMW_Planner::resumeMission() {
-    AMW_Task_Planner::getInstance()->resumeMission();
-    AMW_Sequencer::getInstance()->resumeMission();
+    if (AC_Facade::getFacade()->initFlightMode()) {
+        AMW_Task_Planner::getInstance()->resumeMission();
+        AMW_Sequencer::getInstance()->resumeMission();
+    }
 }
 
 void AMW_Planner::toggleMission() {
