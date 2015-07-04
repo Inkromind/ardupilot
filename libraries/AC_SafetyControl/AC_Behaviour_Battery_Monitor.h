@@ -10,7 +10,7 @@
 
 #include "AC_Behaviour.h"
 
-#define AC_BATTERY_LIMIT 50
+#define AC_BATTERY_LIMIT 25
 
 class AC_Behaviour_Battery_Monitor: public AC_Behaviour {
 public:

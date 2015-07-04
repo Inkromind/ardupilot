@@ -19,6 +19,8 @@ public:
 
     static void pauseMission();
 
+    static void returnHome();
+
     static void addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation);
 
     static void run100Hz();

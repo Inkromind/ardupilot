@@ -36,6 +36,10 @@ void AMW_Facade::pauseMission() {
     AMW_Planner::pauseMission();
 }
 
+void AMW_Facade::returnHome() {
+    AMW_Planner::returnHome();
+}
+
 void AMW_Facade::addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation) {
     AMW_Task_Planner::getInstance()->addPackage(new AMW_Task_Package(id, pickupLocation, deliveryLocation), false);
 }

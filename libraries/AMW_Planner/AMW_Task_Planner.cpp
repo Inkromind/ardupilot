@@ -20,6 +20,7 @@ AMW_Task_Planner::AMW_Task_Planner() {
     homeBase = Vector2f();
     idleTask = 0;
     assignedAltitude = 1500;
+    returningHome = false;
 }
 
 AMW_Task_Planner::~AMW_Task_Planner() {
@@ -47,17 +48,17 @@ void AMW_Task_Planner::init() {
 }
 
 void AMW_Task_Planner::run() {
-    if (!plannerInitialized || paused)
+    if (!plannerInitialized)
         return;
     return;
 }
 
 
 AMW_Task* AMW_Task_Planner::getFirstTask() {
-    if (!plannerInitialized || paused)
+    if (!plannerInitialized)
         return 0;
 
-    if (plan.empty())
+    if (plan.empty() || returningHome)
         return idleTask;
 
     return plan.front();
@@ -67,7 +68,7 @@ void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
     if (!plannerInitialized)
         return;
 
-    if (plan.empty()) {
+    if (plan.empty() || returningHome) {
         if (idleTask && idleTask == task) {
             idleTask->completeTask();
             delete idleTask;
@@ -95,8 +96,27 @@ void AMW_Task_Planner::pauseMission() {
 #endif
 }
 
+void AMW_Task_Planner::returnHome() {
+    returningHome = true;
+#ifdef AMW_PLANNER_DEBUG
+    AC_Facade::getFacade()->sendDebug(PSTR("Returning Home"));
+#endif
+    if (!idleTask)
+        idleTask = new AMW_Task_RTL();
+    if (!paused)
+        pauseMission();
+}
+
 void AMW_Task_Planner::resumeMission(void) {
     paused = false;
+    if (returningHome && idleTask) {
+#ifdef AMW_PLANNER_DEBUG
+        AC_Facade::getFacade()->sendDebug(PSTR("Cancelling return to home"));
+#endif
+        delete idleTask;
+        idleTask = 0;
+    }
+    returningHome = false;
 #ifdef AMW_PLANNER_DEBUG
     AC_Facade::getFacade()->sendDebug(PSTR("Resuming Task Planner"));
 #endif
@@ -111,7 +131,7 @@ void AMW_Task_Planner::toggleMission(void) {
 
 void AMW_Task_Planner::addTask(AMW_Task *task) {
     plan.push_back(task);
-    if (idleTask) {
+    if (idleTask && !returningHome) {
         delete idleTask;
         idleTask = 0;
 #ifdef AMW_PLANNER_DEBUG
@@ -155,7 +175,7 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
 
     if (!estimate) {
         plan.insert(bestPosition, package);
-        if (idleTask) {
+        if (idleTask && !returningHome) {
             delete idleTask;
             idleTask = 0;
 #ifdef AMW_PLANNER_DEBUG

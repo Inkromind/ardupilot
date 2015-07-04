@@ -12,6 +12,8 @@
 #include <AP_Progmem.h>
 #include <AP_HAL.h>
 
+#define NEAR_DESTINATION_RADIUS     20.0f
+
 class AC_Facade {
 
 public:
@@ -30,7 +32,7 @@ public:
     virtual float getAltitude(void);
     virtual bool isLanded(void);
     virtual bool areMotorsArmed(void);
-    virtual bool destinationReached(const Vector3f& destination);
+    virtual bool destinationReached(const Vector3f& destination, float radius = NEAR_DESTINATION_RADIUS);
     virtual bool altitudeReached(float altitude);
     virtual Vector3f getRelativePosition(void);
     virtual Vector3f getRealPosition(void);

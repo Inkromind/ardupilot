@@ -28,6 +28,8 @@ public:
     virtual void addTask(AMW_Task* task);
     virtual float addPackage(AMW_Task_Package* task, bool estimate);
 
+    virtual void returnHome(void);
+
     float getAssignedAltitude(void) {
         return assignedAltitude;
     }
@@ -41,6 +43,7 @@ public:
 private:
     bool plannerInitialized;
     bool paused;
+    bool returningHome;
     static AMW_Task_Planner* planner;
     AMW_List<AMW_Task*> plan;
     AMW_Task* idleTask;

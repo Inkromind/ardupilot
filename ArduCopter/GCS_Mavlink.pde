@@ -1446,6 +1446,10 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         AMW_Facade::resumeMission();
         break;
     }
+    case MAVLINK_MSG_ID_MAD_RETURN_HOME: {
+        AMW_Facade::returnHome();
+        break;
+    }
     case MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE: {
         mavlink_mad_request_package_t packet;
         mavlink_msg_mad_request_package_decode(msg, &packet);

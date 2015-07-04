@@ -41,7 +41,6 @@ void AMW_Planner::run1Hz() {
 }
 
 void AMW_Planner::pauseMission() {
-    AMW_Task_Planner::getInstance()->pauseMission();
     AMW_Sequencer::getInstance()->pauseMission();
 }
 
@@ -56,7 +55,6 @@ void AMW_Planner::toggleMission() {
     if (!initialized)
         initPlanner();
     else {
-        AMW_Task_Planner::getInstance()->toggleMission();
         AMW_Sequencer::getInstance()->toggleMission();
     }
 }
@@ -70,4 +68,11 @@ void AMW_Planner::checkMissionToggle() {
     }
     else
         AMW_Planner::previousToggleState = false;
+}
+
+void AMW_Planner::returnHome() {
+    if (AC_Facade::getFacade()->initFlightMode()) {
+        AMW_Task_Planner::getInstance()->returnHome();
+        AMW_Sequencer::getInstance()->resumeMission();
+    }
 }

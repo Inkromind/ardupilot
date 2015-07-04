@@ -27,6 +27,8 @@ public:
 
     static void resumeMission(void);
 
+    static void returnHome(void);
+
 private:
     AMW_Planner();
     ~AMW_Planner();

@@ -482,6 +482,10 @@
       <field type="float" name="y">Y Coordinate of current location</field>
       <field type="float" name="alt">Current altitude</field>
     </message>
-
+    <message name="MAD_RETURN_HOME" id="196">
+      <description>Pause mission and return home</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+    </message>
      </messages>
 </mavlink>

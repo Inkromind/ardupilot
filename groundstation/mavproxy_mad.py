@@ -12,6 +12,7 @@ class MadModule(mp_module.MPModule):
         super(MadModule, self).__init__(mpstate, "MAD", "MAD module")
         self.add_command('initPlanner', self.cmd_init, "Initialize Planners")
         self.add_command('pauseMission', self.cmd_pause, "Pause mission")
+        self.add_command('returnHome', self.cmd_returnHome, "Pause mission and return home")
         self.add_command('resumeMission', self.cmd_resume, "Resume mission")
         self.add_command('getLocation', self.cmd_getLocation, "Get current location")
         self.add_command('requestPackage', self.cmd_requestPackage, "Request a new package to be transported", ["<id> <pickupX> <pickupY> <deliveryX> <deliveryY>"])
@@ -29,8 +30,13 @@ class MadModule(mp_module.MPModule):
       
     def cmd_resume(self, args):
         '''Resume mission'''
-        print("Resuming pission")
+        print("Resuming mission")
         self.master.mav.mad_resume_mission_send(0, 0)
+        
+    def cmd_returnHome(self, args):
+        '''Return home'''
+        print("Returning Home")
+        self.master.mav.mad_return_home_send(0, 0)
     
     def cmd_getLocation(self, args):
         'Get location'''

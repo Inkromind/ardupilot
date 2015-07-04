@@ -92,6 +92,9 @@ void AMW_Sequencer::startNewTask() {
 }
 
 void AMW_Sequencer::executeCurrentTask() {
+    if (paused)
+        return;
+
     currentPlan->run();
     if (currentPlan->isComplete()) {
         delete currentPlan;
@@ -133,8 +136,18 @@ void AMW_Sequencer::resumeMission(void) {
 #ifdef AMW_PLANNER_DEBUG
     AC_Facade::getFacade()->sendDebug(PSTR("Resuming Sequencer"));
 #endif
-    if (currentPlan)
-        currentPlan->resume();
+    if (currentPlan) {
+        newTask = AMW_Task_Planner::getInstance()->getFirstTask();
+
+        if (currentTask && currentTask == newTask) {
+#ifdef AMW_PLANNER_DEBUG
+            AC_Facade::getFacade()->sendDebug(PSTR("Resuming plan"));
+#endif
+            currentPlan->resume();
+            return;
+        }
+        newTask = 0;
+    }
 }
 
 void AMW_Sequencer::toggleMission(void) {

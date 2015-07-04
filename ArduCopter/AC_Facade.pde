@@ -8,14 +8,12 @@
 AC_Facade* AC_Facade::facade = 0;
 AC_ReactiveFacade* AC_ReactiveFacade::reactiveFacade = 0;
 
-#define NEAR_DESTINATION_RADIUS     100.0f
-
 bool MAD_navInitialized = false;
 Vector3f MAD_origin;
 
 void MAD_updateOrigin(void);
 bool MAD_inControl(void);
-bool MAD_relativeDestinationReached(const Vector3f& destination);
+bool MAD_relativeDestinationReached(const Vector3f& destination, float radius = NEAR_DESTINATION_RADIUS);
 
 bool MAD_inControl() {
     if (control_mode != MAD)
@@ -127,30 +125,30 @@ bool AC_Facade::areMotorsArmed() {
     return motors.armed();
 }
 
-bool AC_Facade::destinationReached(const Vector3f& destination) {
+bool AC_Facade::destinationReached(const Vector3f& destination, float radius) {
     if (control_mode != MAD)
         return false;
 
     Vector3f relativeDestination = destination + MAD_origin;
 
-    return MAD_relativeDestinationReached(relativeDestination);
+    return MAD_relativeDestinationReached(relativeDestination, radius);
 }
 
-bool MAD_relativeDestinationReached(const Vector3f& destination) {
+bool MAD_relativeDestinationReached(const Vector3f& destination, float radius) {
     if (control_mode != MAD)
         return false;
 
     Vector3f currentDistToDest = inertial_nav.get_position() - destination;
-    if (currentDistToDest.length() > NEAR_DESTINATION_RADIUS) {
+    if (currentDistToDest.length() > radius) {
         return false;
     }
 
     if (mad_mode == Mad_Land)
-        return false;
+        return (ap.land_complete);
 
     Vector3f wpDistToDest = wp_nav.get_wp_destination() - destination;
 
-    return (wpDistToDest.length() <= NEAR_DESTINATION_RADIUS);
+    return (wpDistToDest.length() <= radius);
 }
 
 Vector3f AC_Facade::getRelativePosition() {
