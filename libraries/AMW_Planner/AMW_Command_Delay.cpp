@@ -7,7 +7,6 @@
 
 #include "AMW_Command_Delay.h"
 #include <AP_HAL.h>
-#include <AP_Math.h>
 #include <AC_Facade.h>
 
 extern const AP_HAL::HAL& hal;

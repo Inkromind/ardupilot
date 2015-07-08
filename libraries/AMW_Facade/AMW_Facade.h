@@ -8,7 +8,8 @@
 #ifndef AMW_FACADE_H_
 #define AMW_FACADE_H_
 
-#include <AP_Math.h>
+#include "../AP_Math/vector2.h"
+#include <stdint.h>
 
 class AMW_Facade {
 

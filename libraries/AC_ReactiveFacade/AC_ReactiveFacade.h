@@ -9,6 +9,7 @@
 #define AC_REACTIVEFACADE_H_
 
 #include <AC_Facade.h>
+#include <AP_BattMonitor.h>
 
 class AC_ReactiveFacade : public AC_Facade {
 

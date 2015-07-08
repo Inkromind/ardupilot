@@ -8,7 +8,9 @@
 #ifndef AMW_COMMANDS_PLAN_H_
 #define AMW_COMMANDS_PLAN_H_
 
-//#define AMW_COMMANDS_PLAN_DEBUG
+#ifndef TESTENV
+    //#define AMW_COMMANDS_PLAN_DEBUG
+#endif
 
 #include "AMW_Command_Composite.h"
 

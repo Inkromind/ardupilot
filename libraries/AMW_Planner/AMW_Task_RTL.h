@@ -10,6 +10,7 @@
 
 #include "AMW_Task.h"
 #include "AMW_Task_Planner.h"
+#include "../AP_Math/vector3.h"
 
 class AMW_Task_RTL: public AMW_Task {
 public:

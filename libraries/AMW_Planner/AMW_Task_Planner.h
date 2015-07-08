@@ -10,7 +10,7 @@
 
 #include "AMW_Task.h"
 #include <AMW_List.h>
-#include <AP_Math.h>
+#include "../AP_Math/vector2.h"
 #include "AMW_Task_Package.h"
 
 class AMW_Task_Planner {

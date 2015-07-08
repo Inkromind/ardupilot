@@ -11,7 +11,7 @@
 #define PACKAGE_WAIT_TIME 15;
 
 #include "AMW_Task.h"
-#include <AP_Math.h>
+#include "../AP_Math/vector2.h"
 
 class AMW_Task_Package: public AMW_Task {
 public:

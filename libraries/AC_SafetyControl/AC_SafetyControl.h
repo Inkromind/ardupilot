@@ -11,7 +11,9 @@
 #include "AC_Behaviour.h"
 #include <AMW_List.h>
 
-#define AC_SAFETYCONTROL_DEBUG
+#ifndef TESTENV
+    #define AC_SAFETYCONTROL_DEBUG
+#endif
 
 class AC_SafetyControl {
 

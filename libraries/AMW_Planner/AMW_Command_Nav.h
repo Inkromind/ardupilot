@@ -9,7 +9,7 @@
 #define AMW_COMMAND_NAV_H_
 
 #include "AMW_Command.h"
-#include <AP_Math.h>
+#include "../AP_Math/vector3.h"
 
 class AMW_Command_Nav: public AMW_Command {
 public:

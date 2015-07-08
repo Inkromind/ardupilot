@@ -9,9 +9,11 @@
 #define AMW_TASK_H_
 
 #include "AMW_Command.h"
-#include <AP_Math.h>
+#include "../AP_Math/vector2.h"
 
-#define AMW_TASK_DEBUG
+#ifndef TESTENV
+    #define AMW_TASK_DEBUG
+#endif
 
 class AMW_Task {
 public:

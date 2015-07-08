@@ -11,6 +11,9 @@
 #include "AMW_Command.h"
 #include <stdint.h>
 
+#define max(a,b) ((a)>(b)?(a):(b))
+#define min(a,b) ((a)<(b)?(a):(b))
+
 class AMW_Command_Delay: public AMW_Command {
 public:
     AMW_Command_Delay(uint32_t delay);

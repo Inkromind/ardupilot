@@ -51,7 +51,9 @@
 #define VECTOR3_H
 
 #include <math.h>
+#include <stdint.h>
 #include <string.h>
+#include "rotations.h"
 
 #if MATH_CHECK_INDEXES
 #include <assert.h>

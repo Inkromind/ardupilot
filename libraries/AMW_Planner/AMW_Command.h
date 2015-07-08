@@ -8,7 +8,9 @@
 #ifndef AMW_COMMAND_H_
 #define AMW_COMMAND_H_
 
-#define AMW_COMMAND_DEBUG
+#ifndef TESTENV
+    #define AMW_COMMAND_DEBUG
+#endif
 
 class AMW_Command {
 public:

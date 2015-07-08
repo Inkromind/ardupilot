@@ -6,7 +6,6 @@
  */
 
 #include "AC_Behaviour_Battery_Monitor.h"
-#include <AP_BattMonitor.h>
 #include <AC_ReactiveFacade.h>
 #include "AC_SafetyControl.h"
 

@@ -8,9 +8,11 @@
 #ifndef AC_FACADE_H_
 #define AC_FACADE_H_
 
-#include <AP_Math.h>
-#include <AP_Progmem.h>
-#include <AP_HAL.h>
+#include "../AP_Math/vector3.h"
+#ifndef TESTENV
+    #include <AP_Progmem.h>
+#endif
+//#include <AP_HAL.h>
 
 #define NEAR_DESTINATION_RADIUS     20.0f
 
@@ -26,8 +28,10 @@ public:
     virtual bool loiter(void);
     virtual bool initFlightMode(void);
 
+#ifndef TESTENV
     virtual void sendDebug(const prog_char_t *str);
     virtual void sendFormattedDebug(const prog_char_t *str, ...);
+#endif
 
     virtual float getAltitude(void);
     virtual bool isLanded(void);
