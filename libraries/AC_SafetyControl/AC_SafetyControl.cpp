@@ -9,6 +9,7 @@
 #include "AC_Behaviour_Battery_Monitor.h"
 
 AC_SafetyControl* AC_SafetyControl::module = 0;
+AMW_Module_Identifier* AC_SafetyControl::moduleIdentifier = new AMW_Module_Identifier(10);
 
 AC_SafetyControl::AC_SafetyControl() {
     behaviours.push_back(new AC_Behaviour_Battery_Monitor());

@@ -17,10 +17,27 @@ public:
     AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f destination);
     virtual ~AMW_Command_Composite_Nav_Assigned_Altitude() {}
 
+    virtual void start();
+
     virtual void updateStatus(void);
 
+    virtual void completedSubCommand(void);
+
 private:
+
+    enum CommandState { NORMAL, RETURNTOSTART, LAND };
+
+    CommandState currentState;
     Vector3f destination;
+    Vector2f startLocation;
+
+    void resetSubCommands(void);
+
+    void setNormalSubCommands(void);
+
+    void returnToStart(void);
+
+    void land(void);
 };
 
 #endif /* AMW_COMMAND_COMPOSITE_NAV_ASSIGNED_ALTITUDE_H_ */

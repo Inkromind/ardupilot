@@ -8,6 +8,7 @@
 #include "AMW_Sequencer.h"
 #include <AC_Facade.h>
 #include "AMW_Planner.h"
+#include "AMW_Task_Planner.h"
 
 AMW_Sequencer* AMW_Sequencer::sequencer = 0;
 

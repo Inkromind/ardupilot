@@ -16,10 +16,7 @@ public:
     AMW_Command_Composite() : AMW_Command() {}
 
     virtual ~AMW_Command_Composite() {
-        while (!subCommands.empty()) {
-            delete subCommands.front();
-            subCommands.pop();
-        }
+        clearSubCommands();
     };
 
     virtual void run(void) {
@@ -31,11 +28,17 @@ public:
             completed = true;
             return;
         }
+        if (!commandStarted) {
+            startCommand();
+            if (!commandStarted)
+                return;
+        }
         subCommands.front()->run();
         commandStarted = true;
         if (subCommands.front()->isComplete()) {
             delete subCommands.front();
             subCommands.pop();
+            completedSubCommand();
             run();
         }
     }
@@ -56,7 +59,22 @@ public:
             subCommands.front()->resume();
     };
 
+    virtual void completedSubCommand() { }
+
     virtual void updateStatus(void) = 0;
+
+    virtual void clearSubCommands() {
+        while (!subCommands.empty()) {
+            delete subCommands.front();
+            subCommands.pop();
+        }
+    }
+
+    virtual void startCommand(void) {
+        commandStarted = true;
+    }
+
+
 
 protected:
     AMW_Queue<AMW_Command*> subCommands;

@@ -13,6 +13,7 @@
 #endif
 
 #include "AMW_Task_Planner.h"
+#include <AMW_Modules.h>
 
 class AMW_Planner {
 public:
@@ -32,6 +33,10 @@ public:
 
     static void returnHome(void);
 
+    virtual static AMW_Module_Identifier* getModuleIdentifier(void) {
+          return moduleIdentifier;
+    }
+
 private:
     AMW_Planner();
     ~AMW_Planner();
@@ -41,6 +46,8 @@ private:
 
     static bool previousToggleState;
     static bool initialized;
+
+    static AMW_Module_Identifier* moduleIdentifier;
 
 };
 
