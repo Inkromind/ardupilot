@@ -5,3 +5,4 @@
 #include <AMW_Corridors.h>
 #include <AC_Facade.h>
 #include <AC_SafetyControl.h>
+#include <AC_CommunicationFacade.h>

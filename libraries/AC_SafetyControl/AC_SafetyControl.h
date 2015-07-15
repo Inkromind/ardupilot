@@ -13,7 +13,7 @@
 #include <AMW_Modules.h>
 
 #ifndef TESTENV
-    #define AC_SAFETYCONTROL_DEBUG
+    //#define AC_SAFETYCONTROL_DEBUG
 #endif
 
 class AC_SafetyControl {

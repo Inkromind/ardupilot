@@ -6,12 +6,15 @@
  */
 
 #include "AMW_Command_Nav_Assigned_Altitude.h"
-#include "AMW_Task_Planner.h"
 #include <AC_Facade.h>
+#include <AMW_Corridors.h>
+#include "AMW_Planner.h"
 
 void AMW_Command_Nav_Assigned_Altitude::run() {
     if (!commandStarted)
-        this->destination.z = AMW_Task_Planner::getInstance()->getAssignedAltitude();
+        this->destination.z = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
+    if (this->destination.z == 0)
+        return;
 
     updateStatus();
 
@@ -19,12 +22,12 @@ void AMW_Command_Nav_Assigned_Altitude::run() {
         return;
 
     AC_Facade::getFacade()->navigateTo(destination);
-#ifdef AMW_COMMAND_DEBUG
     if (!commandStarted) {
+#ifdef AMW_COMMAND_DEBUG
         AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting nav to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
+#endif
         commandStarted = true;
     }
-#endif
 }
 
 void AMW_Command_Nav_Assigned_Altitude::updateStatus() {

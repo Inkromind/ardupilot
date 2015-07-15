@@ -13,6 +13,7 @@
     #include <AP_Progmem.h>
 #endif
 //#include <AP_HAL.h>
+#include <AP_BattMonitor.h>
 
 #define NEAR_DESTINATION_RADIUS     20.0f
 
@@ -49,6 +50,8 @@ public:
             facade = new AC_Facade();
         return facade;
     }
+
+    virtual AP_BattMonitor* getBattery(void);
 
 private:
     static AC_Facade* facade;

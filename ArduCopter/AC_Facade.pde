@@ -178,7 +178,7 @@ uint32_t AC_Facade::getCH7Position(void) {
     return ap.CH7_flag;
 }
 
-AP_BattMonitor* AC_ReactiveFacade::getBattery(void) {
+AP_BattMonitor* AC_Facade::getBattery(void) {
     return &battery;
 }
 

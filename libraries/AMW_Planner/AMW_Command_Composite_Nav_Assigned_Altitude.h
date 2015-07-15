@@ -11,17 +11,25 @@
 #include "AMW_Command_Composite.h"
 #include "../AP_Math/vector2.h"
 #include "../AP_Math/vector3.h"
+#include <AMW_List.h>
+#include <AMW_Corridors.h>
 
 class AMW_Command_Composite_Nav_Assigned_Altitude: public AMW_Command_Composite {
 public:
     AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f destination);
-    virtual ~AMW_Command_Composite_Nav_Assigned_Altitude() {}
+    virtual ~AMW_Command_Composite_Nav_Assigned_Altitude() {
+        clearReservedCorridors();
+    }
 
     virtual void start();
 
     virtual void updateStatus(void);
 
     virtual void completedSubCommand(void);
+
+    virtual AMW_List<AMW_Corridor*>* getCorridors(void) {
+        return &corridors;
+    }
 
 private:
 
@@ -31,9 +39,14 @@ private:
     Vector3f destination;
     Vector2f startLocation;
 
+    AMW_List<AMW_Corridor*> corridors;
+
     void resetSubCommands(void);
 
     void setNormalSubCommands(void);
+    void reserveNormalCorridors(void);
+
+    void clearReservedCorridors(void);
 
     void returnToStart(void);
 

@@ -22,8 +22,6 @@ public:
     virtual bool disarmMotors(void);
     virtual bool loiter(void);
 
-    virtual AP_BattMonitor* getBattery(void);
-
     static AC_ReactiveFacade* getReactiveFacade(void) {
         if (!reactiveFacade)
             reactiveFacade = new AC_ReactiveFacade();

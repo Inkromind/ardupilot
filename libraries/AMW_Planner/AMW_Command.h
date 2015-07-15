@@ -9,8 +9,11 @@
 #define AMW_COMMAND_H_
 
 #ifndef TESTENV
-    #define AMW_COMMAND_DEBUG
+    //#define AMW_COMMAND_DEBUG
 #endif
+
+#include <AMW_Corridors.h>
+#include <AMW_List.h>
 
 class AMW_Command {
 public:
@@ -19,6 +22,7 @@ public:
         this->completed = false;
         this->failed = false;
         this->paused = false;
+        this->parentCommand = 0;
     }
     virtual ~AMW_Command() {};
 
@@ -35,11 +39,21 @@ public:
         return failed;
     }
 
+    virtual void setParentCommand(AMW_Command* parent) {
+        parentCommand = parent;
+    }
+
+    virtual AMW_List<AMW_Corridor*>* getCorridors(void) {
+        return 0;
+    }
+
 protected:
     bool commandStarted;
     bool completed;
     bool failed;
     bool paused;
+
+    AMW_Command* parentCommand;
 };
 
 #endif /* AMW_COMMAND_H_ */

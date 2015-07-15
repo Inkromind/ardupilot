@@ -9,6 +9,10 @@
 #define AMW_CORRIDORS_H_
 
 #include "AMW_Corridor_Manager.h"
+#include "AMW_Corridor.h"
+#include "AMW_Vertical_Corridor.h"
+#include "AMW_Horizontal_Corridor.h"
+#include "AMW_Corridor_Conflict.h"
 
 
 

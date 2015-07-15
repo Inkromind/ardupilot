@@ -40,6 +40,8 @@ public:
 
     static AMW_Task_Planner* getInstance(void);
 
+    virtual void markBatteryEmpty(void);
+
 private:
     bool plannerInitialized;
     bool paused;
