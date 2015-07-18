@@ -16,6 +16,8 @@
 #include "AMW_Corridor_Conflict.h"
 
 #define AMW_CORRIDOR_MIN_ALTITUDE 5
+#define AMW_CORRIDOR_ALTITUDE_HEIGHT 5
+#define AMW_CORRIDOR_MAX_ALTITUDE 30
 
 #ifndef UINT8_MAX
 #define AMW_MAX_RESERVATION_ID 0xff
@@ -24,6 +26,13 @@
 #endif
 
 #define AMW_CORRIDOR_RESERVATION_TIMEOUT 10
+#define AMW_CORRIDOR_RESERVATION_TIMEOUT_MAX_DELTA 5
+#define AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY 30
+#define AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY_MAX_DELTA 5
+#define AMW_CORRIDOR_RESERVATION_ROUND_DELAY 0
+#define AMW_CORRIDOR_RESERVATION_ROUND_DELAY_MAX_DELTA 5
+
+#define AMW_CORRIDOR_MAX_FAILURES 1
 
 class AMW_Corridor_Manager {
 public:
@@ -32,7 +41,7 @@ public:
     bool reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
 
     bool corridorsAreReserved(AMW_List<AMW_Corridor*>* corridors);
-    bool reservationFailed(AMW_Module_Identifier* module) {
+    bool reservationHasFailed(AMW_Module_Identifier* module) {
         return failed;
     }
     bool isReservingCorridors(AMW_Module_Identifier* module);
@@ -62,6 +71,8 @@ public:
 
 
 private:
+    enum State { IDLE, REQUEST_SEND, WAITING_FOR_RETRY, WAITING_FOR_NEXT_ROUND };
+
     static AMW_Corridor_Manager* module;
     AMW_Corridor_Manager();
 
@@ -71,7 +82,11 @@ private:
 
     void setNewModule(AMW_Module_Identifier* module);
 
-    void startReservation(void);
+    void startWait(float timeout, uint8_t maxDelta);
+
+    void reservationFailed(void);
+    void roundFailed(void);
+    void startReservationRound();
 
     AMW_List<AMW_Corridor*> reservedCorridors;
     AMW_List<AMW_Corridor*> preliminaryCorridors;
@@ -80,9 +95,10 @@ private:
     uint8_t failures;
     float reservedAltitude;
     float preliminaryAltitude;
-    uint32_t reservationStart;
-    float reservationTimeout;
+    uint32_t waitStart;
+    float waitTimeout;
     bool failed;
+    State currentState;
 
     bool corridorConflict;
 

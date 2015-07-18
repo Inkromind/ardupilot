@@ -21,6 +21,7 @@ public:
     }
 
     virtual void broadcastReservationRequest(uint8_t reservationId, AMW_List<AMW_Corridor*>* corridors);
+    virtual void broadcastCorridors(AMW_List<AMW_Corridor*>* corridors);
 
 private:
     static AC_CommunicationFacade* facade;

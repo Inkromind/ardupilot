@@ -44,7 +44,7 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::start() {
         else if (AMW_Corridor_Manager::getInstance()->corridorsAreReserved(&corridors)) {
             commandStarted = true;
         }
-        else if (AMW_Corridor_Manager::getInstance()->reservationFailed(AMW_Planner::getModuleIdentifier())) {
+        else if (AMW_Corridor_Manager::getInstance()->reservationHasFailed(AMW_Planner::getModuleIdentifier())) {
             //failed = true;
             //TODO
         }

@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <AP_HAL.h>
 #include <stdlib.h>
+#include "AMW_Position_Corridor.h"
 
 AMW_Corridor_Manager* AMW_Corridor_Manager::module = 0;
 
@@ -18,16 +19,20 @@ AMW_Corridor_Manager::AMW_Corridor_Manager() {
     failures = 0;
     reservedAltitude = 0;
     preliminaryAltitude = 0;
-    reservationStart = 0;
-    reservationTimeout = 0;
+    waitStart = 0;
+    waitTimeout = 0;
     failed = false;
     corridorConflict = false;
+    currentState = IDLE;
 }
 
 bool AMW_Corridor_Manager::reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors) {
-    if (!corridors || corridors->empty() || !canReserveCorridors(module))
+    if (!module || !corridors || corridors->empty() || !canReserveCorridors(module))
         return false;
     setNewModule(module);
+
+    preliminaryCorridors.clear();
+    currentState = IDLE;
 
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
     while (iterator->hasNext()) {
@@ -37,7 +42,10 @@ bool AMW_Corridor_Manager::reserveCorridors(AMW_Module_Identifier* module, AMW_L
     }
     delete iterator;
 
-    startReservation();
+    failures = 0;
+    failed = false;
+    preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
+    startReservationRound();
 
     return true;
 }
@@ -62,49 +70,65 @@ bool AMW_Corridor_Manager::canReserveCorridors(AMW_Module_Identifier* module) {
 }
 
 void AMW_Corridor_Manager::setNewModule(AMW_Module_Identifier* module) {
-    if (!reservedModule) {
-        reservedModule = module;
-        corridorConflict = false;
-        reservedAltitude = 0;
-    }
-    else if (reservedModule != module) {
+    if (!module)
+        return;
+    if (reservedModule != module) {
         reservedCorridors.clear();
-        corridorConflict = false;
-        preliminaryCorridors.clear();
         reservedModule = module;
+        corridorConflict = false;
         reservedAltitude = 0;
-    }
-    else {
         preliminaryCorridors.clear();
+        currentState = IDLE;
     }
 }
 
-void AMW_Corridor_Manager::startReservation(void) {
-    failures = 0;
-    failed = false;
-    preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
-    if (currentReservationId-1 >= AMW_MAX_RESERVATION_ID)
+void AMW_Corridor_Manager::startReservationRound() {
+    if (currentReservationId - 1 >= AMW_MAX_RESERVATION_ID)
         currentReservationId = 0;
 
+    AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
+    while (iterator->hasNext()) {
+        AMW_Corridor* corridor = iterator->next();
+        corridor->setAltitude(preliminaryAltitude);
+    }
+    delete iterator;
 
     currentReservationId++;
-    reservationStart = hal.scheduler->millis();
-    reservationTimeout = AMW_CORRIDOR_RESERVATION_TIMEOUT + rand() % 5;
-    AC_CommunicationFacade::getFacade()->broadcastReservationRequest(currentReservationId, &preliminaryCorridors);
+    startWait(AMW_CORRIDOR_RESERVATION_TIMEOUT, AMW_CORRIDOR_RESERVATION_TIMEOUT_MAX_DELTA);
+    AC_CommunicationFacade::getFacade()->broadcastReservationRequest(
+            currentReservationId, &preliminaryCorridors);
+    currentState = REQUEST_SEND;
+}
+
+void AMW_Corridor_Manager::startWait(float timeout, uint8_t maxDelta) {
+    waitStart = hal.scheduler->millis();
+    waitTimeout = timeout + rand() % maxDelta;
 }
 
 void AMW_Corridor_Manager::checkTimeout(void) {
     if (preliminaryCorridors.empty())
         return;
-    if (hal.scheduler->millis() - reservationStart > reservationTimeout * 1000) {
-        reservedAltitude = preliminaryAltitude;
-        AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
-        while (iterator->hasNext()) {
-            AMW_Corridor* corridor = iterator->next();
-            reservedCorridors.push_back(corridor);
+    if (currentState == IDLE)
+        return;
+    if (hal.scheduler->millis() - waitStart > waitTimeout * 1000) {
+        currentState = IDLE;
+        if (currentState == REQUEST_SEND) {
+            reservedAltitude = preliminaryAltitude;
+            AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
+            while (iterator->hasNext()) {
+                AMW_Corridor* corridor = iterator->next();
+                reservedCorridors.push_back(corridor);
+            }
+            delete iterator;
+            preliminaryCorridors.clear();
         }
-        delete iterator;
-        preliminaryCorridors.clear();
+        else if (currentState == WAITING_FOR_RETRY) {
+            preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
+            startReservationRound();
+        }
+        else if (currentState == WAITING_FOR_NEXT_ROUND) {
+            startReservationRound();
+        }
     }
 }
 
@@ -143,7 +167,7 @@ void AMW_Corridor_Manager::markCorridorConflictResolved(AMW_Module_Identifier* m
 }
 
 bool AMW_Corridor_Manager::markCorridorsReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors) {
-    if (!canReserveCorridors(module))
+    if (!module || !canReserveCorridors(module))
         return false;
     setNewModule(module);
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
@@ -196,12 +220,15 @@ void AMW_Corridor_Manager::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
     if (reservedCorridors.empty() && preliminaryCorridors.empty()) {
         reservedModule = 0;
     }
+    if (preliminaryCorridors.empty()) {
+        currentState = IDLE;
+    }
 }
 
 AMW_Corridor_Conflict* AMW_Corridor_Manager::checkReservationRequest(AMW_List<AMW_Corridor*>* corridors) {
     AMW_Corridor_Conflict* conflict = 0;
     if (reservedCorridors.empty()) {
-        PositionCorridor positionCorridor<AC_Facade::getFacade()->getRealPosition()>;
+        AMW_Position_Corridor positionCorridor = AMW_Position_Corridor<AC_Facade::getFacade()->getRealPosition()>;
         conflict = positionCorridor.checkConflicts(corridors, true);
     }
     else {
@@ -212,6 +239,15 @@ AMW_Corridor_Conflict* AMW_Corridor_Manager::checkReservationRequest(AMW_List<AM
                 break;
         }
         delete iterator;
+        if (!conflict) {
+            AMW_List<AMW_Corridor*>::Iterator* iterator2 = preliminaryCorridors.iterator();
+            while (iterator2->hasNext()) {
+                conflict = iterator2->next()->checkConflicts(corridors, true);
+                if (conflict)
+                    break;
+            }
+            delete iterator2;
+        }
     }
     return conflict;
 }
@@ -219,15 +255,63 @@ AMW_Corridor_Conflict* AMW_Corridor_Manager::checkReservationRequest(AMW_List<AM
 void AMW_Corridor_Manager::reservationConflictReceived(uint8_t reservationId, AMW_Corridor_Conflict* conflict) {
     if (this->currentReservationId != reservationId)
         return;
+
+    if (currentState != REQUEST_SEND)
+        return;
+
+    bool validCorridor = false;
+    AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
+    while (iterator->hasNext()) {
+        if (iterator->next()->getId() ==  conflict->getCorridorId()) {
+            validCorridor = true;
+            break;
+        }
+    }
+    delete iterator;
+    if (!validCorridor)
+        return;
+
     currentReservationId++;
-    //TODO
+    currentState = IDLE;
+    if (conflict->getCorridorType() == AMW_Corridor::VERTICAL) {
+        reservationFailed();
+    }
+    else {
+        if (conflict->getCorridor2Type() == AMW_Corridor::VERTICAL) {
+            preliminaryAltitude = conflict->getAltitude();
+        }
+        roundFailed();
+    }
+}
+
+void AMW_Corridor_Manager::reservationFailed(void) {
+    failures++;
+    if (failures >= AMW_CORRIDOR_MAX_FAILURES) {
+        preliminaryCorridors.clear();
+        failed = true;
+    }
+    else {
+        startWait(AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY, AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY_MAX_DELTA);
+        currentState = WAITING_FOR_RETRY;
+    }
+}
+
+void AMW_Corridor_Manager::roundFailed(void) {
+    preliminaryAltitude += AMW_CORRIDOR_ALTITUDE_HEIGHT;
+    if (preliminaryAltitude > AMW_CORRIDOR_MAX_ALTITUDE) {
+        reservationFailed();
+    }
+    else {
+        startWait(AMW_CORRIDOR_RESERVATION_ROUND_DELAY, AMW_CORRIDOR_RESERVATION_ROUND_DELAY_MAX_DELTA);
+        currentState = WAITING_FOR_NEXT_ROUND;
+    }
 }
 
 void AMW_Corridor_Manager::broadcastReservedCorridors(void) {
     if (reservedCorridors.empty()) {
         AMW_List<AMW_Corridor*> corridors;
-        PositionCorridor positionCorridor(AC_Facade::getFacade()->getRealPosition())
-        corridors.push_back(&PositionCorridor);
+        AMW_Position_Corridor positionCorridor = AMW_Position_Corridor(AC_Facade::getFacade()->getRealPosition())
+        corridors.push_back(&positionCorridor);
         AC_CommunicationFacade::getFacade()->broadcastCorridors(&corridors);
     }
     else {

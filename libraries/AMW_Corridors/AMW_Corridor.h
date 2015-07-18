@@ -11,10 +11,20 @@
 class AMW_Corridor {
 
 public:
-    virtual void setAltitude(float altitude) = 0;
+    enum Type { VERTICAL, POSITION, HORIZONTAL };
+
+    virtual void setAltitude(float newAltitude) {
+        altitude = newAltitude;
+    }
     virtual ~AMW_Corridor() { }
-    virtual float getAltitude(void) = 0;
+    virtual float getAltitude(void) {
+        return altitude;
+    }
     virtual AMW_Corridor_Conflict* checkConflicts(AMW_List<AMW_Corridor*>* corridors, bool checkFullCorridor);
+    virtual uint8_t getId();
+
+protected:
+    float altitude = 0;
 
 };
 
