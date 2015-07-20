@@ -7,8 +7,8 @@
 
 #include "AMW_Position_Corridor.h"
 
-AMW_Position_Corridor::AMW_Position_Corridor(Vector3f position) {
-    // TODO Auto-generated constructor stub
-
+AMW_Position_Corridor::AMW_Position_Corridor(Vector3f position) : AMW_Corridor() {
+    location = Vector2f(position.x, position.y);
+    altitude = position.z;
 }
 

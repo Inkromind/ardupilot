@@ -11,13 +11,12 @@
 #include <AMW_Modules.h>
 #include <AMW_List.h>
 #include "AMW_Corridors.h"
-#include "AMW_Corridor_Reservation.h"
 #include <stdint.h>
 #include "AMW_Corridor_Conflict.h"
 
-#define AMW_CORRIDOR_MIN_ALTITUDE 5
-#define AMW_CORRIDOR_ALTITUDE_HEIGHT 5
-#define AMW_CORRIDOR_MAX_ALTITUDE 30
+#define AMW_CORRIDOR_MIN_ALTITUDE 5000
+#define AMW_CORRIDOR_ALTITUDE_HEIGHT 5000
+#define AMW_CORRIDOR_MAX_ALTITUDE 30000
 
 #ifndef UINT8_MAX
 #define AMW_MAX_RESERVATION_ID 0xff
@@ -87,6 +86,7 @@ private:
     void reservationFailed(void);
     void roundFailed(void);
     void startReservationRound();
+    void increaseReservationId();
 
     AMW_List<AMW_Corridor*> reservedCorridors;
     AMW_List<AMW_Corridor*> preliminaryCorridors;

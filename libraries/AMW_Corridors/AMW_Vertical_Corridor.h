@@ -10,15 +10,23 @@
 
 #include "AMW_Corridor.h"
 #include "../AP_Math/vector2.h"
-#include <stdint.h>
 
-class AMW_Vertical_Corridor: public AMW_Corridor {
+class AMW_Vertical_Corridor: public AMW_Directional_Corridor {
 public:
     AMW_Vertical_Corridor(Vector2f location);
     AMW_Vertical_Corridor(Vector2f location, float altitude);
     virtual ~AMW_Vertical_Corridor() {
-        // TODO Auto-generated destructor stub
     }
+
+    virtual Type getType(void) {
+        return Type::VERTICAL;
+    }
+
+    virtual Vector3f getStart(void);
+    virtual Vector3f getDestination(void);
+
+private:
+    Vector2f location;
 };
 
 #endif /* LIBRARIES_AMW_CORRIDORS_AMW_VERTICAL_CORRIDOR_H_ */

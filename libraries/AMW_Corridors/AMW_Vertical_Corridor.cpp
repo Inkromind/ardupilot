@@ -7,8 +7,19 @@
 
 #include "AMW_Vertical_Corridor.h"
 
-AMW_Vertical_Corridor::AMW_Vertical_Corridor() {
-    // TODO Auto-generated constructor stub
+AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location) : AMW_Directional_Corridor() {
+    this->location = location;
+}
 
+AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location, float altitude) : AMW_Vertical_Corridor(location) {
+    this->altitude = altitude;
+}
+
+Vector3f AMW_Vertical_Corridor::getStart(void) {
+    return Vector3f(location.x, location.y, 0);
+}
+
+Vector3f AMW_Vertical_Corridor::getDestination(void) {
+    return Vector3f(location.x, location.y, altitude);
 }
 
