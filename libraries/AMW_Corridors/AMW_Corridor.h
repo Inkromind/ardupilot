@@ -56,6 +56,12 @@ public:
 
     virtual Type getType(void) = 0;
 
+    virtual void setReverseDirection(bool newValue) {}
+
+    virtual void setInCorridor(bool newValue) {}
+
+    virtual void setCompleted(bool newValue) {}
+
 protected:
     virtual AMW_Corridor() {
         altitude = 0;

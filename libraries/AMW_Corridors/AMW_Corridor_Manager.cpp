@@ -136,9 +136,14 @@ void AMW_Corridor_Manager::checkTimeout(void) {
     }
 }
 
-bool AMW_Corridor_Manager::corridorsAreReserved(AMW_List<AMW_Corridor*>* corridors) {
+bool AMW_Corridor_Manager::corridorsAreReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors) {
+    if (reservedModule != module)
+        return false;
     if (!corridors)
         return false;
+    if (corridors->size() > reservedCorridors.size())
+        return false;
+
     AMW_List<AMW_Corridor*> corridorsCopy;
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
     while (iterator->hasNext()) {

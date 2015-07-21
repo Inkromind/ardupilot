@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include "AMW_Planner.h"
 #include "AMW_Task_Planner.h"
+#include <stdint.h>
 
 #define AMW_COMMAND_COMPOSITE_NAV_DESTINATION_RADIUS 200.0f
 #define AMW_COMMAND_BATTERY_TAKEOFF_LIMIT 40
@@ -20,60 +21,84 @@
 AMW_Command_Composite_Nav_Assigned_Altitude::AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f newDestination) : AMW_Command_Composite() {
     destination = Vector3f(newDestination.x, newDestination.y, 0);
     setNormalSubCommands();
+    currentState = INIT;
 }
 
 void AMW_Command_Composite_Nav_Assigned_Altitude::completedSubCommand() {
     if (subCommands.empty()) {
         clearReservedCorridors();
     }
-    if ((currentState == RETURNTOSTART || currentState == LAND) && subCommands.empty()) {
-        setNormalSubCommands();
-        return;
+    if (currentState == NORMAL) {
+        if (subCommands.size() == 2) {
+            corridors.get(0)->setCompleted(true); // Vertical 1
+            corridors.get(0)->setInCorridor(false);
+            corridors.get(1)->setInCorridor(true); // Horizontal
+        }
+        else if (subCommands.size() == 1) {
+            corridors.get(1)->setCompleted(true); // Horizontal
+            corridors.get(1)->setInCorridor(false);
+            corridors.get(2)->setInCorridor(true); // Vertical 2
+        }
+    }
+    else if (currentState == RETURNTOSTART) {
+        if (subCommands.empty()) {
+            setNormalSubCommands();
+            currentState = INIT;
+        }
+        else if (subCommands.size() == 3) {
+            corridors.get(2)->setCompleted(true); // Vertical 2
+            corridors.get(2)->setInCorridor(false);
+            corridors.get(1)->setInCorridor(true); // Horizontal
+        }
+        else if (subCommands.size() == 2) {
+            corridors.get(1)->setCompleted(true); // Horizontal
+            corridors.get(1)->setInCorridor(false);
+            corridors.get(0)->setInCorridor(true); // Vertical 1
+        }
+        else if (subCommands.size() == 1) {
+            corridors.get(0)->setCompleted(true); // Horizontal
+            corridors.get(0)->setInCorridor(false);
+            clearReservedCorridors();
+        }
+    }
+    else if (currentState == LAND) {
+        if (subCommands.empty()) {
+            setNormalSubCommands();
+            currentState = INIT;
+        }
+        else if (subCommands.size() == 1) {
+            clearReservedCorridors();
+        }
     }
 }
 
 void AMW_Command_Composite_Nav_Assigned_Altitude::start() {
-    if (currentState == NORMAL) {
+    if (currentState == INIT) {
         if (AC_Facade::getFacade()->getBattery()->capacity_remaining_pct() < AMW_COMMAND_BATTERY_TAKEOFF_LIMIT) {
             AMW_Task_Planner::getInstance()->markBatteryEmpty();
             return;
         }
-        if (corridors.empty()) {
-            reserveNormalCorridors();
-        }
-        else if (AMW_Corridor_Manager::getInstance()->corridorsAreReserved(&corridors)) {
-            commandStarted = true;
-        }
-        else if (AMW_Corridor_Manager::getInstance()->reservationHasFailed(AMW_Planner::getModuleIdentifier())) {
-            //failed = true;
-            //TODO
-        }
-        else if (!AMW_Corridor_Manager::getInstance()->isReservingCorridors(AMW_Planner::getModuleIdentifier())) {
-            AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
-        }
+        getCorridors();
+        AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
+        currentState = WAITING_FOR_CORRIDORS;
     }
 }
 
+
+
 void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
-    if (completed)
+    if (completed || failed)
         return;
 
     if (AC_Facade::getFacade()->destinationReached(destination, AMW_COMMAND_COMPOSITE_NAV_DESTINATION_RADIUS)) {
             completed = true;
+            currentState = COMPLETED;
             clearReservedCorridors();
             AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
 #ifdef AMW_COMMAND_DEBUG
             AC_Facade::getFacade()->sendFormattedDebug(PSTR("Composite Nav Completed to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
             return;
 #endif
-    }
-
-    if (!commandStarted)
-        return;
-
-    if (!AMW_Corridor_Manager::getInstance()->corridorsAreReserved(&corridors)) {
-        commandStarted = false;
-        return;
     }
 
     bool corridorConflict = AMW_Corridor_Manager::getInstance()->hasCorridorConflict(AMW_Planner::getModuleIdentifier());
@@ -88,6 +113,36 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
         AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
     }
 
+    bool isReservingCorridors = AMW_Corridor_Manager::getInstance()->isReservingCorridors(AMW_Planner::getModuleIdentifier());
+    bool corridorsAreReserved = AMW_Corridor_Manager::getInstance()->corridorsAreReserved(AMW_Planner::getModuleIdentifier(), &corridors);
+
+    if (currentState == WAITING_FOR_CORRIDORS) {
+        if (corridorsAreReserved) {
+            commandStarted = true;
+            currentState = NORMAL;
+            corridors.get(0)->setInCorridor(true);
+        }
+        else if (AMW_Corridor_Manager::getInstance()->reservationHasFailed(AMW_Planner::getModuleIdentifier())) {
+            failed = true;
+            currentState = FAILED;
+        }
+        else if (!isReservingCorridors) {
+            AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
+        }
+    }
+    else if (currentState == NORMAL) {
+        if (!corridorsAreReserved)
+            land();
+    }
+    else if (currentState == RETURNTOSTART) {
+        if (!corridorsAreReserved && !corridors.empty())
+            land();
+    }
+    else if (currentState == LAND) {
+        if (!corridorsAreReserved)
+            AMW_Corridor_Manager::getInstance()->markCorridorsReserved(AMW_Planner::getModuleIdentifier(), &corridors);
+    }
+
 }
 
 void AMW_Command_Composite_Nav_Assigned_Altitude::setNormalSubCommands() {
@@ -97,14 +152,40 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::setNormalSubCommands() {
     subCommands.push(new AMW_Command_Land());
     Vector3f position = AC_Facade::getFacade()->getRealPosition();
     startLocation = Vector2f(position.x, position.y);
-    currentState = NORMAL;
 }
 
 void AMW_Command_Composite_Nav_Assigned_Altitude::returnToStart() {
+    uint32_t remainingCommands = subCommands.size();
     clearSubCommands();
-    subCommands.push(new AMW_Command_Takeoff_Assigned_Altitude());
-    subCommands.push(new AMW_Command_Nav_Assigned_Altitude(start));
+
+    AMW_List<AMW_Corridor*>::Iterator* iterator = corridors.iterator();
+    while (iterator->hasNext()) {
+        AMW_Corridor* corridor = iterator->next();
+        corridor->setReverseDirection(true);
+        corridor->setCompleted(false);
+        corridor->setInCorridor(false);
+    }
+    delete iterator;
+
+    if (remainingCommands <= 1)
+        subCommands.push(new AMW_Command_Takeoff_Assigned_Altitude());
+    if (remainingCommands <= 2)
+        subCommands.push(new AMW_Command_Nav_Assigned_Altitude(start));
     subCommands.push(new AMW_Command_Land());
+    subCommands.push(new AMW_Command_Delay(30 + rand() % 10));
+
+    if (subCommands.size() == 4) {
+        corridors.get(2)->setInCorridor(true);
+    }
+    else if (subCommands.size() == 3) {
+        corridors.get(2)->setCompleted(true);
+        corridors.get(1)->setInCorridor(true);
+    }
+    else {
+        corridors.get(2)->setCompleted(true);
+        corridors.get(1)->setCompleted(true);
+        corridors.get(0)->setInCorridor(true);
+    }
     currentState = RETURNTOSTART;
 }
 
@@ -124,7 +205,7 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::clearReservedCorridors() {
     corridors.clear();
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::reserveNormalCorridors() {
+void AMW_Command_Composite_Nav_Assigned_Altitude::getCorridors() {
     if (!corridors.empty()) {
         clearReservedCorridors();
     }

@@ -27,13 +27,9 @@ public:
 
     virtual void completedSubCommand(void);
 
-    virtual AMW_List<AMW_Corridor*>* getCorridors(void) {
-        return &corridors;
-    }
-
 private:
 
-    enum CommandState { NORMAL, RETURNTOSTART, LAND };
+    enum CommandState { INIT, WAITING_FOR_CORRIDORS, FAILED, COMPLETED, NORMAL, RETURNTOSTART, LAND };
 
     CommandState currentState;
     Vector3f destination;
@@ -44,7 +40,7 @@ private:
     void resetSubCommands(void);
 
     void setNormalSubCommands(void);
-    void reserveNormalCorridors(void);
+    void getCorridors(void);
 
     void clearReservedCorridors(void);
 

@@ -39,7 +39,7 @@ public:
 
     bool reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
 
-    bool corridorsAreReserved(AMW_List<AMW_Corridor*>* corridors);
+    bool corridorsAreReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
     bool reservationHasFailed(AMW_Module_Identifier* module) {
         return failed;
     }
