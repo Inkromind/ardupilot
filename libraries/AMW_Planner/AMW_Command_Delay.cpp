@@ -16,7 +16,7 @@ AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) : AMW_Command() {
     this->start = 0;
 }
 
-void AMW_Command_Delay::run() {
+void AMW_Command_Delay::run(bool attempt) {
     updateStatus();
 
     AC_Facade::getFacade()->loiter();

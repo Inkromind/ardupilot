@@ -23,9 +23,9 @@ public:
     void toggleMission(void);
     void resumeMission(void);
 
-    virtual AMW_Task* getFirstTask(void);
+    virtual AMW_Task* getFirstTask(bool* forceTask);
     virtual void completeFirstTask(AMW_Task* task);
-    virtual void addTask(AMW_Task* task);
+    virtual void switchedToFirstTask(AMW_Task* task);
     virtual float addPackage(AMW_Task_Package* task, bool estimate);
 
     virtual void returnHome(void);
@@ -46,6 +46,7 @@ private:
     bool plannerInitialized;
     bool paused;
     bool returningHome;
+    bool idleTaskCompleted;
     static AMW_Task_Planner* planner;
     AMW_List<AMW_Task*> plan;
     AMW_Task* idleTask;

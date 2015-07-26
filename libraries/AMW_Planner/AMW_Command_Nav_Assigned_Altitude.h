@@ -17,7 +17,7 @@ public:
     AMW_Command_Nav_Assigned_Altitude(Vector2f newDestination) :
         AMW_Command_Nav(Vector3f(newDestination.x, newDestination.y, 0)) {};
 
-    void run(void);
+    void run(bool attempt);
 
 private:
     void updateStatus(void);

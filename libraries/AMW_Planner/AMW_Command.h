@@ -26,10 +26,14 @@ public:
     }
     virtual ~AMW_Command() {};
 
-    virtual void run(void) = 0;
+    virtual void run(bool attempt) = 0;
 
     virtual bool isComplete(void) {
         return completed;
+    }
+
+    virtual bool hasStarted(void) {
+        return commandStarted;
     }
 
     virtual void pause(void) {};

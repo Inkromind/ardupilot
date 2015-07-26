@@ -31,13 +31,13 @@
 #define AMW_CORRIDOR_RESERVATION_ROUND_DELAY 0
 #define AMW_CORRIDOR_RESERVATION_ROUND_DELAY_MAX_DELTA 5
 
-#define AMW_CORRIDOR_MAX_FAILURES 1
+#define AMW_CORRIDOR_MAX_FAILURES 5
 
 class AMW_Corridor_Manager {
 public:
     virtual ~AMW_Corridor_Manager() { }
 
-    bool reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
+    bool reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures = AMW_CORRIDOR_MAX_FAILURES);
 
     bool corridorsAreReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
     bool reservationHasFailed(AMW_Module_Identifier* module) {
@@ -99,6 +99,7 @@ private:
     float waitTimeout;
     bool failed;
     State currentState;
+    bool maxFailures;
 
     bool corridorConflict;
 

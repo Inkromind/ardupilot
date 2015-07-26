@@ -10,19 +10,19 @@
 #include <AC_Facade.h>
 #include <AMW_Corridors.h>
 
-void AMW_Command_Takeoff_Assigned_Altitude::run() {
+void AMW_Command_Takeoff_Assigned_Altitude::run(bool attempt) {
 
-    if (!commandStarted) {
-        this->altitude = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
-        if (this->altitude == 0)
-            return;
-        commandStarted = true;
+    if (completed)
+        return;
+
+    if (!commandStarted && !altitude) {
+        altitude = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting takeoff to assigned altitude (%.2fm)"), altitude / 100);
+        if (altitude)
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Got assigned altitude (%.2fm)"), altitude / 1000);
 #endif
     }
 
-
-    AMW_Command_Takeoff::run();
+    AMW_Command_Takeoff::run(attempt);
 
 }

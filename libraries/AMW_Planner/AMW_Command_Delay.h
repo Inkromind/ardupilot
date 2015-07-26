@@ -18,7 +18,7 @@ class AMW_Command_Delay: public AMW_Command {
 public:
     AMW_Command_Delay(uint32_t delay);
 
-    void run(void);
+    void run(bool attempt);
 
     void pause(void);
     void resume(void);

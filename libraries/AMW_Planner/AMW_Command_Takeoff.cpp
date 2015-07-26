@@ -12,20 +12,21 @@ AMW_Command_Takeoff::AMW_Command_Takeoff(float alt) : AMW_Command() {
     this->altitude = alt;
 }
 
-void AMW_Command_Takeoff::run() {
+void AMW_Command_Takeoff::run(bool attempt) {
     updateStatus();
-
-#ifdef AMW_COMMAND_DEBUG
-    if (!commandStarted) {
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting takeoff to %.2fm"), altitude / 100);
-        commandStarted = true;
-    }
-#endif
 
     if (completed)
         return;
 
-    AC_Facade::getFacade()->takeOff(altitude);
+    bool oldStarted = commandStarted;
+    commandStarted = AC_Facade::getFacade()->takeOff(altitude);
+
+#ifdef AMW_COMMAND_DEBUG
+    if (commandStarted && !oldStarted) {
+        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting takeoff to %.2fm"), altitude / 100);
+        commandStarted = true;
+    }
+#endif
 }
 
 void AMW_Command_Takeoff::updateStatus() {

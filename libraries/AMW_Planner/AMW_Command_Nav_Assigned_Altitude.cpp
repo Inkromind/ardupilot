@@ -10,7 +10,7 @@
 #include <AMW_Corridors.h>
 #include "AMW_Planner.h"
 
-void AMW_Command_Nav_Assigned_Altitude::run() {
+void AMW_Command_Nav_Assigned_Altitude::run(bool attempt) {
     if (!commandStarted)
         this->destination.z = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
     if (this->destination.z == 0)
@@ -21,12 +21,12 @@ void AMW_Command_Nav_Assigned_Altitude::run() {
     if (completed)
         return;
 
-    AC_Facade::getFacade()->navigateTo(destination);
-    if (!commandStarted) {
+    bool oldStarted = commandStarted;
+    commandStarted = AC_Facade::getFacade()->navigateTo(destination);
 #ifdef AMW_COMMAND_DEBUG
+    if (commandStarted && !oldStarted) {
         AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting nav to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
 #endif
-        commandStarted = true;
     }
 }
 

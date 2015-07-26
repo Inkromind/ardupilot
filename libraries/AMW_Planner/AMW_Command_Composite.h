@@ -19,7 +19,7 @@ public:
         clearSubCommands();
     };
 
-    virtual void run(void) {
+    virtual void run(bool attempt) {
         updateStatus();
 
         if (completed || failed || paused)
@@ -29,17 +29,17 @@ public:
             return;
         }
         if (!commandStarted) {
-            startCommand();
+            startCommand(attempt);
             if (!commandStarted)
                 return;
         }
-        subCommands.front()->run();
+        subCommands.front()->run(attempt);
         commandStarted = true;
         if (subCommands.front()->isComplete()) {
             delete subCommands.front();
             subCommands.pop();
             completedSubCommand();
-            run();
+            run(attempt);
         }
     }
 
@@ -70,7 +70,7 @@ public:
         }
     }
 
-    virtual void startCommand(void) {
+    virtual void startCommand(bool attempt) {
         commandStarted = true;
     }
 

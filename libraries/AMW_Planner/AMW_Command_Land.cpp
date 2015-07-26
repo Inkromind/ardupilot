@@ -10,17 +10,17 @@
 
 AMW_Command_Land::AMW_Command_Land() : AMW_Command() { }
 
-void AMW_Command_Land::run() {
+void AMW_Command_Land::run(bool attempt) {
     updateStatus();
 
     if (completed)
         return;
 
-    AC_Facade::getFacade()->land();
+    bool oldStarted = commandStarted;
+    commandStarted = AC_Facade::getFacade()->land();
 #ifdef AMW_COMMAND_DEBUG
-    if (!commandStarted) {
+    if (commandStarted && !oldStarted) {
         AC_Facade::getFacade()->sendDebug(PSTR("Starting landing..."));
-        commandStarted = true;
     }
 #endif
 }

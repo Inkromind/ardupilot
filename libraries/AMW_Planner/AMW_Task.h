@@ -12,7 +12,7 @@
 #include "../AP_Math/vector2.h"
 
 #ifndef TESTENV
-    #define AMW_TASK_DEBUG
+    //#define AMW_TASK_DEBUG
 #endif
 
 class AMW_Task {

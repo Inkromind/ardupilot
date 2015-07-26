@@ -21,6 +21,7 @@ AMW_Task_Planner::AMW_Task_Planner() {
     idleTask = 0;
     assignedAltitude = 1500;
     returningHome = false;
+    idleTaskCompleted = false;
 }
 
 AMW_Task_Planner::~AMW_Task_Planner() {
@@ -54,39 +55,50 @@ void AMW_Task_Planner::run() {
 }
 
 
-AMW_Task* AMW_Task_Planner::getFirstTask() {
-    if (!plannerInitialized)
+AMW_Task* AMW_Task_Planner::getFirstTask(bool* forceTask) {
+    if (!plannerInitialized) {
+        *forceTask = true;
         return 0;
+    }
 
-    if (plan.empty() || returningHome)
-        return idleTask;
-
-    return plan.front();
+    if (returningHome || plan.empty()) {
+        *forceTask = true;
+        if (!idleTaskCompleted)
+            return getIdleTask();
+        else
+            return 0;
+    }
+    else {
+        *forceTask = false;
+        return plan.front();
+    }
 }
 
 void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
     if (!plannerInitialized)
         return;
 
-    if (plan.empty() || returningHome) {
-        if (idleTask && idleTask == task) {
-            idleTask->completeTask();
-            delete idleTask;
-            idleTask = 0;
-        }
+    if (!task)
         return;
+
+    task->completeTask();
+
+    uint32_t id = plan.size();
+    while (id > 0) {
+        id--;
+        AMW_Task* nextTask = plan.get(id);
+        if (task == nextTask)
+            plan.erase(id);
     }
 
-    AMW_Task* firstTask = plan.front();
-    if (firstTask != task)
-        return;
+    if (idleTask == task) {
+        idleTask = 0;
+        if (plan.empty() || returningHome)
+            idleTaskCompleted = true;
+    }
 
-    firstTask->completeTask();
-    plan.pop_front();
-    delete firstTask;
 
-    if (plan.empty() && !idleTask)
-        idleTask = new AMW_Task_RTL();
+    delete task;
 }
 
 void AMW_Task_Planner::pauseMission() {
@@ -101,21 +113,17 @@ void AMW_Task_Planner::returnHome() {
 #ifdef AMW_PLANNER_DEBUG
     AC_Facade::getFacade()->sendDebug(PSTR("Returning Home"));
 #endif
-    if (!idleTask)
-        idleTask = new AMW_Task_RTL();
     if (!paused)
         pauseMission();
 }
 
 void AMW_Task_Planner::resumeMission(void) {
     paused = false;
-    if (returningHome && idleTask) {
 #ifdef AMW_PLANNER_DEBUG
+    if (returningHome && !plan.empty()) {
         AC_Facade::getFacade()->sendDebug(PSTR("Cancelling return to home"));
-#endif
-        delete idleTask;
-        idleTask = 0;
     }
+#endif
     returningHome = false;
 #ifdef AMW_PLANNER_DEBUG
     AC_Facade::getFacade()->sendDebug(PSTR("Resuming Task Planner"));
@@ -127,17 +135,6 @@ void AMW_Task_Planner::toggleMission(void) {
         resumeMission();
     else
         pauseMission();
-}
-
-void AMW_Task_Planner::addTask(AMW_Task *task) {
-    plan.push_back(task);
-    if (idleTask && !returningHome) {
-        delete idleTask;
-        idleTask = 0;
-#ifdef AMW_PLANNER_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Deleted idleTask"));
-#endif
-    }
 }
 
 float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
@@ -175,13 +172,8 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
 
     if (!estimate) {
         plan.insert(bestPosition, package);
-        if (idleTask && !returningHome) {
-            delete idleTask;
-            idleTask = 0;
-#ifdef AMW_PLANNER_DEBUG
-            AC_Facade::getFacade()->sendDebug(PSTR("Deleted idleTask"));
-#endif
-        }
+        if (!returningHome)
+            idleTaskCompleted = false;
 #ifdef AMW_PLANNER_DEBUG
         AC_Facade::getFacade()->sendFormattedDebug(PSTR("Added new package #%d at index %d/%d"), package->id, bestPosition, plan.size());
 #endif

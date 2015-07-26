@@ -72,14 +72,18 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::completedSubCommand() {
     }
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::start() {
+void AMW_Command_Composite_Nav_Assigned_Altitude::startCommand(bool attempt) {
     if (currentState == INIT) {
         if (AC_Facade::getFacade()->getBattery()->capacity_remaining_pct() < AMW_COMMAND_BATTERY_TAKEOFF_LIMIT) {
             AMW_Task_Planner::getInstance()->markBatteryEmpty();
             return;
         }
         getCorridors();
-        AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
+        if (attempt)
+            AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors, 1);
+        else
+            AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
+
         currentState = WAITING_FOR_CORRIDORS;
     }
 }
@@ -170,7 +174,7 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::returnToStart() {
     if (remainingCommands <= 1)
         subCommands.push(new AMW_Command_Takeoff_Assigned_Altitude());
     if (remainingCommands <= 2)
-        subCommands.push(new AMW_Command_Nav_Assigned_Altitude(start));
+        subCommands.push(new AMW_Command_Nav_Assigned_Altitude(startLocation));
     subCommands.push(new AMW_Command_Land());
     subCommands.push(new AMW_Command_Delay(30 + rand() % 10));
 

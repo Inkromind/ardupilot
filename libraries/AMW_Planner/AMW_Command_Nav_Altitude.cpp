@@ -12,17 +12,17 @@ AMW_Command_Nav_Altitude::AMW_Command_Nav_Altitude(float alt) : AMW_Command() {
     this->altitude = alt;
 }
 
-void AMW_Command_Nav_Altitude::run() {
+void AMW_Command_Nav_Altitude::run(bool attempt) {
     updateStatus();
 
     if (completed)
         return;
 
-    AC_Facade::getFacade()->navigateToAltitude(altitude);
+    bool oldStarted = commandStarted;
+    commandStarted = AC_Facade::getFacade()->navigateToAltitude(altitude);
 #ifdef AMW_COMMAND_DEBUG
-    if (!commandStarted) {
+    if (commandStarted && !oldStarted) {
         AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting ascend/descend to %.2fm"), altitude / 100);
-        commandStarted = true;
     }
 #endif
 }

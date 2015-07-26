@@ -15,7 +15,7 @@ class AMW_Command_Nav: public AMW_Command {
 public:
     AMW_Command_Nav(Vector3f destination);
 
-    virtual void run(void);
+    virtual void run(bool attempt);
 
 protected:
     Vector3f destination;

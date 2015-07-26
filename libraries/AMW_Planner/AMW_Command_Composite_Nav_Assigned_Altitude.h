@@ -21,7 +21,7 @@ public:
         clearReservedCorridors();
     }
 
-    virtual void start();
+    virtual void startCommand(bool attempt);
 
     virtual void updateStatus(void);
 

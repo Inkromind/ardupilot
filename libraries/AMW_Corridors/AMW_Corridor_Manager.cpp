@@ -24,9 +24,10 @@ AMW_Corridor_Manager::AMW_Corridor_Manager() {
     failed = false;
     corridorConflict = false;
     currentState = IDLE;
+    maxFailures = 0;
 }
 
-bool AMW_Corridor_Manager::reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors) {
+bool AMW_Corridor_Manager::reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures) {
     if (!module || !corridors || corridors->empty() || !canReserveCorridors(module))
         return false;
     setNewModule(module);
@@ -45,6 +46,7 @@ bool AMW_Corridor_Manager::reserveCorridors(AMW_Module_Identifier* module, AMW_L
     failures = 0;
     failed = false;
     preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
+    this->maxFailures = maxFailures;
     startReservationRound();
 
     return true;
@@ -295,7 +297,7 @@ void AMW_Corridor_Manager::reservationConflictReceived(uint8_t reservationId, AM
 
 void AMW_Corridor_Manager::reservationFailed(void) {
     failures++;
-    if (failures >= AMW_CORRIDOR_MAX_FAILURES) {
+    if (failures >= maxFailures) {
         preliminaryCorridors.clear();
         failed = true;
     }

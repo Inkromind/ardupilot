@@ -32,10 +32,16 @@ private:
     AMW_Task* currentTask;
     AMW_Task* newTask;
     AMW_Command* currentPlan;
+    AMW_Command* newPlan;
+    bool executingCurrentTask;
 
     AMW_Sequencer();
-    virtual void startNewTask(void);
-    virtual void executeCurrentTask(void);
+    void startNewTask(AMW_Task* newTask);
+    void tryNewTask(AMW_Task* newTask);
+    void executeCurrentTask(void);
+    void executeNewTask(void);
+    void checkExecutingTask(void);
+    void cancelNewTaskContinueCurrentTask(bool removeNewTask = false);
 protected:
     virtual ~AMW_Sequencer();
 
