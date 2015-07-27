@@ -12,6 +12,12 @@ AMW_Horizontal_Corridor::AMW_Horizontal_Corridor(Vector2f startLocation, Vector2
     this->destination = destination;
 }
 
+AMW_Horizontal_Corridor::AMW_Horizontal_Corridor(Vector2f startLocation, Vector2f destination, float altitude, uint8_t id) : AMW_Directional_Corridor(id) {
+    start = startLocation;
+    this->destination = destination;
+    this->altitude = altitude;
+}
+
 Vector3f AMW_Horizontal_Corridor::getStart(void) {
     return Vector3f(start.x, start.y, altitude);
 }

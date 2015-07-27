@@ -10,7 +10,7 @@
 #include "AMW_Command_Delay.h"
 #include "AMW_Command_Disarm.h"
 #include "AMW_Commands_Plan.h"
-#include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 #include "AMW_Planner.h"
 
 AMW_Task_Package::AMW_Task_Package(uint8_t newId, Vector2f newPickupLocation, Vector2f newDeliveryLocation) {
@@ -29,14 +29,14 @@ AMW_Command* AMW_Task_Package::generatePlan(void) {
     plan->addNewCommand(new AMW_Command_Disarm());
     plan->addNewCommand(new AMW_Command_Delay(15000));
 #ifdef AMW_TASK_DEBUG
-    AC_Facade::getFacade()->sendFormattedDebug(PSTR("Generated plan for package #%d"), id);
+    AC_CommunicationFacade::sendFormattedDebug(PSTR("Generated plan for package #%d"), id);
 #endif
     return plan;
 }
 
 void AMW_Task_Package::completeTask(void) {
 #ifdef AMW_TASK_DEBUG
-    AC_Facade::getFacade()->sendFormattedDebug(PSTR("Completed package #%d"), id);
+    AC_CommunicationFacade::sendFormattedDebug(PSTR("Completed package #%d"), id);
 #endif
 }
 

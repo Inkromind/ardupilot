@@ -7,6 +7,7 @@
 
 #include "AMW_Command_Nav.h"
 #include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 AMW_Command_Nav::AMW_Command_Nav(Vector3f waypoint) : AMW_Command() {
     this->destination = waypoint;
@@ -22,7 +23,7 @@ void AMW_Command_Nav::run(bool attempt) {
     commandStarted = AC_Facade::getFacade()->navigateTo(destination);
 #ifdef AMW_COMMAND_DEBUG
     if (commandStarted && !oldStarted) {
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting nav to <%.2f,%.2f> | Altitude: %.2fm"), destination.x / 100, destination.y / 100, destination.z / 100);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Starting nav to <%.2f,%.2f> | Altitude: %.2fm"), destination.x / 100, destination.y / 100, destination.z / 100);
     }
 #endif
 }
@@ -34,7 +35,7 @@ void AMW_Command_Nav::updateStatus() {
     if (AC_Facade::getFacade()->destinationReached(destination)) {
         completed = true;
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Nav Completed to <%.2f,%.2f> | Altitude: %.2fm"), destination.x / 100, destination.y / 100, destination.z / 100);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Nav Completed to <%.2f,%.2f> | Altitude: %.2fm"), destination.x / 100, destination.y / 100, destination.z / 100);
 #endif
     }
 }

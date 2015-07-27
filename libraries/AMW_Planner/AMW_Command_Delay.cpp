@@ -7,7 +7,7 @@
 
 #include "AMW_Command_Delay.h"
 #include <AP_HAL.h>
-#include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 extern const AP_HAL::HAL& hal;
 
@@ -30,7 +30,7 @@ void AMW_Command_Delay::run(bool attempt) {
     this->start = hal.scheduler->millis();
     this->commandStarted = true;
 #ifdef AMW_COMMAND_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Starting delay"));
+    AC_CommunicationFacade::sendDebug(PSTR("Starting delay"));
 #endif
 }
 
@@ -43,7 +43,7 @@ void AMW_Command_Delay::updateStatus() {
     if (hal.scheduler->millis() - start > duration) {
         completed = true;
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Delay Completed"));
+        AC_CommunicationFacade::sendDebug(PSTR("Delay Completed"));
 #endif
     }
 }

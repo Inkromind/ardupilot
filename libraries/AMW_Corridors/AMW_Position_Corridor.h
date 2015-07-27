@@ -15,6 +15,7 @@
 class AMW_Position_Corridor: public AMW_Corridor {
 public:
     AMW_Position_Corridor(Vector3f position);
+    AMW_Position_Corridor(Vector3f position, uint8_t id);
     virtual ~AMW_Position_Corridor() {}
 
     virtual Type getType(void) {

@@ -7,7 +7,7 @@
 
 #include "AMW_Command_Takeoff_Assigned_Altitude.h"
 #include "AMW_Planner.h"
-#include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 #include <AMW_Corridors.h>
 
 void AMW_Command_Takeoff_Assigned_Altitude::run(bool attempt) {
@@ -19,7 +19,7 @@ void AMW_Command_Takeoff_Assigned_Altitude::run(bool attempt) {
         altitude = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
 #ifdef AMW_COMMAND_DEBUG
         if (altitude)
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Got assigned altitude (%.2fm)"), altitude / 1000);
+            AC_CommunicationFacade::sendFormattedDebug(PSTR("Got assigned altitude (%.2fm)"), altitude / 1000);
 #endif
     }
 

@@ -7,6 +7,7 @@
 
 #include "AMW_Command_Nav_Assigned_Altitude.h"
 #include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 #include <AMW_Corridors.h>
 #include "AMW_Planner.h"
 
@@ -25,7 +26,7 @@ void AMW_Command_Nav_Assigned_Altitude::run(bool attempt) {
     commandStarted = AC_Facade::getFacade()->navigateTo(destination);
 #ifdef AMW_COMMAND_DEBUG
     if (commandStarted && !oldStarted) {
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting nav to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Starting nav to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
 #endif
     }
 }
@@ -37,7 +38,7 @@ void AMW_Command_Nav_Assigned_Altitude::updateStatus() {
     if (AC_Facade::getFacade()->destinationReached(destination)) {
         completed = true;
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Nav Completed to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Nav Completed to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
 #endif
     }
 }

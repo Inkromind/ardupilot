@@ -1,6 +1,8 @@
 // -*- tab-width: 4; Mode: C++; c-basic-offset: 4; indent-tabs-mode: nil -*-
 
 #include <AMW_Facade.h>
+#include <AMW_Corridors.h>
+#include <AMW_List.h>
 #include <stdio.h>
 
 // default sensors are present and healthy: gyro, accelerometer, barometer, rate_control, attitude_stabilization, yaw_position, altitude control, x/y position control, motor_control
@@ -1450,17 +1452,96 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         AMW_Facade::returnHome();
         break;
     }
-    case MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE: {
-        mavlink_mad_request_package_t packet;
-        mavlink_msg_mad_request_package_decode(msg, &packet);
+
+    case MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE_ESTIMATE: {
+        mavlink_mad_request_package_estimate_t packet;
+        mavlink_msg_mad_request_package_estimate_decode(msg, &packet);
         Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
         Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
-        AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation);
+        float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, true);
+        mavlink_msg_mad_package_estimate_send_buf(msg, chan, packet.package_id, estimate);
         break;
     }
+
+    case MAVLINK_MSG_ID_MAD_ASSIGN_PACKAGE: {
+        mavlink_mad_assign_package_t packet;
+        mavlink_msg_mad_assign_package_decode(msg, &packet);
+        Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
+        Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
+        float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, false);
+        mavlink_msg_mad_confirm_package_send_buf(msg, chan, packet.package_id, estimate);
+        break;
+    }
+
+    case MAVLINK_MSG_ID_MAD_REQUEST_CORRIDOR_RESERVATION: {
+        mavlink_mad_request_corridor_reservation_t packet;
+        mavlink_msg_mad_request_corridor_reservation_decode(msg, &packet);
+        AMW_Corridor* corridor = 0;
+        switch (packet.corridor_type) {
+        case AMW_Corridor::Type::HORIZONTAL: {
+            corridor = new AMW_Horizontal_Corridor(Vector2f(packet.p1x, packet.p1y), Vector2f(packet.p2x, packet.p2y), packet.alt, packet.corridor_id);
+            break;
+        }
+        case AMW_Corridor::Type::VERTICAL: {
+            corridor = new AMW_Vertical_Corridor(Vector2f(packet.p1x, packet.p1y), packet.alt, packet.corridor_id);
+            break;
+        }
+        case AMW_Corridor::Type::POSITION: {
+            corridor = new AMW_Position_Corridor(Vector3f(packet.p1x, packet.p1y, packet.alt));
+            break;
+        }
+        }
+        if (corridor) {
+            AMW_List<AMW_Corridor*> corridors;
+            corridors.push_back(corridor);
+            AMW_Corridor_Conflict* conflict = AMW_Facade::checkReservationRequest(&corridors);
+            if (conflict) {
+                mavlink_msg_mad_corridor_reservation_conflict_send_buf(msg, chan, packet.drone_id, 0, packet.reservation_id, packet.corridor_id, packet.corridor_type,
+                        packet.alt, conflict->getOwnId(), (uint8_t)conflict->getOwnType(), conflict->getOwnAltitude());
+                delete conflict;
+            }
+            corridors.clearAndDelete();
+        }
+        break;
+    }
+    case MAD_CORRIDOR_RESERVATION_CONFLICT: {
+        mavlink_mad_corridor_reservation_conflict_t packet;
+        mavlink_msg_mad_corridor_reservation_conflict_decode(msg, &packet);
+        AMW_Corridor_Conflict conflict = AMW_Corridor_Conflict<packet.preliminary_type, packet.preliminary_id, packet.preliminary_alt,
+        packet.conflicting_type, packet.conflicting_id, packet.conflicting_alt>;
+        AMW_Facade::reservationConflictReceived(packet.reservation_id, &conflict);
+        break;
+    }
+    case MAD_CORRIDOR_ANNOUNCEMENT: {
+        mavlink_mad_corridor_announcement_t packet;
+        mavlink_msg_mad_corridor_announcement_decode(msg, &packet);
+        AMW_Corridor* corridor = 0;
+        switch (packet.corridor_type) {
+        case AMW_Corridor::Type::HORIZONTAL: {
+            corridor = new AMW_Horizontal_Corridor(Vector2f(packet.p1x, packet.p1y), Vector2f(packet.p2x, packet.p2y), packet.alt, packet.corridor_id);
+            break;
+        }
+        case AMW_Corridor::Type::VERTICAL: {
+            corridor = new AMW_Vertical_Corridor(Vector2f(packet.p1x, packet.p1y), packet.alt, packet.corridor_id);
+            break;
+        }
+        case AMW_Corridor::Type::POSITION: {
+            corridor = new AMW_Position_Corridor(Vector3f(packet.p1x, packet.p1y, packet.alt));
+            break;
+        }
+        }
+        if (corridor) {
+            AMW_List<AMW_Corridor*> corridors;
+            corridors.push_back(corridor);
+            AMW_Facade::receivedCorridorBroadcast(&corridors);
+            corridors.clearAndDelete();
+        }
+        break;
+    }
+
     case MAVLINK_MSG_ID_MAD_GET_CURRENT_LOCATION: {
         Vector3f currentLocation = AC_Facade::getFacade()->getRealPosition();
-        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x / 100, currentLocation.y / 100, currentLocation.z / 100);
+        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x / 1000, currentLocation.y / 1000, currentLocation.z / 1000);
         break;
     }
 

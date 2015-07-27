@@ -19,6 +19,12 @@ public:
         completed = false;
         inCorridor = false;
     };
+
+    AMW_Directional_Corridor(uint8_t id) : AMW_Corridor(id) {
+        reverseDirection = false;
+        completed = false;
+        inCorridor = false;
+    };
     virtual ~AMW_Directional_Corridor() {
     }
 

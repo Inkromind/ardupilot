@@ -28,12 +28,6 @@ public:
     virtual bool disarmMotors(void);
     virtual bool loiter(void);
     virtual bool initFlightMode(void);
-
-#ifndef TESTENV
-    virtual void sendDebug(const prog_char_t *str);
-    virtual void sendFormattedDebug(const prog_char_t *str, ...);
-#endif
-
     virtual float getAltitude(void);
     virtual bool isLanded(void);
     virtual bool areMotorsArmed(void);

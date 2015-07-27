@@ -24,7 +24,7 @@
 class AMW_Corridor {
 
 public:
-    enum Type { VERTICAL, POSITION, HORIZONTAL };
+    enum Type : uint8_t { VERTICAL=1, POSITION=2, HORIZONTAL=3 };
 
     virtual void setAltitude(float newAltitude) {
         altitude = newAltitude;
@@ -71,6 +71,10 @@ protected:
         else
             nextId++;
     }
+    virtual AMW_Corridor(uint8_t id) {
+        altitude = 0;
+        this->id = id;
+    }
 
     float altitude;
     uint8_t id;
@@ -88,7 +92,7 @@ private:
             return 0;
         float distance = getDistance(corridor, checkFullCorridor);
         if (distance < AMW_MIN_CORRIDOR_DISTANCE)
-            return new AMW_Corridor_Conflict(this, corridor, distance);
+            return new AMW_Corridor_Conflict(this, corridor);
         else
             return 0;
     }

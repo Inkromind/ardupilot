@@ -7,6 +7,7 @@
 
 #include "AC_Behaviour_Battery_Monitor.h"
 #include <AC_ReactiveFacade.h>
+#include <AC_CommunicationFacade.h>
 #include "AC_SafetyControl.h"
 
 bool AC_Behaviour_Battery_Monitor::isActive(void) {
@@ -14,7 +15,7 @@ bool AC_Behaviour_Battery_Monitor::isActive(void) {
         return true;
     if (AC_ReactiveFacade::getReactiveFacade()->getBattery()->capacity_remaining_pct() < AC_BATTERY_LIMIT) {
 #ifdef AC_SAFETYCONTROL_DEBUG
-        AC_ReactiveFacade::getFacade()->sendDebug(PSTR("Battery Low! Landing..."));
+        AC_CommunicationFacade::sendDebug(PSTR("Battery Low! Landing..."));
 #endif
         activated = true;
     }

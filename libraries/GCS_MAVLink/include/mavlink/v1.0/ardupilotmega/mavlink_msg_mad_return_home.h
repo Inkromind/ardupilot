@@ -1,6 +1,6 @@
 // MESSAGE MAD_RETURN_HOME PACKING
 
-#define MAVLINK_MSG_ID_MAD_RETURN_HOME 196
+#define MAVLINK_MSG_ID_MAD_RETURN_HOME 193
 
 typedef struct __mavlink_mad_return_home_t
 {
@@ -9,10 +9,10 @@ typedef struct __mavlink_mad_return_home_t
 } mavlink_mad_return_home_t;
 
 #define MAVLINK_MSG_ID_MAD_RETURN_HOME_LEN 2
-#define MAVLINK_MSG_ID_196_LEN 2
+#define MAVLINK_MSG_ID_193_LEN 2
 
 #define MAVLINK_MSG_ID_MAD_RETURN_HOME_CRC 4
-#define MAVLINK_MSG_ID_196_CRC 4
+#define MAVLINK_MSG_ID_193_CRC 4
 
 
 

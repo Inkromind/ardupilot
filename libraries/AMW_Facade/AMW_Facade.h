@@ -10,6 +10,8 @@
 
 #include "../AP_Math/vector2.h"
 #include <stdint.h>
+#include <AMW_Corridors.h>
+#include <AMW_List.h>
 
 class AMW_Facade {
 
@@ -22,7 +24,13 @@ public:
 
     static void returnHome();
 
-    static void addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation);
+    static void addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation, bool estimate);
+
+    static AMW_Corridor_Conflict* checkReservationRequest(AMW_List<AMW_Corridor*>* corridors);
+
+    static void reservationConflictReceived(uint8_t reservationId, AMW_Corridor_Conflict* conflict);
+
+    static void receivedCorridorBroadcast(AMW_List<AMW_Corridor*>* corridors);
 
     static void run100Hz();
 

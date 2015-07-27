@@ -10,7 +10,7 @@
 #include "AMW_Task_Test_Flight_2.h"
 #include "AMW_Task_RTL.h"
 #include "AMW_Planner.h"
-#include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 AMW_Task_Planner* AMW_Task_Planner::planner = 0;
 
@@ -34,7 +34,7 @@ AMW_Task_Planner::~AMW_Task_Planner() {
 AMW_Task_Planner* AMW_Task_Planner::getInstance() {
     if (!AMW_Task_Planner::planner) {
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Creating Task Planner..."));
+    AC_CommunicationFacade::sendDebug(PSTR("Creating Task Planner..."));
 #endif
         AMW_Task_Planner::planner = new AMW_Task_Planner();
     }
@@ -44,7 +44,7 @@ AMW_Task_Planner* AMW_Task_Planner::getInstance() {
 void AMW_Task_Planner::init() {
     plannerInitialized = true;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Initializing Task Planner..."));
+    AC_CommunicationFacade::sendDebug(PSTR("Initializing Task Planner..."));
 #endif
 }
 
@@ -104,14 +104,14 @@ void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
 void AMW_Task_Planner::pauseMission() {
     paused = true;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Pausing Task Planner"));
+    AC_CommunicationFacade::sendDebug(PSTR("Pausing Task Planner"));
 #endif
 }
 
 void AMW_Task_Planner::returnHome() {
     returningHome = true;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Returning Home"));
+    AC_CommunicationFacade::sendDebug(PSTR("Returning Home"));
 #endif
     if (!paused)
         pauseMission();
@@ -121,12 +121,12 @@ void AMW_Task_Planner::resumeMission(void) {
     paused = false;
 #ifdef AMW_PLANNER_DEBUG
     if (returningHome && !plan.empty()) {
-        AC_Facade::getFacade()->sendDebug(PSTR("Cancelling return to home"));
+        AC_CommunicationFacade::sendDebug(PSTR("Cancelling return to home"));
     }
 #endif
     returningHome = false;
 #ifdef AMW_PLANNER_DEBUG
-    AC_Facade::getFacade()->sendDebug(PSTR("Resuming Task Planner"));
+    AC_CommunicationFacade::sendDebug(PSTR("Resuming Task Planner"));
 #endif
 }
 
@@ -148,7 +148,7 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
     AMW_List<AMW_Task*>::Iterator* iterator = plan.iterator();
     while (iterator->hasNext()) {
 #ifdef AMW_PLANNER_DEBUG
-    //AC_Facade::getFacade()->sendDebug(PSTR("Checking next index"));
+    //AC_CommunicationFacade::sendDebug(PSTR("Checking next index"));
 #endif
         AMW_Task *nextTask = iterator->next();
         if (currentIndex > 0) {
@@ -175,7 +175,7 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
         if (!returningHome)
             idleTaskCompleted = false;
 #ifdef AMW_PLANNER_DEBUG
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Added new package #%d at index %d/%d"), package->id, bestPosition, plan.size());
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Added new package #%d at index %d/%d"), package->id, bestPosition, plan.size());
 #endif
     }
 

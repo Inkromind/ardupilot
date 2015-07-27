@@ -14,6 +14,8 @@
 #include <AP_Mission.h>
 #include "../AP_BattMonitor/AP_BattMonitor.h"
 #include <stdint.h>
+#include <AMW_Corridors.h>
+#include <AMW_List.h>
 
 //  GCS Message ID's
 /// NOTE: to ensure we never block on sending MAVLink messages
@@ -209,6 +211,9 @@ public:
       any library
     */
     static void send_statustext_all(const prog_char_t *msg);
+
+    void broadcastReservationRequest(uint8_t reservationId, AMW_Corridor* corridor);
+    void broadcastCorridor(AMW_Corridor* corridor);
 
 private:
     void        handleMessage(mavlink_message_t * msg);

@@ -7,8 +7,12 @@
 
 #include "AMW_Corridor_Conflict.h"
 
-AMW_Corridor_Conflict::AMW_Corridor_Conflict() {
-    // TODO Auto-generated constructor stub
-
+AMW_Corridor_Conflict::AMW_Corridor_Conflict(AMW_Corridor* ownCorridor, AMW_Corridor* otherCorridor) {
+    ownType = ownCorridor->getType();
+    ownId = ownCorridor->getId();
+    otherType = otherCorridor->getType();
+    otherId = otherCorridor->getId();
+    ownAltitude = ownCorridor->getAltitude();
+    otherAltitude = otherCorridor->getAltitude();
 }
 

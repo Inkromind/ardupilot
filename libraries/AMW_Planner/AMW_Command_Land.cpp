@@ -7,6 +7,7 @@
 
 #include "AMW_Command_Land.h"
 #include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 AMW_Command_Land::AMW_Command_Land() : AMW_Command() { }
 
@@ -20,7 +21,7 @@ void AMW_Command_Land::run(bool attempt) {
     commandStarted = AC_Facade::getFacade()->land();
 #ifdef AMW_COMMAND_DEBUG
     if (commandStarted && !oldStarted) {
-        AC_Facade::getFacade()->sendDebug(PSTR("Starting landing..."));
+        AC_CommunicationFacade::sendDebug(PSTR("Starting landing..."));
     }
 #endif
 }
@@ -32,7 +33,7 @@ void AMW_Command_Land::updateStatus() {
     if (AC_Facade::getFacade()->isLanded()) {
         completed = true;
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Landing Completed"));
+        AC_CommunicationFacade::sendDebug(PSTR("Landing Completed"));
 #endif
     }
 }

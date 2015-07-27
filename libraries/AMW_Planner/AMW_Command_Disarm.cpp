@@ -7,6 +7,7 @@
 
 #include "AMW_Command_Disarm.h"
 #include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 AMW_Command_Disarm::AMW_Command_Disarm() : AMW_Command() { }
 
@@ -20,7 +21,7 @@ void AMW_Command_Disarm::run(bool attempt) {
     commandStarted = AC_Facade::getFacade()->disarmMotors();
 #ifdef AMW_COMMAND_DEBUG
     if (commandStarted && !oldStarted) {
-        AC_Facade::getFacade()->sendDebug(PSTR("Starting disarm..."));
+        AC_CommunicationFacade::sendDebug(PSTR("Starting disarm..."));
     }
 #endif
 
@@ -34,7 +35,7 @@ void AMW_Command_Disarm::updateStatus() {
     if (!AC_Facade::getFacade()->areMotorsArmed()) {
         this->completed = true;
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendDebug(PSTR("Disarming Completed"));
+        AC_CommunicationFacade::sendDebug(PSTR("Disarming Completed"));
 #endif
     }
 }

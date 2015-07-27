@@ -12,3 +12,8 @@ AMW_Position_Corridor::AMW_Position_Corridor(Vector3f position) : AMW_Corridor()
     altitude = position.z;
 }
 
+AMW_Position_Corridor::AMW_Position_Corridor(Vector3f position, uint8_t id) : AMW_Corridor(id) {
+    location = Vector2f(position.x, position.y);
+    altitude = position.z;
+}
+

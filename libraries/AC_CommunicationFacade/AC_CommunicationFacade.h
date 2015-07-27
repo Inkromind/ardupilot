@@ -14,19 +14,19 @@
 
 class AC_CommunicationFacade {
 public:
-    static AC_CommunicationFacade* getFacade(void) {
-        if (!facade)
-            facade = new AC_CommunicationFacade();
-        return facade;
-    }
+    static void broadcastReservationRequest(uint8_t reservationId, AMW_List<AMW_Corridor*>* corridors);
+    static void broadcastCorridors(AMW_List<AMW_Corridor*>* corridors);
 
-    virtual void broadcastReservationRequest(uint8_t reservationId, AMW_List<AMW_Corridor*>* corridors);
-    virtual void broadcastCorridors(AMW_List<AMW_Corridor*>* corridors);
+
+#ifndef TESTENV
+    static void sendDebug(const prog_char_t *str);
+    static void sendFormattedDebug(const prog_char_t *str, ...);
+#endif
+
 
 private:
-    static AC_CommunicationFacade* facade;
-protected:
     AC_CommunicationFacade() {}
+protected:
     virtual ~AC_CommunicationFacade() {}
 };
 

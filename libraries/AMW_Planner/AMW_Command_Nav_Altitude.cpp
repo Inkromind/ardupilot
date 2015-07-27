@@ -7,6 +7,7 @@
 
 #include "AMW_Command_Nav_Altitude.h"
 #include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 AMW_Command_Nav_Altitude::AMW_Command_Nav_Altitude(float alt) : AMW_Command() {
     this->altitude = alt;
@@ -22,7 +23,7 @@ void AMW_Command_Nav_Altitude::run(bool attempt) {
     commandStarted = AC_Facade::getFacade()->navigateToAltitude(altitude);
 #ifdef AMW_COMMAND_DEBUG
     if (commandStarted && !oldStarted) {
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Starting ascend/descend to %.2fm"), altitude / 100);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Starting ascend/descend to %.2fm"), altitude / 100);
     }
 #endif
 }
@@ -34,7 +35,7 @@ void AMW_Command_Nav_Altitude::updateStatus() {
     if (AC_Facade::getFacade()->altitudeReached(altitude)) {
         completed = true;
 #ifdef AMW_COMMAND_DEBUG
-        AC_Facade::getFacade()->sendFormattedDebug(PSTR("Ascend/Descend completed to %.2fm"), altitude / 100);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Ascend/Descend completed to %.2fm"), altitude / 100);
 #endif
     }
 }

@@ -462,13 +462,10 @@
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
     </message>
     
-    <message name="MAD_REQUEST_PACKAGE" id="193">
-      <description>Request a new package to be transported</description>
-      <field type="uint8_t" name="package_id">Unique package id</field>
-      <field type="float" name="pickup_x">X Coordinate of pickup location</field>
-      <field type="float" name="pickup_y">Y Coordinate of pickup location</field>
-      <field type="float" name="delivery_x">X Coordinate of delivery location</field>
-      <field type="float" name="delivery_y">Y Coordinate of delivery location</field>
+    <message name="MAD_RETURN_HOME" id="193">
+      <description>Pause mission and return home</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
     </message>
     
     <message name="MAD_GET_CURRENT_LOCATION" id="194">
@@ -476,16 +473,80 @@
       <field type="uint8_t" name="target_system">System which should execute the command</field>
       <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
     </message>
+    
     <message name="MAD_CURRENT_LOCATION" id="195">
       <description>Return the current location</description>
       <field type="float" name="x">X Coordinate of current location</field>
       <field type="float" name="y">Y Coordinate of current location</field>
       <field type="float" name="alt">Current altitude</field>
     </message>
-    <message name="MAD_RETURN_HOME" id="196">
-      <description>Pause mission and return home</description>
-      <field type="uint8_t" name="target_system">System which should execute the command</field>
-      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+    
+    <message name="MAD_REQUEST_PACKAGE_ESTIMATE" id="196">
+      <description>Request an estimate for a new package to be transported</description>
+      <field type="uint8_t" name="package_id">Unique package id</field>
+      <field type="float" name="pickup_x">X Coordinate of pickup location</field>
+      <field type="float" name="pickup_y">Y Coordinate of pickup location</field>
+      <field type="float" name="delivery_x">X Coordinate of delivery location</field>
+      <field type="float" name="delivery_y">Y Coordinate of delivery location</field>
+    </message>
+    
+    <message name="MAD_PACKAGE_ESTIMATE" id="197">
+      <description>Reply an estimate for a new package to be transported</description>
+      <field type="uint8_t" name="package_id">Unique package id</field>
+      <field type="float" name="estimate">Package estimate</field>
+    </message>
+    
+    <message name="MAD_ASSIGN_PACKAGE" id="198">
+      <description>Assign a new package to be transported</description>
+      <field type="uint8_t" name="package_id">Unique package id</field>
+      <field type="float" name="pickup_x">X Coordinate of pickup location</field>
+      <field type="float" name="pickup_y">Y Coordinate of pickup location</field>
+      <field type="float" name="delivery_x">X Coordinate of delivery location</field>
+      <field type="float" name="delivery_y">Y Coordinate of delivery location</field>
+    </message>
+    
+    <message name="MAD_CONFIRM_PACKAGE" id="199">
+      <description>Confirm succesfull assignment of a new package to be transported</description>
+      <field type="uint8_t" name="package_id">Unique package id</field>
+      <field type="float" name="estimate">Package estimate</field>
+    </message>
+    
+    <message name="MAD_REQUEST_CORRIDOR_RESERVATION" id="200">
+      <description>Request a reservation for a new corridor</description>
+      <field type="uint8_t" name="drone_id">Requesting drone id</field>
+      <field type="uint8_t" name="reservation_id">Reservation ID</field>
+      <field type="uint8_t" name="corridor_id">Corridor ID</field>
+      <field type="uint8_t" name="corridor_type">Corridor Type</field>
+      <field type="float" name="alt">Altitude</field>
+      <field type="float" name="p1x">Point 1: X</field>
+      <field type="float" name="p1y">Point 1: Y</field>
+      <field type="float" name="p2x">Point 2: X</field>
+      <field type="float" name="p2y">Point 2: Y</field>
+    </message>
+    
+    <message name="MAD_CORRIDOR_RESERVATION_CONFLICT" id="201">
+      <description>Reply a corridor reservation conflict</description>
+      <field type="uint8_t" name="drone_id">Requesting drone id</field>
+      <field type="uint8_t" name="conflicting_drone">Conflicting drone id</field>
+      <field type="uint8_t" name="reservation_id">Reservation ID</field>
+      <field type="uint8_t" name="preliminary_id">Preliminary Corridor ID</field>
+      <field type="uint8_t" name="preliminary_type">Preliminary Corridor Type</field>
+      <field type="uint8_t" name="preliminary_alt">Preliminary Corridor Altitude</field>
+      <field type="uint8_t" name="conflicting_id">Conflicting Corridor ID</field>
+      <field type="uint8_t" name="conflicting_type">Conflicting Corridor Type</field>
+      <field type="uint8_t" name="conflicting_alt">Conflicting Corridor Altitude</field>
+    </message>
+    
+    <message name="MAD_CORRIDOR_ANNOUNCEMENT" id="202">
+      <description>Announcement of reserved corridor</description>
+      <field type="uint8_t" name="drone_id">Drone id</field>
+      <field type="uint8_t" name="corridor_id">Corridor ID</field>
+      <field type="uint8_t" name="corridor_type">Corridor Type</field>
+      <field type="float" name="alt">Altitude</field>
+      <field type="float" name="p1x">Point 1: X</field>
+      <field type="float" name="p1y">Point 1: Y</field>
+      <field type="float" name="p2x">Point 2: X</field>
+      <field type="float" name="p2y">Point 2: Y</field>
     </message>
      </messages>
 </mavlink>
