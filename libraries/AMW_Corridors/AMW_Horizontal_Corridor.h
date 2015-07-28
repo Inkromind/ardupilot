@@ -18,8 +18,8 @@ public:
     virtual ~AMW_Horizontal_Corridor() {
     }
 
-    virtual Type getType(void) {
-        return Type::HORIZONTAL;
+    virtual AMW_Corridor::Type getType(void) {
+        return HORIZONTAL;
     }
 
     virtual Vector3f getStart(void);

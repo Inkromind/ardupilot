@@ -8,7 +8,7 @@
 #ifndef AMW_MODULES_H_
 #define AMW_MODULES_H_
 
-
+#include "AMW_Module_Identifier.h"
 
 
 

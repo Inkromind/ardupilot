@@ -33,7 +33,7 @@ public:
 
     static void returnHome(void);
 
-    virtual static AMW_Module_Identifier* getModuleIdentifier(void) {
+    static AMW_Module_Identifier* getModuleIdentifier(void) {
           return moduleIdentifier;
     }
 

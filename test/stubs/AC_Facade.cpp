@@ -8,6 +8,9 @@
 #include <AC_Facade.h>
 #include <AC_ReactiveFacade.h>
 
+AC_Facade* AC_Facade::facade = 0;
+AC_ReactiveFacade* AC_ReactiveFacade::reactiveFacade = 0;
+
 bool AC_Facade::initFlightMode() {
     return true;
 }
@@ -102,6 +105,6 @@ uint32_t AC_Facade::getCH7Position(void) {
     return 0;
 }
 
-AP_BattMonitor* AC_ReactiveFacade::getBattery(void) {
+AP_BattMonitor* AC_Facade::getBattery(void) {
     return 0;
 }

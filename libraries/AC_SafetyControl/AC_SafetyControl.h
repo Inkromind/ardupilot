@@ -26,17 +26,17 @@ public:
 
     static AC_SafetyControl* getInstance(void);
 
-    virtual static AMW_Module_Identifier* getModuleIdentifier(void) {
+    static AMW_Module_Identifier* getModuleIdentifier(void) {
           return moduleIdentifier;
     }
 private:
-    AMW_List<AC_Behaviour*> behaviours;
     bool active;
     static AC_SafetyControl* module;
 
     static AMW_Module_Identifier* moduleIdentifier;
     AC_SafetyControl();
 protected:
+    AMW_List<AC_Behaviour*> behaviours;
     virtual ~AC_SafetyControl();
 };
 

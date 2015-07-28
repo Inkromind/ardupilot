@@ -22,7 +22,6 @@ public:
         this->completed = false;
         this->failed = false;
         this->paused = false;
-        this->parentCommand = 0;
     }
     virtual ~AMW_Command() {};
 
@@ -43,21 +42,11 @@ public:
         return failed;
     }
 
-    virtual void setParentCommand(AMW_Command* parent) {
-        parentCommand = parent;
-    }
-
-    virtual AMW_List<AMW_Corridor*>* getCorridors(void) {
-        return 0;
-    }
-
 protected:
     bool commandStarted;
     bool completed;
     bool failed;
     bool paused;
-
-    AMW_Command* parentCommand;
 };
 
 #endif /* AMW_COMMAND_H_ */

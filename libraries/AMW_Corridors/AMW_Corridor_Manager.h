@@ -10,9 +10,10 @@
 
 #include <AMW_Modules.h>
 #include <AMW_List.h>
-#include "AMW_Corridors.h"
+#include "AMW_Corridor.h"
 #include <stdint.h>
-#include "AMW_Corridor_Conflict.h"
+
+class AMW_Corridor_Conflict;
 
 #define AMW_CORRIDOR_MIN_ALTITUDE 5000
 #define AMW_CORRIDOR_ALTITUDE_HEIGHT 5000
@@ -37,43 +38,43 @@ class AMW_Corridor_Manager {
 public:
     virtual ~AMW_Corridor_Manager() { }
 
-    bool reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures = AMW_CORRIDOR_MAX_FAILURES);
+    virtual bool reserveCorridors(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures = AMW_CORRIDOR_MAX_FAILURES);
 
-    bool corridorsAreReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
-    bool reservationHasFailed(AMW_Module_Identifier* module) {
+    virtual bool corridorsAreReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
+    virtual bool reservationHasFailed(AMW_Module_Identifier* module) {
         return failed;
     }
-    bool isReservingCorridors(AMW_Module_Identifier* module);
-    bool hasCorridorConflict(AMW_Module_Identifier* module) {
+    virtual bool isReservingCorridors(AMW_Module_Identifier* module);
+    virtual bool hasCorridorConflict(AMW_Module_Identifier* module) {
         return corridorConflict;
     }
-    void markCorridorConflictResolved(AMW_Module_Identifier* module);
-    bool markCorridorsReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
-    bool getReservedAltitude(AMW_Module_Identifier* module) {
+    virtual void markCorridorConflictResolved(AMW_Module_Identifier* module);
+    virtual bool markCorridorsReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
+    virtual bool getReservedAltitude(AMW_Module_Identifier* module) {
         return reservedAltitude;
     }
 
     static AMW_Corridor_Manager* getInstance(void);
 
-    void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
+    virtual void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
 
-    void checkTimeout(void);
+    virtual void checkTimeout(void);
 
-    AMW_Corridor_Conflict* checkReservationRequest(AMW_List<AMW_Corridor*>* corridors);
+    virtual AMW_Corridor_Conflict* checkReservationRequest(AMW_List<AMW_Corridor*>* corridors);
 
-    void reservationConflictReceived(uint8_t reservationId, AMW_Corridor_Conflict* conflict);
+    virtual void reservationConflictReceived(uint8_t reservationId, AMW_Corridor_Conflict* conflict);
 
-    void broadcastReservedCorridors(void);
+    virtual void broadcastReservedCorridors(void);
 
-    void receivedCorridorBroadcast(AMW_List<AMW_Corridor*>* corridors);
+    virtual void receivedCorridorBroadcast(AMW_List<AMW_Corridor*>* corridors);
 
-
+protected:
+    static AMW_Corridor_Manager* module;
+    AMW_Corridor_Manager();
 
 private:
     enum State { IDLE, REQUEST_SEND, WAITING_FOR_RETRY, WAITING_FOR_NEXT_ROUND };
 
-    static AMW_Corridor_Manager* module;
-    AMW_Corridor_Manager();
 
     AMW_Module_Identifier* reservedModule;
 

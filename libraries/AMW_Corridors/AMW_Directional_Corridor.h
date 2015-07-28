@@ -14,17 +14,6 @@
 
 class AMW_Directional_Corridor: public AMW_Corridor {
 public:
-    AMW_Directional_Corridor() : AMW_Corridor() {
-        reverseDirection = false;
-        completed = false;
-        inCorridor = false;
-    };
-
-    AMW_Directional_Corridor(uint8_t id) : AMW_Corridor(id) {
-        reverseDirection = false;
-        completed = false;
-        inCorridor = false;
-    };
     virtual ~AMW_Directional_Corridor() {
     }
 
@@ -68,6 +57,18 @@ protected:
     bool reverseDirection;
     bool inCorridor;
     bool completed;
+
+    AMW_Directional_Corridor() : AMW_Corridor() {
+        reverseDirection = false;
+        completed = false;
+        inCorridor = false;
+    };
+
+    AMW_Directional_Corridor(uint8_t id) : AMW_Corridor(id) {
+        reverseDirection = false;
+        completed = false;
+        inCorridor = false;
+    };
 
     virtual Vector3f getStart(void) = 0;
     virtual Vector3f getDestination(void) = 0;

@@ -27,8 +27,8 @@ void AMW_Command_Nav_Assigned_Altitude::run(bool attempt) {
 #ifdef AMW_COMMAND_DEBUG
     if (commandStarted && !oldStarted) {
         AC_CommunicationFacade::sendFormattedDebug(PSTR("Starting nav to <%.0f,%.0f>"), destination.x / 100, destination.y / 100);
-#endif
     }
+#endif
 }
 
 void AMW_Command_Nav_Assigned_Altitude::updateStatus() {

@@ -12,6 +12,7 @@
 #include "AMW_Corridor_Conflict.h"
 #include "../AP_Math/vector3.h"
 #include "SegmentDistance.h"
+#include <AMW_List.h>
 
 #ifndef UINT8_MAX
 #define AMW_MAX_CORRIDOR_ID 0xff
@@ -27,12 +28,14 @@ public:
     enum Type : uint8_t { VERTICAL=1, POSITION=2, HORIZONTAL=3 };
 
     virtual void setAltitude(float newAltitude) {
-        altitude = newAltitude;
+        this->altitude = newAltitude;
     }
     virtual ~AMW_Corridor() { }
+
     virtual float getAltitude(void) {
-        return altitude;
+        return this->altitude;
     }
+
     AMW_Corridor_Conflict* checkConflicts(AMW_List<AMW_Corridor*>* corridors, bool checkFullCorridor) {
         if (!checkForConflicts(checkFullCorridor))
             return 0;
@@ -51,10 +54,10 @@ public:
         return conflict;
     }
     virtual uint8_t getId() {
-        return id;
+        return this->id;
     }
 
-    virtual Type getType(void) = 0;
+    virtual AMW_Corridor::Type getType(void) = 0;
 
     virtual void setReverseDirection(bool newValue) {}
 
@@ -62,27 +65,27 @@ public:
 
     virtual void setCompleted(bool newValue) {}
 
+    virtual Vector3f getStartPoint(bool checkFullCorridor = true) = 0;
+    virtual Vector3f getEndPoint(bool checkFullCorridor = true) = 0;
+
 protected:
-    virtual AMW_Corridor() {
-        altitude = 0;
-        id = nextId;
-        if (AMW_MAX_CORRIDOR_ID <= nextId)
-            nextId = 0;
+    AMW_Corridor() {
+        this->altitude = 0;
+        this->id = AMW_Corridor::nextId;
+        if (AMW_MAX_CORRIDOR_ID <= AMW_Corridor::nextId)
+            AMW_Corridor::nextId = 0;
         else
-            nextId++;
+            AMW_Corridor::nextId++;
     }
-    virtual AMW_Corridor(uint8_t id) {
-        altitude = 0;
+    AMW_Corridor(uint8_t id) {
+        this->altitude = 0;
         this->id = id;
     }
 
     float altitude;
     uint8_t id;
 
-    static uint8_t nextId = 0;
-
-    virtual Vector3f getStartPoint(bool checkFullCorridor = true) = 0;
-    virtual Vector3f getEndPoint(bool checkFullCorridor = true) = 0;
+    static uint8_t nextId;
 
     virtual bool checkForConflicts(bool checkFullCorridor = true) = 0;
 
@@ -92,7 +95,8 @@ private:
             return 0;
         float distance = getDistance(corridor, checkFullCorridor);
         if (distance < AMW_MIN_CORRIDOR_DISTANCE)
-            return new AMW_Corridor_Conflict(this, corridor);
+            return new AMW_Corridor_Conflict(getType(), getId(), getAltitude(),
+                    corridor->getType(), corridor->getId(), corridor->getAltitude());
         else
             return 0;
     }
@@ -115,7 +119,5 @@ private:
     }
 
 };
-
-
 
 #endif /* AMW_CORRIDOR_H_ */

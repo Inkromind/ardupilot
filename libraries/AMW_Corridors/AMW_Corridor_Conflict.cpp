@@ -7,12 +7,13 @@
 
 #include "AMW_Corridor_Conflict.h"
 
-AMW_Corridor_Conflict::AMW_Corridor_Conflict(AMW_Corridor* ownCorridor, AMW_Corridor* otherCorridor) {
-    ownType = ownCorridor->getType();
-    ownId = ownCorridor->getId();
-    otherType = otherCorridor->getType();
-    otherId = otherCorridor->getId();
-    ownAltitude = ownCorridor->getAltitude();
-    otherAltitude = otherCorridor->getAltitude();
+AMW_Corridor_Conflict::AMW_Corridor_Conflict(uint8_t ownType, uint8_t ownId, float ownAltitude,
+            uint8_t otherType, uint8_t otherId, float otherAltitude) {
+    this->ownType = ownType;
+    this->ownId = ownId;
+    this->otherType = otherType;
+    this->otherId = otherId;
+    this->ownAltitude = ownAltitude;
+    this->otherAltitude = otherAltitude;
 }
 

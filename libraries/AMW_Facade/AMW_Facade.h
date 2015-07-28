@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include <AMW_Corridors.h>
 #include <AMW_List.h>
+#include <AMW_Modules.h>
 
 class AMW_Facade {
 
@@ -31,6 +32,10 @@ public:
     static void reservationConflictReceived(uint8_t reservationId, AMW_Corridor_Conflict* conflict);
 
     static void receivedCorridorBroadcast(AMW_List<AMW_Corridor*>* corridors);
+
+    static bool markCorridorsReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
+
+    static void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
 
     static void run100Hz();
 

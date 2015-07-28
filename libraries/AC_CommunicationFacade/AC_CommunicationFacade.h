@@ -11,6 +11,9 @@
 #include <stdint.h>
 #include <AMW_List.h>
 #include <AMW_Corridors.h>
+#ifndef TESTENV
+    #include <AP_Progmem.h>
+#endif
 
 class AC_CommunicationFacade {
 public:

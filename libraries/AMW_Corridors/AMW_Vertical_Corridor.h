@@ -8,7 +8,7 @@
 #ifndef AMW_VERTICAL_CORRIDOR_H_
 #define AMW_VERTICAL_CORRIDOR_H_
 
-#include "AMW_Corridor.h"
+#include "AMW_Directional_Corridor.h"
 #include "../AP_Math/vector2.h"
 
 class AMW_Vertical_Corridor: public AMW_Directional_Corridor {
@@ -19,8 +19,8 @@ public:
     virtual ~AMW_Vertical_Corridor() {
     }
 
-    virtual Type getType(void) {
-        return Type::VERTICAL;
+    virtual AMW_Corridor::Type getType(void) {
+        return VERTICAL;
     }
 
     virtual Vector3f getStart(void);

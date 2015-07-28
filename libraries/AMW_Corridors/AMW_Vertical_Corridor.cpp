@@ -11,7 +11,8 @@ AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location) : AMW_Directiona
     this->location = location;
 }
 
-AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location, float altitude) : AMW_Vertical_Corridor(location) {
+AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location, float altitude) {
+    this->location = location;
     this->altitude = altitude;
 }
 

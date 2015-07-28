@@ -10,8 +10,14 @@
 #include <AP_HAL.h>
 #include <stdlib.h>
 #include "AMW_Position_Corridor.h"
+#include <AMW_Modules.h>
+#include <AC_CommunicationFacade.h>
+#include <AC_Facade.h>
+
+extern const AP_HAL::HAL& hal;
 
 AMW_Corridor_Manager* AMW_Corridor_Manager::module = 0;
+uint8_t AMW_Corridor::nextId = 0;
 
 AMW_Corridor_Manager::AMW_Corridor_Manager() {
     reservedModule = 0;
@@ -239,7 +245,7 @@ void AMW_Corridor_Manager::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
 AMW_Corridor_Conflict* AMW_Corridor_Manager::checkReservationRequest(AMW_List<AMW_Corridor*>* corridors) {
     AMW_Corridor_Conflict* conflict = 0;
     if (reservedCorridors.empty()) {
-        AMW_Position_Corridor positionCorridor = AMW_Position_Corridor<AC_Facade::getFacade()->getRealPosition()>;
+        AMW_Position_Corridor positionCorridor = AMW_Position_Corridor(AC_Facade::getFacade()->getRealPosition());
         conflict = positionCorridor.checkConflicts(corridors, true);
     }
     else {

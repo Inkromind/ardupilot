@@ -9,6 +9,7 @@
 #include "AMW_Command_Nav_Assigned_Altitude.h"
 #include "AMW_Command_Takeoff_Assigned_Altitude.h"
 #include "AMW_Command_Land.h"
+#include "AMW_Command_Delay.h"
 #include <AC_Facade.h>
 #include <AC_CommunicationFacade.h>
 #include <stdlib.h>

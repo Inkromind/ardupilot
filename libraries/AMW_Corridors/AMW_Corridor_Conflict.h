@@ -8,21 +8,19 @@
 #ifndef AMW_CORRIDOR_CONFLICT_H_
 #define AMW_CORRIDOR_CONFLICT_H_
 
-#include "AMW_Corridor.h"
 #include <stdint.h>
 
 class AMW_Corridor_Conflict {
 public:
-    AMW_Corridor_Conflict(AMW_Corridor* ownCorridor, AMW_Corridor* otherCorridor);
-    AMW_Corridor_Conflict(AMW_Corridor::Type ownType, uint8_t ownId, float ownAltitude,
-            AMW_Corridor::Type otherType, uint8_t otherId, float otherAltitude);
+    AMW_Corridor_Conflict(uint8_t ownType, uint8_t ownId, float ownAltitude,
+            uint8_t otherType, uint8_t otherId, float otherAltitude);
     virtual ~AMW_Corridor_Conflict() {
     }
 
-    virtual AMW_Corridor::Type getOwnType(void) {
+    virtual uint8_t getOwnType(void) {
         return ownType;
     }
-    virtual AMW_Corridor::Type getOtherType(void) {
+    virtual uint8_t getOtherType(void) {
         return otherType;
     }
     virtual uint8_t getOwnId(void) {
@@ -40,8 +38,8 @@ public:
     }
 
 private:
-    AMW_Corridor::Type ownType;
-    AMW_Corridor::Type otherType;
+    uint8_t ownType;
+    uint8_t otherType;
     uint8_t ownId;
     uint8_t otherId;
     float ownAltitude;
