@@ -27,15 +27,17 @@ public:
 
     static void addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation, bool estimate);
 
-    static AMW_Corridor_Conflict* checkReservationRequest(AMW_List<AMW_Corridor*>* corridors);
+    static AMW_Corridor_Conflict* checkReservationRequest(const AMW_List<AMW_Corridor*>* corridors);
 
-    static void reservationConflictReceived(uint8_t reservationId, AMW_Corridor_Conflict* conflict);
+    static void reservationConflictReceived(uint8_t reservationId, const AMW_Corridor_Conflict* conflict);
 
-    static void receivedCorridorBroadcast(AMW_List<AMW_Corridor*>* corridors);
+    static void receivedCorridorBroadcast(const AMW_List<AMW_Corridor*>* corridors);
 
-    static bool markCorridorsReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors);
+    static bool markCorridorsReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors);
 
     static void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
+
+    static bool isBatteryEmpty(void);
 
     static void run100Hz();
 
@@ -44,6 +46,10 @@ public:
     static void run10Hz();
 
     static void run1Hz();
+
+    static AMW_Corridor_Manager* getCM(void) {
+        return AMW_Corridor_Manager::getInstance();
+    }
 
 private:
     AMW_Facade();

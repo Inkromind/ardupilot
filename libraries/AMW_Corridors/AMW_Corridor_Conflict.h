@@ -17,23 +17,23 @@ public:
     virtual ~AMW_Corridor_Conflict() {
     }
 
-    virtual uint8_t getOwnType(void) {
+    virtual uint8_t getOwnType(void) const {
         return ownType;
     }
-    virtual uint8_t getOtherType(void) {
+    virtual uint8_t getOtherType(void) const {
         return otherType;
     }
-    virtual uint8_t getOwnId(void) {
+    virtual uint8_t getOwnId(void) const {
         return ownId;
     }
-    virtual uint8_t getOtherId(void) {
+    virtual uint8_t getOtherId(void) const {
         return otherId;
     }
 
-    virtual float getOwnAltitude(void) {
+    virtual float getOwnAltitude(void) const {
         return ownAltitude;
     }
-    virtual float getOtherAltitude(void) {
+    virtual float getOtherAltitude(void) const {
         return otherAltitude;
     }
 

@@ -19,13 +19,13 @@ class AMW_Task {
 public:
     virtual ~AMW_Task() {};
 
-    virtual AMW_Command* generatePlan(void) = 0;
+    virtual AMW_Command* generatePlan(void) const = 0;
 
-    virtual Vector2f getStartPosition(Vector2f currentPosition) {
+    virtual Vector2f getStartPosition(Vector2f currentPosition) const {
         return currentPosition;
     }
 
-    virtual Vector2f getEndPosition(Vector2f currentPosition) {
+    virtual Vector2f getEndPosition(Vector2f currentPosition) const {
         return currentPosition;
     }
 

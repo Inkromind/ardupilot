@@ -16,13 +16,13 @@ class AMW_Task_RTL: public AMW_Task {
 public:
     AMW_Task_RTL();
 
-    AMW_Command* generatePlan(void);
+    AMW_Command* generatePlan(void) const;
 
-    Vector2f getEndPosition(Vector3f currentPosition) {
+    Vector2f getEndPosition(Vector3f currentPosition) const {
         return AMW_Task_Planner::getInstance()->getHomeBase();
     }
 
-    Vector2f getStartPosition(Vector3f currentPosition) {
+    Vector2f getStartPosition(Vector3f currentPosition) const {
         return getEndPosition(currentPosition);
     }
 

@@ -10,6 +10,7 @@
 
 #include "../AP_Math/vector3.h"
 #include <AP_BattMonitor.h>
+#include <stdint.h>
 
 // Default acceptance radius for nav
 #define NEAR_DESTINATION_RADIUS     20.0f
@@ -156,6 +157,11 @@ public:
      * Get the battery monitor
      */
     virtual AP_BattMonitor* getBattery(void);
+
+    /**
+     * Get the current scheduler time in milliseconds
+     */
+    virtual uint32_t getTimeMillis(void);
 
 private:
 protected:

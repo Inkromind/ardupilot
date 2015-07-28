@@ -20,7 +20,7 @@ AMW_Task_Package::AMW_Task_Package(uint8_t newId, Vector2f newPickupLocation, Ve
     this->taskId = newId * 10 + 1;
 }
 
-AMW_Command* AMW_Task_Package::generatePlan(void) {
+AMW_Command* AMW_Task_Package::generatePlan(void) const {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
     plan->addNewCommand(new AMW_Command_Composite_Nav_Assigned_Altitude(pickupLocation));
     plan->addNewCommand(new AMW_Command_Disarm());

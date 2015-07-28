@@ -27,18 +27,18 @@ public:
 
     virtual void run(bool attempt) = 0;
 
-    virtual bool isComplete(void) {
+    virtual bool isComplete(void) const {
         return completed;
     }
 
-    virtual bool hasStarted(void) {
+    virtual bool hasStarted(void) const {
         return commandStarted;
     }
 
     virtual void pause(void) {};
     virtual void resume(void) {};
 
-    virtual bool hasFailed(void) {
+    virtual bool hasFailed(void) const {
         return failed;
     }
 

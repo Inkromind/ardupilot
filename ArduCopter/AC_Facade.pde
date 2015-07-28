@@ -171,6 +171,10 @@ AP_BattMonitor* AC_Facade::getBattery(void) {
     return &battery;
 }
 
+uint32_t AC_Facade::getTimeMillis(void) {
+    return hal.scheduler->millis();
+}
+
 void MAD_updateOrigin(void) {
     if (MAD_navInitialized)
         MAD_origin = MAD_origin - inertial_nav.get_position();

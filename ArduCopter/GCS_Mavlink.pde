@@ -1500,7 +1500,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
                         packet.alt, conflict->getOwnId(), (uint8_t)conflict->getOwnType(), conflict->getOwnAltitude());
                 delete conflict;
             }
-            corridors.clearAndDelete();
+            corridors.clear();
+            delete corridor;
         }
         break;
     }
@@ -1534,7 +1535,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
             AMW_List<AMW_Corridor*> corridors;
             corridors.push_back(corridor);
             AMW_Facade::receivedCorridorBroadcast(&corridors);
-            corridors.clearAndDelete();
+            corridors.clear();
+            delete corridor;
         }
         break;
     }

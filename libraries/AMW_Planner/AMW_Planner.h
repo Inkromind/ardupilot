@@ -33,6 +33,8 @@ public:
 
     static void returnHome(void);
 
+    static bool isBatteryEmpty(void);
+
     static AMW_Module_Identifier* getModuleIdentifier(void) {
           return moduleIdentifier;
     }

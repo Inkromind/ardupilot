@@ -30,17 +30,21 @@ public:
 
     virtual void returnHome(void);
 
-    float getAssignedAltitude(void) {
+    float getAssignedAltitude(void) const {
         return assignedAltitude;
     }
 
-    Vector2f getHomeBase(void) {
+    Vector2f getHomeBase(void) const {
         return homeBase;
     }
 
     static AMW_Task_Planner* getInstance(void);
 
     virtual void markBatteryEmpty(void);
+
+    virtual bool isBatteryEmpty(void) const {
+        return batteryEmpty;
+    }
 
 private:
     bool plannerInitialized;
@@ -51,6 +55,7 @@ private:
     AMW_List<AMW_Task*> plan;
     AMW_Task* idleTask;
     Vector2f homeBase;
+    bool batteryEmpty;
 
     float assignedAltitude;
 

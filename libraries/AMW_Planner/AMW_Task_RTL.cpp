@@ -16,7 +16,7 @@ AMW_Task_RTL::AMW_Task_RTL() {
     taskId = 9;
 }
 
-AMW_Command* AMW_Task_RTL::generatePlan() {
+AMW_Command* AMW_Task_RTL::generatePlan() const {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
     plan->addNewCommand(new AMW_Command_Composite_Nav_Assigned_Altitude(AMW_Task_Planner::getInstance()->getHomeBase()));
     plan->addNewCommand(new AMW_Command_Disarm());

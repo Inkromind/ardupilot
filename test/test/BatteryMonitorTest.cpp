@@ -5,17 +5,23 @@
  *      Author: Arne
  */
 
-
+//CppUTest
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
-#include "../../libraries/AC_SafetyControl/AC_Behaviour_Battery_Monitor.h"
-#include <AC_ReactiveFacade.h>
-#include <AP_BattMonitor.h>
-#include "../../libraries/AP_Math/vector3.h"
 
+//Class being tested
+#include "../../libraries/AC_SafetyControl/AC_Behaviour_Battery_Monitor.h"
+
+//Mocks
 #include  "../mocks/CorridorManagerMock.h"
 #include  "../mocks/BatteryMonitorMock.h"
 #include  "../mocks/ReactiveFacadeMock.h"
+
+//Includes
+#include <AC_ReactiveFacade.h>
+#include <AP_BattMonitor.h>
+#include <AMW_Facade.h>
+#include "../../libraries/AP_Math/vector3.h"
 
 ReactiveFacadeMock* facadeMock = 0;
 BattMonitorMock* batteryMock = 0;

@@ -80,3 +80,7 @@ void AMW_Planner::returnHome() {
         AMW_Sequencer::getInstance()->resumeMission();
     }
 }
+
+bool AMW_Planner::isBatteryEmpty() {
+    return AMW_Task_Planner::getInstance()->isBatteryEmpty();
+}

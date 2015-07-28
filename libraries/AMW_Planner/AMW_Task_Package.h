@@ -17,13 +17,13 @@ class AMW_Task_Package: public AMW_Task {
 public:
     AMW_Task_Package(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation);
 
-    AMW_Command* generatePlan(void);
+    AMW_Command* generatePlan(void) const;
 
-    Vector2f getEndPosition(Vector2f currentPosition) {
+    Vector2f getEndPosition(Vector2f currentPosition) const {
         return deliveryLocation;
     }
 
-    Vector2f getStartPosition(Vector2f currentPosition) {
+    Vector2f getStartPosition(Vector2f currentPosition) const {
         return pickupLocation;
     }
 

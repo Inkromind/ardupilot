@@ -17,13 +17,17 @@ AC_SafetyControl::AC_SafetyControl() {
 }
 
 AC_SafetyControl::~AC_SafetyControl() {
-    behaviours.clearAndDelete();
+    while (!behaviours.empty()) {
+        AC_Behaviour* behaviour = behaviours.front();
+        behaviours.pop_front();
+        delete behaviour;
+    }
 }
 
 void AC_SafetyControl::init(void) {
 }
 
-bool AC_SafetyControl::isActive(void) {
+bool AC_SafetyControl::isActive(void) const {
     return active;
 }
 

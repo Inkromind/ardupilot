@@ -16,7 +16,7 @@ public:
     AMW_Module_Identifier(uint8_t priorityCorridors = 0) { corridorPriority = priorityCorridors; };
     virtual ~AMW_Module_Identifier() { }
 
-    virtual uint8_t getCorridorPriority() {
+    virtual uint8_t getCorridorPriority() const {
         return corridorPriority;
     }
 

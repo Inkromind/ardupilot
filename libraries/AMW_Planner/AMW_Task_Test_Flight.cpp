@@ -17,7 +17,7 @@
 
 AMW_Task_Test_Flight::AMW_Task_Test_Flight() { }
 
-AMW_Command* AMW_Task_Test_Flight::generatePlan(void) {
+AMW_Command* AMW_Task_Test_Flight::generatePlan(void) const {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
 
     plan->addNewCommand(new AMW_Command_Takeoff(2000));

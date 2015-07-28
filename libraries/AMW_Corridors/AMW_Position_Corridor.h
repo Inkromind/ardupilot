@@ -18,18 +18,18 @@ public:
     AMW_Position_Corridor(Vector3f position, uint8_t id);
     virtual ~AMW_Position_Corridor() {}
 
-    virtual AMW_Corridor::Type getType(void) {
+    virtual AMW_Corridor::Type getType(void) const {
         return POSITION;
     }
 
-    virtual Vector3f getStartPoint(bool checkFullCorridor) {
+    virtual Vector3f getStartPoint(bool checkFullCorridor) const {
         return Vector3f(location.x, location.y, altitude);
     }
-    virtual Vector3f getEndPoint(bool checkFullCorridor ) {
+    virtual Vector3f getEndPoint(bool checkFullCorridor ) const {
         return Vector3f(location.x, location.y, altitude);
     }
 
-    virtual bool checkForConflicts(bool checkFullCorridor) {
+    virtual bool checkForConflicts(bool checkFullCorridor) const {
         return true;
     }
 

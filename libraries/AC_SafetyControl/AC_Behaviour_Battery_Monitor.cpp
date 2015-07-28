@@ -10,6 +10,7 @@
 #include <AC_CommunicationFacade.h>
 #include "AC_SafetyControl.h"
 #include <AMW_Corridors.h>
+#include <AMW_Facade.h>
 #include "../AP_Math/vector3.h"
 #include "../AP_Math/vector2.h"
 
@@ -31,7 +32,7 @@ bool AC_Behaviour_Battery_Monitor::perform() {
             if (landCorridor) {
                 AMW_List<AMW_Corridor*> corridors;
                 corridors.push_back(landCorridor);
-                AMW_Corridor_Manager::getInstance()->freeCorridors(&corridors);
+                AMW_Facade::freeCorridors(&corridors);
                 landCorridor = 0;
             }
             if (AC_ReactiveFacade::getReactiveFacade()->areMotorsArmed())
@@ -47,7 +48,7 @@ bool AC_Behaviour_Battery_Monitor::perform() {
                 landCorridor = new AMW_Vertical_Corridor(Vector2f(location.x, location.y), location.z);
                 AMW_List<AMW_Corridor*> corridors;
                 corridors.push_back(landCorridor);
-                AMW_Corridor_Manager::getInstance()->markCorridorsReserved(AC_SafetyControl::getModuleIdentifier(), &corridors);
+                AMW_Facade::markCorridorsReserved(AC_SafetyControl::getModuleIdentifier(), &corridors);
             }
             return landing;
         }

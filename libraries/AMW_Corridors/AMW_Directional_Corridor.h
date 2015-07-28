@@ -17,7 +17,7 @@ public:
     virtual ~AMW_Directional_Corridor() {
     }
 
-    virtual bool checkForConflicts(bool checkFullCorridor) {
+    virtual bool checkForConflicts(bool checkFullCorridor) const {
         return (!checkFullCorridor || !completed);
     }
 
@@ -33,7 +33,7 @@ public:
         completed = newValue;
     }
 
-    virtual Vector3f getStartPoint(bool checkFullCorridor) {
+    virtual Vector3f getStartPoint(bool checkFullCorridor) const {
         if (checkFullCorridor || !inCorridor) {
             if (!reverseDirection)
                 return getStart();
@@ -45,7 +45,7 @@ public:
         }
     }
 
-    virtual Vector3f getEndPoint(bool checkFullCorridor) {
+    virtual Vector3f getEndPoint(bool checkFullCorridor) const {
         if (!reverseDirection)
             return getDestination();
         else
@@ -70,8 +70,8 @@ protected:
         inCorridor = false;
     };
 
-    virtual Vector3f getStart(void) = 0;
-    virtual Vector3f getDestination(void) = 0;
+    virtual Vector3f getStart(void) const = 0;
+    virtual Vector3f getDestination(void) const = 0;
 };
 
 #endif /* AMW_DIRECTIONAL_CORRIDOR_H_ */

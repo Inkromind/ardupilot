@@ -22,7 +22,7 @@ public:
     virtual void run(void);
     virtual void init(void);
 
-    virtual bool isActive(void);
+    virtual bool isActive(void) const;
 
     static AC_SafetyControl* getInstance(void);
 

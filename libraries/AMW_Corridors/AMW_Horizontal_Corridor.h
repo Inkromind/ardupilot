@@ -18,12 +18,12 @@ public:
     virtual ~AMW_Horizontal_Corridor() {
     }
 
-    virtual AMW_Corridor::Type getType(void) {
+    virtual AMW_Corridor::Type getType(void) const {
         return HORIZONTAL;
     }
 
-    virtual Vector3f getStart(void);
-    virtual Vector3f getDestination(void);
+    virtual Vector3f getStart(void) const;
+    virtual Vector3f getDestination(void) const;
 
 private:
     Vector2f start;

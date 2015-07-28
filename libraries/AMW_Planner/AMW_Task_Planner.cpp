@@ -22,6 +22,7 @@ AMW_Task_Planner::AMW_Task_Planner() {
     assignedAltitude = 1500;
     returningHome = false;
     idleTaskCompleted = false;
+    batteryEmpty = false;
 }
 
 AMW_Task_Planner::~AMW_Task_Planner() {
@@ -56,7 +57,7 @@ void AMW_Task_Planner::run() {
 
 
 AMW_Task* AMW_Task_Planner::getFirstTask(bool* forceTask) {
-    if (!plannerInitialized) {
+    if (!plannerInitialized || isBatteryEmpty()) {
         *forceTask = true;
         return 0;
     }
@@ -75,9 +76,6 @@ AMW_Task* AMW_Task_Planner::getFirstTask(bool* forceTask) {
 }
 
 void AMW_Task_Planner::completeFirstTask(AMW_Task* task) {
-    if (!plannerInitialized)
-        return;
-
     if (!task)
         return;
 
@@ -113,8 +111,6 @@ void AMW_Task_Planner::returnHome() {
 #ifdef AMW_PLANNER_DEBUG
     AC_CommunicationFacade::sendDebug(PSTR("Returning Home"));
 #endif
-    if (!paused)
-        pauseMission();
 }
 
 void AMW_Task_Planner::resumeMission(void) {
@@ -180,4 +176,26 @@ float AMW_Task_Planner::addPackage(AMW_Task_Package *package, bool estimate) {
     }
 
     return minDistance;
+}
+
+void AMW_Task_Planner::markBatteryEmpty(void) {
+    batteryEmpty = true;
+}
+
+void AMW_Task_Planner::switchedToFirstTask(AMW_Task* task) {
+    if (!task)
+        return;
+    if (returningHome)
+        return;
+    else if (idleTask != task && idleTask) {
+        delete idleTask;
+        idleTask = 0;
+        idleTaskCompleted = false;
+    }
+}
+
+AMW_Task* AMW_Task_Planner::getIdleTask() {
+    if (!idleTask)
+        idleTask = new AMW_Task_RTL();
+    return idleTask;
 }

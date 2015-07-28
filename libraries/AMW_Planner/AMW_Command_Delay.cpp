@@ -6,10 +6,9 @@
  */
 
 #include "AMW_Command_Delay.h"
-#include <AP_HAL.h>
 #include <AC_CommunicationFacade.h>
+#include <AC_Facade.h>
 
-extern const AP_HAL::HAL& hal;
 
 AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) : AMW_Command() {
     this->duration = (uint32_t)max(delay, 0);
@@ -27,7 +26,7 @@ void AMW_Command_Delay::run(bool attempt) {
     if (completed)
         return;
 
-    this->start = hal.scheduler->millis();
+    this->start = AC_Facade::getFacade()->getTimeMillis();
     this->commandStarted = true;
 #ifdef AMW_COMMAND_DEBUG
     AC_CommunicationFacade::sendDebug(PSTR("Starting delay"));
@@ -40,7 +39,7 @@ void AMW_Command_Delay::updateStatus() {
     if (!commandStarted)
            return;
 
-    if (hal.scheduler->millis() - start > duration) {
+    if (AC_Facade::getFacade()->getTimeMillis() - start > duration) {
         completed = true;
 #ifdef AMW_COMMAND_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("Delay Completed"));
@@ -49,10 +48,10 @@ void AMW_Command_Delay::updateStatus() {
 }
 
 void AMW_Command_Delay::pause() {
-    this->duration -= hal.scheduler->millis() - start;
+    this->duration -= AC_Facade::getFacade()->getTimeMillis() - start;
     start = 0;
 }
 
 void AMW_Command_Delay::resume() {
-    this->start = hal.scheduler->millis();
+    this->start = AC_Facade::getFacade()->getTimeMillis();
 }

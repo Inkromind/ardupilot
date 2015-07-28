@@ -24,7 +24,14 @@ AMW_Sequencer::AMW_Sequencer() {
 }
 
 AMW_Sequencer::~AMW_Sequencer() {
-    delete currentTask;
+    if (currentPlan) {
+        delete currentPlan;
+        currentPlan = 0;
+    }
+    if (newPlan) {
+        delete newPlan;
+        newPlan = 0;
+    }
 }
 
 AMW_Sequencer* AMW_Sequencer::getInstance() {
@@ -140,10 +147,14 @@ void AMW_Sequencer::startNewTask(AMW_Task* task) {
     if (!task)
         return;
     
-    if (currentPlan)
+    if (currentPlan) {
         delete currentPlan;
-    if (newPlan)
+        currentPlan = 0;
+    }
+    if (newPlan) {
         delete newPlan;
+        newPlan = 0;
+    }
     newTask = 0;
     currentTask = task;
     executingCurrentTask = true;
@@ -251,7 +262,7 @@ void AMW_Sequencer::resumeMission(void) {
         bool force = false;
         AMW_Task* firstTask = AMW_Task_Planner::getInstance()->getFirstTask(&force);
 
-        if (currentTask && currentTask == newTask) {
+        if (currentTask && currentTask == firstTask) {
 #ifdef AMW_PLANNER_DEBUG
             AC_CommunicationFacade::sendDebug(PSTR("Resuming plan"));
 #endif

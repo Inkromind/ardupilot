@@ -21,11 +21,11 @@ AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location, float altitude, 
     this->location = location;
 }
 
-Vector3f AMW_Vertical_Corridor::getStart(void) {
+Vector3f AMW_Vertical_Corridor::getStart(void) const {
     return Vector3f(location.x, location.y, 0);
 }
 
-Vector3f AMW_Vertical_Corridor::getDestination(void) {
+Vector3f AMW_Vertical_Corridor::getDestination(void) const {
     return Vector3f(location.x, location.y, altitude);
 }
 

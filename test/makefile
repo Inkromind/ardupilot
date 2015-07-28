@@ -23,7 +23,6 @@ LIBDIR  := ../libraries/
 #CPPUTEST_MEMLEAK_DETECTOR_NEW_MACRO_FILE = -include ApplicationLib/ExamplesNewOverrides.h
 
 SRC_DIRS = \
-	stubs\
 	$(LIBDIR)AC_Facade\
 	$(LIBDIR)AC_CommunicationFacade\
 	$(LIBDIR)AC_ReactiveFacade\
@@ -45,6 +44,10 @@ INCLUDE_DIRS =\
   mocks\
   $(shell find $(LIBDIR) -type d)\
   $(CPPUTEST_HOME)/include\
+  
+MOCKS_SRC_DIRS =\
+  stubs\
+  mocks\
   
 CPPUTEST_CPPFLAGS += -DTESTENV -std=c++0x
 CPPUTEST_WARNINGFLAGS = -Wall

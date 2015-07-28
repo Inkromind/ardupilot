@@ -26,3 +26,4 @@
  */
 
 IMPORT_TEST_GROUP(BatteryMonitor);
+IMPORT_TEST_GROUP(List);

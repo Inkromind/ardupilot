@@ -11,6 +11,7 @@
 #include "CppUTest/TestHarness.h"
 #include "CppUTestExt/MockSupport.h"
 #include <list>
+#include <AMW_Corridors.h>
 
 class CorridorManagerMock : public AMW_Corridor_Manager {
 public:
@@ -37,7 +38,6 @@ public:
 
     std::list<std::list<AMW_Corridor*>*> markCorridorsReservedLists;
     std::list<std::list<AMW_Corridor*>*> freeCorridorsLists;
-    std::list<AMW_Module_Identifier*> markCorridorsReservedModules;
 
     static void setInstance(CorridorManagerMock* instance) {
         AMW_Corridor_Manager::module = instance;
@@ -45,30 +45,9 @@ public:
     static void deleteInstance() {
         AMW_Corridor_Manager::module = 0;
     }
-    bool markCorridorsReserved(AMW_Module_Identifier* module, AMW_List<AMW_Corridor*>* corridors) {
-        std::list<AMW_Corridor*>* corridorList = new std::list<AMW_Corridor*>;
-        AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
-        while (iterator->hasNext()) {
-            corridorList->push_back(iterator->next());
-        }
-        delete iterator;
-        markCorridorsReservedLists.push_back(corridorList);
-        markCorridorsReservedModules.push_back(module);
-        return mock().actualCall("markCorridorsReserved").onObject(this).returnIntValue();
-    }
+    bool markCorridorsReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors);
 
-    void freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
-        std::list<AMW_Corridor*>* corridorList = new std::list<AMW_Corridor*>;
-        AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
-        while (iterator->hasNext()) {
-            corridorList->push_back(iterator->next());
-        }
-        delete iterator;
-        freeCorridorsLists.push_back(corridorList);
-        mock().actualCall("freeCorridors").onObject(this);
-    }
-
-
+    void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
 };
 
 #endif /* MOCKS_CORRIDORMANAGERMOCK_H_ */

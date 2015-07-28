@@ -108,3 +108,7 @@ uint32_t AC_Facade::getCH7Position(void) {
 AP_BattMonitor* AC_Facade::getBattery(void) {
     return 0;
 }
+
+uint32_t AC_Facade::getTimeMillis(void) {
+    return 0;
+}

@@ -32,11 +32,11 @@ public:
     }
     virtual ~AMW_Corridor() { }
 
-    virtual float getAltitude(void) {
+    virtual float getAltitude(void) const {
         return this->altitude;
     }
 
-    AMW_Corridor_Conflict* checkConflicts(AMW_List<AMW_Corridor*>* corridors, bool checkFullCorridor) {
+    AMW_Corridor_Conflict* checkConflicts(const AMW_List<AMW_Corridor*>* corridors, bool checkFullCorridor) const {
         if (!checkForConflicts(checkFullCorridor))
             return 0;
 
@@ -53,11 +53,11 @@ public:
 
         return conflict;
     }
-    virtual uint8_t getId() {
+    virtual uint8_t getId() const {
         return this->id;
     }
 
-    virtual AMW_Corridor::Type getType(void) = 0;
+    virtual AMW_Corridor::Type getType(void) const = 0;
 
     virtual void setReverseDirection(bool newValue) {}
 
@@ -65,8 +65,8 @@ public:
 
     virtual void setCompleted(bool newValue) {}
 
-    virtual Vector3f getStartPoint(bool checkFullCorridor = true) = 0;
-    virtual Vector3f getEndPoint(bool checkFullCorridor = true) = 0;
+    virtual Vector3f getStartPoint(bool checkFullCorridor = true) const = 0;
+    virtual Vector3f getEndPoint(bool checkFullCorridor = true) const = 0;
 
 protected:
     AMW_Corridor() {
@@ -87,10 +87,10 @@ protected:
 
     static uint8_t nextId;
 
-    virtual bool checkForConflicts(bool checkFullCorridor = true) = 0;
+    virtual bool checkForConflicts(bool checkFullCorridor = true) const = 0;
 
 private:
-    AMW_Corridor_Conflict* checkConflict(AMW_Corridor* corridor, bool checkFullCorridor) {
+    AMW_Corridor_Conflict* checkConflict(const AMW_Corridor* corridor, bool checkFullCorridor) const {
         if (!corridor)
             return 0;
         float distance = getDistance(corridor, checkFullCorridor);
@@ -101,7 +101,7 @@ private:
             return 0;
     }
 
-    float getDistance(AMW_Corridor* corridor, bool checkFullCorridor) {
+    float getDistance(const AMW_Corridor* corridor, bool checkFullCorridor) const {
         if (getType() == POSITION || corridor->getType() == POSITION) {
             if (getType() == POSITION && corridor->getType() == POSITION) {
                 return dist_Point_to_Point(getStartPoint(), corridor->getStartPoint());
