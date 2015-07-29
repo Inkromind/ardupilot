@@ -17,7 +17,7 @@ bool CorridorManagerMock::markCorridorsReserved(const AMW_Module_Identifier* mod
     }
     delete iterator;
     markCorridorsReservedLists.push_back(corridorList);
-    return mock().actualCall("markCorridorsReserved").onObject(this).returnIntValue();
+    return mock().actualCall("CMmarkCorridorsReserved").onObject(this).returnIntValue();
 }
 
 void CorridorManagerMock::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
@@ -30,5 +30,5 @@ void CorridorManagerMock::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
     }
     delete iterator;
     freeCorridorsLists.push_back(corridorList);
-    mock().actualCall("freeCorridors").onObject(this);
+    mock().actualCall("CMfreeCorridors").onObject(this);
 }

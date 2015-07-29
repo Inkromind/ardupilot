@@ -13,7 +13,7 @@
 
 class BattMonitorMock : public AP_BattMonitor {
     uint8_t capacity_remaining_pct() const {
-        return (uint8_t) mock().actualCall("batteryCapacity").returnIntValue();
+        return (uint8_t) mock().actualCall("BMbatteryCapacity").returnIntValue();
     }
 };
 

@@ -15,23 +15,23 @@
 class ReactiveFacadeMock : public AC_ReactiveFacade {
 public:
     AP_BattMonitor* getBattery(void) {
-        return (AP_BattMonitor*) mock().actualCall("getBattery").onObject(this).returnPointerValue();
+        return (AP_BattMonitor*) mock().actualCall("RFgetBattery").onObject(this).returnPointerValue();
     }
 
     bool isLanded(void) {
-        return (bool) mock().actualCall("isLanded").onObject(this).returnIntValue();
+        return (bool) mock().actualCall("RFisLanded").onObject(this).returnIntValue();
     }
 
     bool areMotorsArmed(void) {
-        return (bool) mock().actualCall("areMotorsArmed").onObject(this).returnIntValue();
+        return (bool) mock().actualCall("RFareMotorsArmed").onObject(this).returnIntValue();
     }
 
     bool land(void) {
-        return (bool) mock().actualCall("land").onObject(this).returnIntValue();
+        return (bool) mock().actualCall("RFland").onObject(this).returnIntValue();
     }
 
     bool disarmMotors(void) {
-        return (bool) mock().actualCall("disarmMotors").onObject(this).returnIntValue();
+        return (bool) mock().actualCall("RFdisarmMotors").onObject(this).returnIntValue();
     }
 
     static void setFacade(ReactiveFacadeMock* facade) {
@@ -42,11 +42,11 @@ public:
     }
 
     Vector3f getRelativePosition(void) {
-        return *((Vector3f*) mock().actualCall("getRelativePosition").onObject(this).returnPointerValue());
+        return *((Vector3f*) mock().actualCall("RFgetRelativePosition").onObject(this).returnPointerValue());
     }
 
     Vector3f getRealPosition(void) {
-        return *((Vector3f*) mock().actualCall("getRealPosition").onObject(this).returnPointerValue());
+        return *((Vector3f*) mock().actualCall("RFgetRealPosition").onObject(this).returnPointerValue());
     }
 };
 

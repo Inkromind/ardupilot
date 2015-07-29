@@ -16,16 +16,39 @@
     //#define AC_SAFETYCONTROL_DEBUG
 #endif
 
+/**
+ * A Reactive Module for the safety of the drone
+ * This module can override the long term planner if necessary,
+ * e.g. the remaining battery level drops below a critical level.
+ */
 class AC_SafetyControl {
 
 public:
+    /**
+     * Run the SafetyControl Module
+     */
     virtual void run(void);
+
+    /**
+     * Initialize the SafetyControl Module
+     */
     virtual void init(void);
 
+    /**
+     * Returns if the SafetyControl Module is taking control
+     *
+     * @return True if the module is taking control. False otherwise
+     */
     virtual bool isActive(void) const;
 
+    /**
+     * Get the module instance
+     */
     static AC_SafetyControl* getInstance(void);
 
+    /**
+     * Get the identifier for this module
+     */
     static AMW_Module_Identifier* getModuleIdentifier(void) {
           return moduleIdentifier;
     }
@@ -34,9 +57,9 @@ private:
     static AC_SafetyControl* module;
 
     static AMW_Module_Identifier* moduleIdentifier;
-    AC_SafetyControl();
 protected:
     AMW_List<AC_Behaviour*> behaviours;
+    AC_SafetyControl();
     virtual ~AC_SafetyControl();
 };
 
