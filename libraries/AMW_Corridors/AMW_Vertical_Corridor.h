@@ -23,6 +23,7 @@ public:
         return VERTICAL;
     }
 
+protected:
     virtual Vector3f getStart(void) const;
     virtual Vector3f getDestination(void) const;
 

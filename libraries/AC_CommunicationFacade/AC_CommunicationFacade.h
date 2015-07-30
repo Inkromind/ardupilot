@@ -17,7 +17,14 @@
 
 class AC_CommunicationFacade {
 public:
+    /**
+     * Broadcast a reservation request
+     */
     static void broadcastReservationRequest(uint8_t reservationId, AMW_List<AMW_Corridor*>* corridors);
+
+    /**
+     * Broadcast currently assigned corridors
+     */
     static void broadcastCorridors(AMW_List<AMW_Corridor*>* corridors);
 
 

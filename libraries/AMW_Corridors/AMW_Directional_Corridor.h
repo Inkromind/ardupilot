@@ -18,7 +18,7 @@ public:
     }
 
     virtual bool checkForConflicts(bool checkFullCorridor) const {
-        return (!checkFullCorridor || !completed);
+        return (checkFullCorridor || !completed);
     }
 
     virtual void setReverseDirection(bool newValue) {
@@ -45,7 +45,7 @@ public:
         }
     }
 
-    virtual Vector3f getEndPoint(bool checkFullCorridor) const {
+    virtual Vector3f getEndPoint() const {
         if (!reverseDirection)
             return getDestination();
         else

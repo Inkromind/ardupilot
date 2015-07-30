@@ -21,6 +21,7 @@ public:
         clearReservedCorridors();
     }
 
+protected:
     virtual void startCommand(bool attempt);
 
     virtual void updateStatus(void);

@@ -16,84 +16,86 @@ public:
     DummyClass() {}
 };
 
-AMW_Queue<DummyClass*>* queue = 0;
+AMW_Queue<DummyClass*>* Qqueue = 0;
 
 TEST_GROUP(Queue)
 {
 
     void setup()
     {
-        queue = new AMW_Queue<DummyClass*>();
+        Qqueue = new AMW_Queue<DummyClass*>();
     }
     void teardown()
     {
-        delete queue;
-        queue = 0;
+        delete Qqueue;
+        Qqueue = 0;
     }
 };
 
 TEST(Queue, Push) {
     DummyClass dummy1;
     DummyClass dummy2;
-    queue->push(&dummy1);
-    queue->push(&dummy2);
 
-    CHECK_EQUAL(2, queue->size());
-    CHECK_EQUAL(&dummy2, queue->back());
-    CHECK_EQUAL(&dummy1, queue->front());
+    Qqueue->push(&dummy1);
+    Qqueue->push(&dummy2);
+
+    CHECK_EQUAL(2, Qqueue->size());
+    CHECK_EQUAL(&dummy2, Qqueue->back());
+    CHECK_EQUAL(&dummy1, Qqueue->front());
 
 }
 
 TEST(Queue, Pop) {
     DummyClass dummy1;
     DummyClass dummy2;
-    queue->push(&dummy1);
-    queue->push(&dummy2);
-    CHECK_EQUAL(2, queue->size());
+    Qqueue->push(&dummy1);
+    Qqueue->push(&dummy2);
+    CHECK_EQUAL(2, Qqueue->size());
 
-    queue->pop();
-    CHECK_EQUAL(1, queue->size());
-    CHECK_EQUAL(&dummy2, queue->front());
-    CHECK_EQUAL(&dummy2, queue->back());
+    Qqueue->pop();
 
-    queue->pop();
-    CHECK_TRUE(queue->empty());
+    CHECK_EQUAL(1, Qqueue->size());
+    CHECK_EQUAL(&dummy2, Qqueue->front());
+    CHECK_EQUAL(&dummy2, Qqueue->back());
 
-    queue->pop();
+    Qqueue->pop();
 
-    queue->push(&dummy1);
-    CHECK_EQUAL(1, queue->size());
-    CHECK_EQUAL(&dummy1, queue->front());
-    CHECK_EQUAL(&dummy1, queue->back());
+    CHECK_TRUE(Qqueue->empty());
+
+    Qqueue->pop();
+
+    Qqueue->push(&dummy1);
+    CHECK_EQUAL(1, Qqueue->size());
+    CHECK_EQUAL(&dummy1, Qqueue->front());
+    CHECK_EQUAL(&dummy1, Qqueue->back());
 }
 
 TEST(Queue, ClearEmpty) {
-    queue->clear();
-    CHECK_TRUE(queue->empty());
+    Qqueue->clear();
 
+    CHECK_TRUE(Qqueue->empty());
     DummyClass dummy1;
-    queue->push(&dummy1);
-
-    CHECK_FALSE(queue->empty());
-    CHECK_EQUAL(1, queue->size());
-    CHECK_EQUAL(&dummy1, queue->front());
-    CHECK_EQUAL(&dummy1, queue->back());
+    Qqueue->push(&dummy1);
+    CHECK_FALSE(Qqueue->empty());
+    CHECK_EQUAL(1, Qqueue->size());
+    CHECK_EQUAL(&dummy1, Qqueue->front());
+    CHECK_EQUAL(&dummy1, Qqueue->back());
 }
 
 TEST(Queue, ClearNotEmpty) {
     DummyClass dummy1;
     DummyClass dummy2;
     DummyClass dummy3;
+    Qqueue->push(&dummy1);
+    Qqueue->push(&dummy2);
+    Qqueue->push(&dummy3);
 
-    queue->push(&dummy1);
-    queue->push(&dummy2);
-    queue->push(&dummy3);
-    queue->clear();
-    CHECK_TRUE(queue->empty());
+    Qqueue->clear();
 
-    queue->push(&dummy1);
-    CHECK_FALSE(queue->empty());
-    CHECK_EQUAL(1, queue->size());
-    CHECK_EQUAL(&dummy1, queue->front());
-    CHECK_EQUAL(&dummy1, queue->back());
+    CHECK_TRUE(Qqueue->empty());
+    Qqueue->push(&dummy1);
+    CHECK_FALSE(Qqueue->empty());
+    CHECK_EQUAL(1, Qqueue->size());
+    CHECK_EQUAL(&dummy1, Qqueue->front());
+    CHECK_EQUAL(&dummy1, Qqueue->back());
 }

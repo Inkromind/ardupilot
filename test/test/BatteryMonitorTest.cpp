@@ -23,162 +23,174 @@
 #include <AMW_Facade.h>
 #include "../../libraries/AP_Math/vector3.h"
 
-ReactiveFacadeMock* facadeMock = 0;
-BattMonitorMock* batteryMock = 0;
-CorridorManagerMock* corridorManagerMock = 0;
+ReactiveFacadeMock* BMfacadeMock = 0;
+BattMonitorMock* BMbatteryMock = 0;
+CorridorManagerMock* BMcorridorManagerMock = 0;
+AC_Behaviour_Battery_Monitor* BMmonitor = 0;
 
 TEST_GROUP(BatteryMonitor)
 {
     void setup()
     {
-        facadeMock = new ReactiveFacadeMock();
-        ReactiveFacadeMock::setFacade(facadeMock);
-        batteryMock = new BattMonitorMock();
-        corridorManagerMock = new CorridorManagerMock();
-        CorridorManagerMock::setInstance(corridorManagerMock);
+        BMfacadeMock = new ReactiveFacadeMock();
+        ReactiveFacadeMock::setFacade(BMfacadeMock);
+        BMbatteryMock = new BattMonitorMock();
+        BMcorridorManagerMock = new CorridorManagerMock();
+        CorridorManagerMock::setInstance(BMcorridorManagerMock);
+        BMmonitor = new AC_Behaviour_Battery_Monitor();
     }
     void teardown()
     {
+        delete BMmonitor;
         ReactiveFacadeMock::deleteFacade();
-        delete facadeMock;
-        delete batteryMock;
+        delete BMfacadeMock;
+        delete BMbatteryMock;
         CorridorManagerMock::deleteInstance();
-        delete corridorManagerMock;
+        delete BMcorridorManagerMock;
     }
 };
 
 TEST(BatteryMonitor, IsActiveTrue)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
+
+    CHECK_TRUE(BMmonitor->isActive());
 }
 
 TEST(BatteryMonitor, IsActiveFalse)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(!monitor.isActive());
+
+    CHECK_FALSE(BMmonitor->isActive());
 }
 
 TEST(BatteryMonitor, IsActiveTrueChangedLevel)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    CHECK_TRUE(monitor.isActive());
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_TRUE(BMmonitor->isActive());
 }
 
 TEST(BatteryMonitor, PerformNotActivated)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(!monitor.isActive());
-    CHECK_TRUE(!monitor.perform());
+
+    CHECK_FALSE(BMmonitor->isActive());
+    CHECK_FALSE(BMmonitor->perform());
 }
 
 TEST(BatteryMonitor, PerformNotLandedCommandReturnsFalse)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(false);
-    mock().expectOneCall("RFland").onObject(facadeMock).andReturnValue(false);
-    CHECK_TRUE(!monitor.perform());
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(false);
+    mock().expectOneCall("RFland").onObject(BMfacadeMock).andReturnValue(false);
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_FALSE(BMmonitor->perform());
 }
 
 TEST(BatteryMonitor, PerformNotLandedCommandReturnsTrue)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
-    mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(false);
     Vector3f location = Vector3f(1,2,3);
-    mock().expectOneCall("RFland").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFgetRealPosition").onObject(facadeMock).andReturnValue(&location);
-    mock().expectOneCall("CMmarkCorridorsReserved").onObject(corridorManagerMock).andReturnValue(true);
-    CHECK_TRUE(monitor.perform());
-    mock().expectOneCall("CMfreeCorridors").onObject(corridorManagerMock);
+
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
+    mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(false);
+    mock().expectOneCall("RFland").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFgetRealPosition").onObject(BMfacadeMock).andReturnValue(&location);
+    mock().expectOneCall("CMmarkCorridorsReserved").onObject(BMcorridorManagerMock).andReturnValue(true);
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_TRUE(BMmonitor->perform());
+
+    mock().expectOneCall("CMfreeCorridors").onObject(BMcorridorManagerMock);
 }
 
 TEST(BatteryMonitor, PerformLandAndDisarmed)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFareMotorsArmed").onObject(facadeMock).andReturnValue(false);
-    CHECK_TRUE(monitor.perform());
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFareMotorsArmed").onObject(BMfacadeMock).andReturnValue(false);
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_TRUE(BMmonitor->perform());
 }
 
 TEST(BatteryMonitor, PerformNotDisarmedCommandReturnsFalse)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFareMotorsArmed").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFdisarmMotors").onObject(facadeMock).andReturnValue(false);
-    CHECK_TRUE(!monitor.perform());
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFareMotorsArmed").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFdisarmMotors").onObject(BMfacadeMock).andReturnValue(false);
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_FALSE(BMmonitor->perform());
 }
 
 TEST(BatteryMonitor, PerformNotDisarmedCommandReturnsTrue)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
     mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFareMotorsArmed").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFdisarmMotors").onObject(facadeMock).andReturnValue(true);
-    CHECK_TRUE(monitor.perform());
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFareMotorsArmed").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFdisarmMotors").onObject(BMfacadeMock).andReturnValue(true);
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_TRUE(BMmonitor->perform());
 }
 
 TEST(BatteryMonitor, PerformReserveAndFreeCorridor)
 {
-    mock().expectOneCall("RFgetBattery").onObject(facadeMock).andReturnValue(batteryMock);
-    mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
-    AC_Behaviour_Battery_Monitor monitor;
-    CHECK_TRUE(monitor.isActive());
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(false);
     Vector3f location = Vector3f(1,2,3);
-    mock().expectOneCall("RFgetRealPosition").onObject(facadeMock).andReturnValue(&location);
-    mock().expectOneCall("CMmarkCorridorsReserved").onObject(corridorManagerMock).andReturnValue(true);
-    mock().expectOneCall("RFland").onObject(facadeMock).andReturnValue(true);
-    CHECK_TRUE(monitor.perform());
-    CHECK_EQUAL(1, corridorManagerMock->markCorridorsReservedLists.size())
-    std::list<AMW_Corridor*>* corridors = corridorManagerMock->markCorridorsReservedLists.front();
-    CHECK_EQUAL(1, corridors->size());
+
+    mock().expectOneCall("RFgetBattery").onObject(BMfacadeMock).andReturnValue(BMbatteryMock);
+    mock().expectOneCall("BMbatteryCapacity").andReturnValue(AC_BATTERY_LIMIT - 1);
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(false);
+    mock().expectOneCall("RFgetRealPosition").onObject(BMfacadeMock).andReturnValue(&location);
+    mock().expectOneCall("CMmarkCorridorsReserved").onObject(BMcorridorManagerMock).andReturnValue(true);
+    mock().expectOneCall("RFland").onObject(BMfacadeMock).andReturnValue(true);
+
+    CHECK_TRUE(BMmonitor->isActive());
+    CHECK_TRUE(BMmonitor->perform());
+
+    CHECK_EQUAL(1, (int) BMcorridorManagerMock->markCorridorsReservedLists.size())
+    std::list<AMW_Corridor*>* corridors = BMcorridorManagerMock->markCorridorsReservedLists.front();
+    CHECK_EQUAL(1, (int) corridors->size());
     AMW_Corridor* corridor = corridors->front();
     CHECK_EQUAL((uint8_t) AMW_Corridor::Type::VERTICAL, (uint8_t) corridor->getType());
     CHECK_EQUAL(location.x, corridor->getStartPoint().x);
     CHECK_EQUAL(location.y, corridor->getStartPoint().y);
     CHECK_EQUAL(location.z, corridor->getAltitude());
     uint8_t corridorId = corridor->getId();
-    mock().checkExpectations();
-    mock().clear();
 
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(false);
-    mock().expectOneCall("RFland").onObject(facadeMock).andReturnValue(true);
-    CHECK_TRUE(monitor.perform());
     mock().checkExpectations();
-    mock().clear();
 
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("CMfreeCorridors").onObject(corridorManagerMock);
-    mock().expectOneCall("RFareMotorsArmed").onObject(facadeMock).andReturnValue(false);
-    CHECK_TRUE(monitor.perform());
-    CHECK_EQUAL(1, corridorManagerMock->freeCorridorsLists.size())
-    std::list<AMW_Corridor*>* freedCorridors = corridorManagerMock->freeCorridorsLists.front();
-    CHECK_EQUAL(1, freedCorridors->size());
+    mock().clear();
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(false);
+    mock().expectOneCall("RFland").onObject(BMfacadeMock).andReturnValue(true);
+
+    CHECK_TRUE(BMmonitor->perform());
+
+    mock().checkExpectations();
+
+    mock().clear();
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("CMfreeCorridors").onObject(BMcorridorManagerMock);
+    mock().expectOneCall("RFareMotorsArmed").onObject(BMfacadeMock).andReturnValue(false);
+
+    CHECK_TRUE(BMmonitor->perform());
+
+    CHECK_EQUAL(1, (int) BMcorridorManagerMock->freeCorridorsLists.size())
+    std::list<AMW_Corridor*>* freedCorridors = BMcorridorManagerMock->freeCorridorsLists.front();
+    CHECK_EQUAL(1, (int) freedCorridors->size());
     AMW_Corridor* freedCorridor = freedCorridors->front();
     CHECK_EQUAL((uint8_t) AMW_Corridor::Type::VERTICAL, (uint8_t) freedCorridor->getType());
     CHECK_EQUAL(location.x, freedCorridor->getStartPoint().x);
@@ -186,9 +198,10 @@ TEST(BatteryMonitor, PerformReserveAndFreeCorridor)
     CHECK_EQUAL(location.z, freedCorridor->getAltitude());
     CHECK_EQUAL(corridorId, freedCorridor->getId());
     mock().checkExpectations();
-    mock().clear();
 
-    mock().expectOneCall("RFisLanded").onObject(facadeMock).andReturnValue(true);
-    mock().expectOneCall("RFareMotorsArmed").onObject(facadeMock).andReturnValue(false);
-    CHECK_TRUE(monitor.perform());
+    mock().clear();
+    mock().expectOneCall("RFisLanded").onObject(BMfacadeMock).andReturnValue(true);
+    mock().expectOneCall("RFareMotorsArmed").onObject(BMfacadeMock).andReturnValue(false);
+
+    CHECK_TRUE(BMmonitor->perform());
 }

@@ -59,6 +59,7 @@ public:
             subCommands.front()->resume();
     };
 
+protected:
     virtual void completedSubCommand() { }
 
     virtual void updateStatus(void) = 0;
@@ -73,10 +74,6 @@ public:
     virtual void startCommand(bool attempt) {
         commandStarted = true;
     }
-
-
-
-protected:
     AMW_Queue<AMW_Command*> subCommands;
 
 };

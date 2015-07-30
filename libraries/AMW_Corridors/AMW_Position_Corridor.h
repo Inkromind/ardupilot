@@ -25,7 +25,7 @@ public:
     virtual Vector3f getStartPoint(bool checkFullCorridor) const {
         return Vector3f(location.x, location.y, altitude);
     }
-    virtual Vector3f getEndPoint(bool checkFullCorridor ) const {
+    virtual Vector3f getEndPoint() const {
         return Vector3f(location.x, location.y, altitude);
     }
 

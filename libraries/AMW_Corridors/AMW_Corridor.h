@@ -20,25 +20,47 @@
 #define AMW_MAX_CORRIDOR_ID UINT8_MAX
 #endif
 
-#define AMW_MIN_CORRIDOR_DISTANCE 3000
+/** Radius of corridors */
+#define AMW_MIN_CORRIDOR_DISTANCE 300
 
+/**
+ * Flight corridor
+ */
 class AMW_Corridor {
 
 public:
     enum Type : uint8_t { VERTICAL=1, POSITION=2, HORIZONTAL=3 };
 
+    /**
+     * Set the altitude of this corridor
+     */
     virtual void setAltitude(float newAltitude) {
         this->altitude = newAltitude;
     }
     virtual ~AMW_Corridor() { }
 
+    /**
+     * Get the altitude of this corridor
+     */
     virtual float getAltitude(void) const {
         return this->altitude;
     }
 
-    AMW_Corridor_Conflict* checkConflicts(const AMW_List<AMW_Corridor*>* corridors, bool checkFullCorridor) const {
+    /**
+     * Check if any of the given corridors conflict with this corridor
+     *
+     * @param corridors List of corridors to check
+     * @param checkFullCorridor Set to false to only check the part of this
+     * corridor that has not yet been finished
+     * @return The first conflict found, or 0 if no conflicts
+     */
+    virtual AMW_Corridor_Conflict* checkConflicts(const AMW_List<AMW_Corridor*>* corridors, bool checkFullCorridor) const {
+        if (!corridors)
+            return 0;
+
         if (!checkForConflicts(checkFullCorridor))
             return 0;
+
 
         AMW_Corridor_Conflict* conflict = 0;
 
@@ -53,21 +75,48 @@ public:
 
         return conflict;
     }
+
+    /**
+     * Get the id of this corridor
+     */
     virtual uint8_t getId() const {
         return this->id;
     }
 
+    /**
+     * Get the type of this corridor
+     */
     virtual AMW_Corridor::Type getType(void) const = 0;
 
+    /**
+     * Set if this corridor is being travelled along in the opposite direction
+     */
     virtual void setReverseDirection(bool newValue) {}
 
+    /**
+     * Set if currently in this corridor
+     */
     virtual void setInCorridor(bool newValue) {}
 
+    /**
+     * Set if currently in this corridor
+     */
     virtual void setCompleted(bool newValue) {}
 
+    /**
+     * Get the starting point of this corridor
+     *
+     * @param checkFullCorridor set to false to get the starting point of the
+     * part not yet completed
+     */
     virtual Vector3f getStartPoint(bool checkFullCorridor = true) const = 0;
-    virtual Vector3f getEndPoint(bool checkFullCorridor = true) const = 0;
 
+    /**
+     * Get the destination of this corridor
+     */
+    virtual Vector3f getEndPoint() const = 0;
+
+    static uint8_t nextId;
 protected:
     AMW_Corridor() {
         this->altitude = 0;
@@ -85,11 +134,15 @@ protected:
     float altitude;
     uint8_t id;
 
-    static uint8_t nextId;
-
+    /**
+     * Check if conflicts for this corridor need to be computed
+     */
     virtual bool checkForConflicts(bool checkFullCorridor = true) const = 0;
 
 private:
+    /**
+     * Check if the given corridor conflicts with this corridor
+     */
     AMW_Corridor_Conflict* checkConflict(const AMW_Corridor* corridor, bool checkFullCorridor) const {
         if (!corridor)
             return 0;
@@ -101,6 +154,9 @@ private:
             return 0;
     }
 
+    /**
+     * Get the closest distance to the given corridor
+     */
     float getDistance(const AMW_Corridor* corridor, bool checkFullCorridor) const {
         if (getType() == POSITION || corridor->getType() == POSITION) {
             if (getType() == POSITION && corridor->getType() == POSITION) {
@@ -110,11 +166,11 @@ private:
                 return dist_Point_to_Segment(getStartPoint(), corridor->getStartPoint(), corridor->getEndPoint());
             }
             else {
-                return dist_Point_to_Segment(corridor->getStartPoint(), getStartPoint(checkFullCorridor), getEndPoint(checkFullCorridor));
+                return dist_Point_to_Segment(corridor->getStartPoint(), getStartPoint(checkFullCorridor), getEndPoint());
             }
         }
         else {
-            return dist3D_Segment_to_Segment(getStartPoint(checkFullCorridor), getEndPoint(checkFullCorridor), corridor->getStartPoint(), corridor->getEndPoint());
+            return dist3D_Segment_to_Segment(getStartPoint(checkFullCorridor), getEndPoint(), corridor->getStartPoint(), corridor->getEndPoint());
         }
     }
 

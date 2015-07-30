@@ -3,3 +3,5 @@ objs/
 libraries/
 bin/
 lib/
+build/
+MultiAgentDrone_tests

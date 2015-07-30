@@ -25,83 +25,88 @@ public:
     }
 };
 
-SafetyControlStub* module = 0;
+SafetyControlStub* SCmodule = 0;
 
 TEST_GROUP(SafetyControl)
 {
     void setup()
     {
-        module = new SafetyControlStub();
-        AC_Behaviour* behaviour = module->getBehaviours()->front();
-        module->getBehaviours()->pop_front();
+        SCmodule = new SafetyControlStub();
+        AC_Behaviour* behaviour = SCmodule->getBehaviours()->front();
+        SCmodule->getBehaviours()->pop_front();
         delete behaviour;
         behaviour = 0;
     }
     void teardown()
     {
-        delete module;
-        module = 0;
+        delete SCmodule;
+        SCmodule = 0;
     }
 };
 
-TEST(SafetyControl, InitTest) {
+TEST(SafetyControl, ConstructorTest) {
     SafetyControlStub stub;
+
     CHECK_EQUAL(1, stub.getBehaviours()->size());
     CHECK_FALSE(stub.isActive());
 }
 
 TEST(SafetyControl, RunNoBehaviours) {
-    module->run();
-    CHECK_FALSE(module->isActive());
+    SCmodule->run();
+
+    CHECK_FALSE(SCmodule->isActive());
 }
 
 TEST(SafetyControl, RunFirstBehaviour) {
     BehaviourMock* behaviour1 = new BehaviourMock();
     BehaviourMock* behaviour2 = new BehaviourMock();
     BehaviourMock* behaviour3 = new BehaviourMock();
-
-    module->getBehaviours()->push_back(behaviour1);
-    module->getBehaviours()->push_back(behaviour2);
-    module->getBehaviours()->push_back(behaviour3);
+    SCmodule->getBehaviours()->push_back(behaviour1);
+    SCmodule->getBehaviours()->push_back(behaviour2);
+    SCmodule->getBehaviours()->push_back(behaviour3);
 
     mock().expectOneCall("BisActive").onObject(behaviour1).andReturnValue(true);
     mock().expectOneCall("Bperform").onObject(behaviour1).andReturnValue(true);
-    module->run();
-    CHECK_TRUE(module->isActive());
+
+    SCmodule->run();
+
+    CHECK_TRUE(SCmodule->isActive());
 }
 
 TEST(SafetyControl, RunLastBehaviour) {
     BehaviourMock* behaviour1 = new BehaviourMock();
     BehaviourMock* behaviour2 = new BehaviourMock();
     BehaviourMock* behaviour3 = new BehaviourMock();
-
-    module->getBehaviours()->push_back(behaviour1);
-    module->getBehaviours()->push_back(behaviour2);
-    module->getBehaviours()->push_back(behaviour3);
+    SCmodule->getBehaviours()->push_back(behaviour1);
+    SCmodule->getBehaviours()->push_back(behaviour2);
+    SCmodule->getBehaviours()->push_back(behaviour3);
 
     mock().expectOneCall("BisActive").onObject(behaviour1).andReturnValue(false);
     mock().expectOneCall("BisActive").onObject(behaviour2).andReturnValue(true);
     mock().expectOneCall("Bperform").onObject(behaviour2).andReturnValue(false);
     mock().expectOneCall("BisActive").onObject(behaviour3).andReturnValue(true);
     mock().expectOneCall("Bperform").onObject(behaviour3).andReturnValue(true);
-    module->run();
-    CHECK_TRUE(module->isActive());
+
+    SCmodule->run();
+
+    CHECK_TRUE(SCmodule->isActive());
 }
 
 TEST(SafetyControl, RunNoBehaviourActive) {
     BehaviourMock* behaviour1 = new BehaviourMock();
     BehaviourMock* behaviour2 = new BehaviourMock();
     BehaviourMock* behaviour3 = new BehaviourMock();
-
-    module->getBehaviours()->push_back(behaviour1);
-    module->getBehaviours()->push_back(behaviour2);
-    module->getBehaviours()->push_back(behaviour3);
+    SCmodule->getBehaviours()->push_back(behaviour1);
+    SCmodule->getBehaviours()->push_back(behaviour2);
+    SCmodule->getBehaviours()->push_back(behaviour3);
 
     mock().expectOneCall("BisActive").onObject(behaviour1).andReturnValue(false);
     mock().expectOneCall("BisActive").onObject(behaviour2).andReturnValue(true);
     mock().expectOneCall("Bperform").onObject(behaviour2).andReturnValue(false);
     mock().expectOneCall("BisActive").onObject(behaviour3).andReturnValue(true);
     mock().expectOneCall("Bperform").onObject(behaviour3).andReturnValue(false);
-    module->run();
-    CHECK_FALSE(module->isActive());
+
+    SCmodule->run();
+
+    CHECK_FALSE(SCmodule->isActive());
 }

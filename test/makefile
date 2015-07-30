@@ -10,7 +10,7 @@ ifndef SILENCE
 endif
 
 #--- Inputs ----#
-COMPONENT_NAME = ArduPilotTest
+COMPONENT_NAME = MultiAgentDrone
 CPPUTEST_HOME = /home/vagrant/cpputest
 
 CPPUTEST_USE_EXTENSIONS = Y
@@ -51,5 +51,8 @@ MOCKS_SRC_DIRS =\
   
 CPPUTEST_CPPFLAGS += -DTESTENV -std=c++0x
 CPPUTEST_WARNINGFLAGS = -Wall
+
+CPPUTEST_OBJS_DIR = ./build/objs
+CPPUTEST_LIB_DIR = ./build/lib
 
 include $(CPPUTEST_HOME)/build/MakefileWorker.mk

@@ -120,8 +120,8 @@ void AMW_Corridor_Manager::checkTimeout(void) {
     if (currentState == IDLE)
         return;
     if (AC_Facade::getFacade()->getTimeMillis() - waitStart > waitTimeout * 1000) {
-        currentState = IDLE;
         if (currentState == REQUEST_SEND) {
+            currentState = IDLE;
             reservedAltitude = preliminaryAltitude;
             AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
             while (iterator->hasNext()) {
@@ -142,47 +142,47 @@ void AMW_Corridor_Manager::checkTimeout(void) {
 }
 
 bool AMW_Corridor_Manager::corridorsAreReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors) const {
-    if (reservedModule != module)
+    if (reservedModule != module || !module)
         return false;
-    if (!corridors)
+    if (!corridors || corridors->empty())
         return false;
     if (corridors->size() > reservedCorridors.size())
         return false;
 
-    AMW_List<AMW_Corridor*> corridorsCopy;
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
+    bool allReserved = true;
     while (iterator->hasNext()) {
-        corridorsCopy.push_back(iterator->next());
-    }
-    delete iterator;
-    AMW_List<AMW_Corridor*>::Iterator* iterator2 = reservedCorridors.iterator();
-    while (iterator2->hasNext() && !corridorsCopy.empty()) {
         AMW_Corridor* corridor = iterator->next();
-        uint32_t id = 0;
-        while (id < corridorsCopy.size()) {
-            AMW_Corridor* corridor2 = corridorsCopy.get(id);
-            if (corridor2 == corridor) {
-                corridorsCopy.erase(id);
+        AMW_List<AMW_Corridor*>::Iterator* iterator2 = reservedCorridors.iterator();
+        bool reserved = false;
+        while (iterator2->hasNext()) {
+            if (corridor == iterator2->next()) {
+                reserved = true;
                 break;
             }
         }
+        delete iterator2;
+        if (!reserved) {
+            allReserved = false;
+            break;
+        }
     }
-    delete iterator2;
-    return (corridorsCopy.empty());
+    delete iterator;
+
+    return allReserved;
 }
 
 bool AMW_Corridor_Manager::isReservingCorridors(const AMW_Module_Identifier* module) const {
-    return (!preliminaryCorridors.empty() && module == reservedModule);
+    return (!preliminaryCorridors.empty() && module == reservedModule && module);
 }
 
 void AMW_Corridor_Manager::markCorridorConflictResolved(const AMW_Module_Identifier* module) {
     if (module == reservedModule)
         corridorConflict = false;
-    module = 0;
 }
 
 bool AMW_Corridor_Manager::markCorridorsReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors) {
-    if (!module || !canReserveCorridors(module) || !corridors)
+    if (!module || !canReserveCorridors(module) || !corridors || corridors->empty())
         return false;
     setNewModule(module);
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
@@ -192,7 +192,6 @@ bool AMW_Corridor_Manager::markCorridorsReserved(const AMW_Module_Identifier* mo
         if (altitude == 0 && corridor->getAltitude() != 0) {
             altitude = corridor->getAltitude();
         }
-        reservedAltitude = corridor->getAltitude();
         reservedCorridors.push_back(corridor);
     }
     delete iterator;
@@ -202,6 +201,8 @@ bool AMW_Corridor_Manager::markCorridorsReserved(const AMW_Module_Identifier* mo
 }
 
 void AMW_Corridor_Manager::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
+    if (!corridors || corridors->empty())
+        return;
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
     while (iterator->hasNext()) {
         AMW_Corridor* corridor = iterator->next();
@@ -241,9 +242,11 @@ void AMW_Corridor_Manager::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
 }
 
 AMW_Corridor_Conflict* AMW_Corridor_Manager::checkReservationRequest(const AMW_List<AMW_Corridor*>* corridors) const {
+    if (!corridors || corridors->empty())
+        return 0;
     AMW_Corridor_Conflict* conflict = 0;
     if (reservedCorridors.empty()) {
-        AMW_Position_Corridor positionCorridor = AMW_Position_Corridor(AC_Facade::getFacade()->getRealPosition());
+        AMW_Position_Corridor positionCorridor(AC_Facade::getFacade()->getRealPosition());
         conflict = positionCorridor.checkConflicts(corridors, true);
     }
     else {
@@ -268,22 +271,13 @@ AMW_Corridor_Conflict* AMW_Corridor_Manager::checkReservationRequest(const AMW_L
 }
 
 void AMW_Corridor_Manager::reservationConflictReceived(uint8_t reservationId, const AMW_Corridor_Conflict* conflict) {
+    if (!conflict)
+        return;
+
     if (this->currentReservationId != reservationId)
         return;
 
     if (currentState != REQUEST_SEND)
-        return;
-
-    bool validCorridor = false;
-    AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
-    while (iterator->hasNext()) {
-        if (iterator->next()->getId() == conflict->getOwnId()) {
-            validCorridor = true;
-            break;
-        }
-    }
-    delete iterator;
-    if (!validCorridor)
         return;
 
     increaseReservationId();
@@ -325,7 +319,7 @@ void AMW_Corridor_Manager::roundFailed(void) {
 void AMW_Corridor_Manager::broadcastReservedCorridors(void) {
     if (reservedCorridors.empty()) {
         AMW_List<AMW_Corridor*> corridors;
-        AMW_Position_Corridor positionCorridor = AMW_Position_Corridor(AC_Facade::getFacade()->getRealPosition());
+        AMW_Position_Corridor positionCorridor(AC_Facade::getFacade()->getRealPosition());
         corridors.push_back(&positionCorridor);
         AC_CommunicationFacade::broadcastCorridors(&corridors);
     }
@@ -335,10 +329,13 @@ void AMW_Corridor_Manager::broadcastReservedCorridors(void) {
 }
 
 void AMW_Corridor_Manager::receivedCorridorBroadcast(const AMW_List<AMW_Corridor*>* corridors) {
+    if (!corridors || corridors->empty())
+        return;
+
     AMW_Corridor_Conflict* conflict = 0;
     AMW_List<AMW_Corridor*>::Iterator* iterator = reservedCorridors.iterator();
     while (iterator->hasNext()) {
-        conflict = iterator->next()->checkConflicts(corridors, true);
+        conflict = iterator->next()->checkConflicts(corridors, false);
         if (conflict)
             break;
     }
