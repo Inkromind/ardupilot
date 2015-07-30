@@ -10,6 +10,9 @@
 
 #include "AMW_Command.h"
 
+/**
+ * Disarm the motors
+ */
 class AMW_Command_Disarm: public AMW_Command {
 public:
     AMW_Command_Disarm();

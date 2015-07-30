@@ -15,11 +15,11 @@
 
 class BehaviourMock : public AC_Behaviour {
     bool isActive(void) {
-        return mock().actualCall("BisActive").onObject(this).returnIntValue();
+        return mock("Behaviour").actualCall("isActive").onObject(this).returnIntValueOrDefault(1);
     }
 
     bool perform(void) {
-        return mock().actualCall("Bperform").onObject(this).returnIntValue();
+        return mock("Behaviour").actualCall("perform").onObject(this).returnIntValueOrDefault(1);
     }
 };
 

@@ -14,6 +14,10 @@
 
 #include "AMW_Command_Composite.h"
 
+/**
+ * A command consisting of several subcommands.
+ * Allows easy addition of commands.
+ */
 class AMW_Commands_Plan : public AMW_Command_Composite {
 public:
     AMW_Commands_Plan() : AMW_Command_Composite() {}

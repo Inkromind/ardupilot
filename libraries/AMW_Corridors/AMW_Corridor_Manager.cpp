@@ -280,7 +280,6 @@ void AMW_Corridor_Manager::reservationConflictReceived(uint8_t reservationId, co
     if (currentState != REQUEST_SEND)
         return;
 
-    increaseReservationId();
     currentState = IDLE;
     if (conflict->getOwnType() == AMW_Corridor::VERTICAL) {
         reservationFailed();

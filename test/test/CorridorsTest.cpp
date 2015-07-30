@@ -7,7 +7,6 @@
 
 //CppUTest
 #include "CppUTest/TestHarness.h"
-#include "CppUTestExt/MockSupport.h"
 
 //Class being tested
 #include "../../libraries/AMW_Corridors/AMW_Position_Corridor.h"
@@ -155,7 +154,7 @@ TEST(Corridors, HorizontalCorridorStartPointNoFullCorridorInCorridorNormalDirect
     Vector3f position(50,60,70);
     corridor.setInCorridor(true);
 
-    mock().expectOneCall("FgetRealPosition").onObject(CsfacadeMock).andReturnValue(&position);
+    mock("Facade").expectOneCall("getRealPosition").onObject(CsfacadeMock).andReturnValue(&position);
 
     Vector3f startPoint = corridor.getStartPoint(false);
 

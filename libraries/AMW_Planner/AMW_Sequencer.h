@@ -11,17 +11,37 @@
 #include "AMW_Task.h"
 #include "AMW_Commands_Plan.h"
 
+/**
+ * Runs short-term goals/commands to complete the tasks
+ * received by the Task Planner.
+ */
 class AMW_Sequencer {
 public:
+    /**
+     * Run the sequencer
+     */
     virtual void run();
+
+    /**
+     * Initialize the sequencer
+     */
     virtual void init();
 
     static AMW_Sequencer* getInstance(void);
 
+    /**
+     * Pause the mission
+     */
     void pauseMission(void);
 
+    /**
+     * Pause/Resume the mission
+     */
     void toggleMission(void);
 
+    /**
+     * Resume the mission
+     */
     void resumeMission(void);
 private:
 
@@ -36,11 +56,38 @@ private:
     bool executingCurrentTask;
 
     AMW_Sequencer();
+
+    /**
+     * Start a new task
+     */
     void startNewTask(AMW_Task* newTask);
+
+    /**
+     * Try to start a new task. If it does not start right away
+     * continue executing the previous task
+     */
     void tryNewTask(AMW_Task* newTask);
+
+    /**
+     * Execute the current task
+     */
     void executeCurrentTask(void);
+
+    /**
+     * Try to execute a new task
+     */
     void executeNewTask(void);
+
+    /**
+     * Check which task should be executed
+     */
     void checkExecutingTask(void);
+
+    /**
+     * Cancel the new task and continue executing the current task
+     *
+     * @param removeNewTask Set to true if the new task should be forgotten
+     */
     void cancelNewTaskContinueCurrentTask(bool removeNewTask = false);
 protected:
     virtual ~AMW_Sequencer();

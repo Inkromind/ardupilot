@@ -144,8 +144,9 @@ void AMW_Sequencer::tryNewTask(AMW_Task* task) {
 }
 
 void AMW_Sequencer::startNewTask(AMW_Task* task) {
-    if (!task)
-        return;
+    if (!task) {
+        AC_Facade::getFacade()->loiter();
+    }
     
     if (currentPlan) {
         delete currentPlan;

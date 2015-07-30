@@ -82,18 +82,18 @@ TEST(Corridor, CheckConflictsNullCorridors) {
 TEST(Corridor, CheckConflictsDontCheck) {
     AMW_List<AMW_Corridor*> corridors;
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(false);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(false);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(false);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(false);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
 
 TEST(Corridor, CheckConflictsEmptyList) {
     AMW_List<AMW_Corridor*> corridors;
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -102,7 +102,7 @@ TEST(Corridor, CheckConflictsNullCorridor) {
     AMW_List<AMW_Corridor*> corridors;
     corridors.push_front(0);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -117,13 +117,13 @@ TEST(Corridor, CheckConflictsPositionCorridorPositionCorridorConflict) {
     Vector3f position1 = Vector3f(10,10,10);
     Vector3f position2 = Vector3f(10,10,309);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(309.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(309.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -144,11 +144,11 @@ TEST(Corridor, CheckConflictsPositionCorridorPositionCorridorNoConflict) {
     Vector3f position1 = Vector3f(10,10,10);
     Vector3f position2 = Vector3f(10,10,310);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -164,14 +164,14 @@ TEST(Corridor, CheckConflictsPositionCorridorHorizontalCorridorConflict) {
     Vector3f position2a = Vector3f(0,0,299);
     Vector3f position2b = Vector3f(0,900,299);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(4, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(299.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(4, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(299.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -193,12 +193,12 @@ TEST(Corridor, CheckConflictsPositionCorridorHorizontalCorridorCheckFullCorridor
     Vector3f position2a = Vector3f(0,0,300);
     Vector3f position2b = Vector3f(0,900,300);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -211,12 +211,12 @@ TEST(Corridor, CheckConflictsPositionCorridorHorizontalCorridorNoConflict) {
     Vector3f position2a = Vector3f(0,0,300);
     Vector3f position2b = Vector3f(0,900,300);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -232,14 +232,14 @@ TEST(Corridor, CheckConflictsPositionCorridorVerticalCorridorConflict) {
     Vector3f position2a = Vector3f(0,299,0);
     Vector3f position2b = Vector3f(0,299,900);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(4, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(900.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(4, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(900.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -261,12 +261,12 @@ TEST(Corridor, CheckConflictsPositionCorridorVerticalCorridorCheckFullCorridorNo
     Vector3f position2a = Vector3f(0,300,0);
     Vector3f position2b = Vector3f(0,300,900);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -279,12 +279,12 @@ TEST(Corridor, CheckConflictsPositionCorridorVerticalCorridorNoConflict) {
     Vector3f position2a = Vector3f(0,300,0);
     Vector3f position2b = Vector3f(0,300,900);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -300,14 +300,14 @@ TEST(Corridor, CheckConflictsHorizontalCorridorPositionCorridorConflict) {
     Vector3f position1a = Vector3f(0,0,299);
     Vector3f position1b = Vector3f(0,900,299);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(4, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(0.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(4, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(0.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -329,12 +329,12 @@ TEST(Corridor, CheckConflictsHorizontalCorridorPositionCorridorCheckFullCorridor
     Vector3f position1a = Vector3f(0,0,300);
     Vector3f position1b = Vector3f(0,900,300);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -347,12 +347,12 @@ TEST(Corridor, CheckConflictsHorizontalCorridorPositionCorridorNoConflict) {
     Vector3f position1a = Vector3f(0,0,300);
     Vector3f position1b = Vector3f(0,900,300);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -368,14 +368,14 @@ TEST(Corridor, CheckConflictsVerticalCorridorPositionCorridorConflict) {
     Vector3f position1a = Vector3f(0,299,0);
     Vector3f position1b = Vector3f(0,299,900);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(4, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(600.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(4, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(600.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -397,12 +397,12 @@ TEST(Corridor, CheckConflictsVerticalCorridorPositionCorridorCheckFullCorridorNo
     Vector3f position1a = Vector3f(0,300,0);
     Vector3f position1b = Vector3f(0,300,900);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -415,12 +415,12 @@ TEST(Corridor, CheckConflictsVerticalCorridorPositionCorridorNoConflict) {
     Vector3f position1a = Vector3f(0,300,0);
     Vector3f position1b = Vector3f(0,300,900);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::POSITION);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -437,15 +437,15 @@ TEST(Corridor, CheckConflictsHorizontalCorridorHorizontalCorridorConflict) {
     Vector3f position2a = Vector3f(299,5,10);
     Vector3f position2b = Vector3f(299,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -468,13 +468,13 @@ TEST(Corridor, CheckConflictsHorizontalCorridorHorizontalCorridorCheckFullCorrid
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -488,13 +488,13 @@ TEST(Corridor, CheckConflictsHorizontalCorridorHorizontalCorridorNoConflict) {
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -511,15 +511,15 @@ TEST(Corridor, CheckConflictsHorizontalCorridorVerticalCorridorConflict) {
     Vector3f position2a = Vector3f(299,5,10);
     Vector3f position2b = Vector3f(299,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -542,13 +542,13 @@ TEST(Corridor, CheckConflictsHorizontalCorridorVerticalCorridorCheckFullCorridor
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -562,13 +562,13 @@ TEST(Corridor, CheckConflictsHorizontalCorridorVerticalCorridorNoConflict) {
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -585,15 +585,15 @@ TEST(Corridor, CheckConflictsVerticalCorridorVerticalCorridorConflict) {
     Vector3f position2a = Vector3f(299,5,10);
     Vector3f position2b = Vector3f(299,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -616,13 +616,13 @@ TEST(Corridor, CheckConflictsVerticalCorridorVerticalCorridorCheckFullCorridorNo
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -636,13 +636,13 @@ TEST(Corridor, CheckConflictsVerticalCorridorVerticalCorridorNoConflict) {
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -659,15 +659,15 @@ TEST(Corridor, CheckConflictsVerticalCorridorHorizontalCorridorConflict) {
     Vector3f position2a = Vector3f(299,5,10);
     Vector3f position2b = Vector3f(299,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -690,13 +690,13 @@ TEST(Corridor, CheckConflictsVerticalCorridorHorizontalCorridorCheckFullCorridor
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }
@@ -710,13 +710,13 @@ TEST(Corridor, CheckConflictsVerticalCorridorHorizontalCorridorNoConflict) {
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
-    mock().expectNCalls(1, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(true);
+    mock("Corridor").expectOneCall("getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", false).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, false));
 }
@@ -735,15 +735,15 @@ TEST(Corridor, CheckConflictsVerticalCorridorMultipleHorizontalCorridorFirstConf
     Vector3f position2a = Vector3f(299,5,10);
     Vector3f position2b = Vector3f(299,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor).andReturnValue(10.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -771,20 +771,20 @@ TEST(Corridor, CheckConflictsVerticalCorridorMultipleHorizontalCorridorLastConfl
     Vector3f position3a = Vector3f(299,5,10);
     Vector3f position3b = Vector3f(299,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(3, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectOneCall("CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(2, "CgetType").onObject(&dummyCorridor2).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor2).withParameter("checkFullCorridor", true).andReturnValue(&position3a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor2).andReturnValue(&position3b);
-    mock().expectOneCall("CgetId").onObject(&dummyCorridor2).andReturnValue(2);
-    mock().expectOneCall("CgetAltitude").onObject(&dummyCorridor2).andReturnValue(10.0);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(3, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectNCalls(2, "getType").onObject(&dummyCorridor2).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor2).withParameter("checkFullCorridor", true).andReturnValue(&position3a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor2).andReturnValue(&position3b);
+    mock("Corridor").expectOneCall("getId").onObject(&dummyCorridor2).andReturnValue(2);
+    mock("Corridor").expectOneCall("getAltitude").onObject(&dummyCorridor2).andReturnValue(10.0);
 
     AMW_Corridor_Conflict* conflict = Ccorridor->checkConflicts(&corridors, true);
 
@@ -809,18 +809,18 @@ TEST(Corridor, CheckConflictsVerticalCorridorMultipleHorizontalCorridorCheckFull
     Vector3f position2a = Vector3f(300,5,10);
     Vector3f position2b = Vector3f(300,10,10);
 
-    mock().expectOneCall("CcheckForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
-    mock().expectNCalls(2, "CgetType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectNCalls(1, "CgetType").onObject(&dummyCorridor2).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
-    mock().expectOneCall("CgetStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
-    mock().expectOneCall("CgetEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
-    mock().expectOneCall("CgetStartPoint").onObject(&dummyCorridor2).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
-    mock().expectOneCall("CgetEndPoint").onObject(&dummyCorridor2).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("checkForConflicts").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(true);
+    mock("Corridor").expectNCalls(2, "getType").onObject(Ccorridor).andReturnValue((uint8_t) AMW_Corridor::Type::VERTICAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getType").onObject(&dummyCorridor2).andReturnValue((uint8_t) AMW_Corridor::Type::HORIZONTAL);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor).andReturnValue(&position2b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(Ccorridor).withParameter("checkFullCorridor", true).andReturnValue(&position1a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(Ccorridor).andReturnValue(&position1b);
+    mock("Corridor").expectOneCall("getStartPoint").onObject(&dummyCorridor2).withParameter("checkFullCorridor", true).andReturnValue(&position2a);
+    mock("Corridor").expectOneCall("getEndPoint").onObject(&dummyCorridor2).andReturnValue(&position2b);
 
     CHECK_EQUAL(0, Ccorridor->checkConflicts(&corridors, true));
 }

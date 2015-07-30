@@ -15,20 +15,39 @@
     //#define AMW_TASK_DEBUG
 #endif
 
+/**
+ * A long-term task to complete
+ */
 class AMW_Task {
 public:
     virtual ~AMW_Task() {};
 
+    /**
+     * Get the plan of goals to complete to complete this task
+     */
     virtual AMW_Command* generatePlan(void) const = 0;
 
+    /**
+     * Get the first location this task has to go to
+     *
+     * @param currentPosition The current position
+     */
     virtual Vector2f getStartPosition(Vector2f currentPosition) const {
         return currentPosition;
     }
 
+    /**
+     * Get the last location this task has to go to
+     *
+     * @param currentPosition The current position
+     */
     virtual Vector2f getEndPosition(Vector2f currentPosition) const {
         return currentPosition;
     }
 
+    /**
+     * Mark this task as completed
+     */
     virtual void completeTask(void) {
         return;
     }

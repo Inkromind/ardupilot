@@ -10,6 +10,9 @@
 
 #include "AMW_Command.h"
 
+/**
+ * Land at the current location
+ */
 class AMW_Command_Land : public AMW_Command {
 public:
     AMW_Command_Land();

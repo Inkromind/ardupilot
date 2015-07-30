@@ -14,8 +14,14 @@
 #define max(a,b) ((a)>(b)?(a):(b))
 #define min(a,b) ((a)<(b)?(a):(b))
 
+/**
+ * Make the sequencer wait a given amount of time
+ */
 class AMW_Command_Delay: public AMW_Command {
 public:
+    /**
+     * @param delay The time to wait (in ms)
+     */
     AMW_Command_Delay(uint32_t delay);
 
     void run(bool attempt);

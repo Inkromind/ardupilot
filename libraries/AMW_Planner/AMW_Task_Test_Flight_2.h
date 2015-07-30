@@ -10,6 +10,9 @@
 
 #include "AMW_Task.h"
 
+/**
+ * Test flight 2
+ */
 class AMW_Task_Test_Flight_2: public AMW_Task {
 public:
     AMW_Task_Test_Flight_2();

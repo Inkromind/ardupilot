@@ -12,6 +12,9 @@
 #include "AMW_Task_Planner.h"
 #include "../AP_Math/vector3.h"
 
+/**
+ * Return to the homebase and land
+ */
 class AMW_Task_RTL: public AMW_Task {
 public:
     AMW_Task_RTL();

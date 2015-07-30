@@ -12,8 +12,14 @@
 #include "../AP_Math/vector3.h"
 #include "../AP_Math/vector2.h"
 
+/**
+ * Fly to a given location at the altitude reserved by the corridormanager
+ */
 class AMW_Command_Nav_Assigned_Altitude : public AMW_Command_Nav {
 public:
+    /**
+     * @param newDestination The location to fly to (relative to origin)
+     */
     AMW_Command_Nav_Assigned_Altitude(Vector2f newDestination) :
         AMW_Command_Nav(Vector3f(newDestination.x, newDestination.y, 0)) {};
 

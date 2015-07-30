@@ -11,8 +11,14 @@
 #include "AMW_Command.h"
 #include "../AP_Math/vector3.h"
 
+/**
+ * Fly to a given location
+ */
 class AMW_Command_Nav: public AMW_Command {
 public:
+    /**
+     * @param destination The location to fly to (relative to origin)
+     */
     AMW_Command_Nav(Vector3f destination);
 
     virtual void run(bool attempt);

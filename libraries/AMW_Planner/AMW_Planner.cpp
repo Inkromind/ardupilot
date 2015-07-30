@@ -84,3 +84,7 @@ void AMW_Planner::returnHome() {
 bool AMW_Planner::isBatteryEmpty() {
     return AMW_Task_Planner::getInstance()->isBatteryEmpty();
 }
+
+void AMW_Planner::markBatteryEmpty() {
+    AMW_Task_Planner::getInstance()->markBatteryEmpty();
+}

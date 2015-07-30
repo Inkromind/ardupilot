@@ -10,8 +10,14 @@
 
 #include "AMW_Command.h"
 
+/**
+ * Takeoff to a given altitude
+ */
 class AMW_Command_Takeoff: public AMW_Command {
 public:
+    /**
+     * @param alt The altitude to take off to (in cm)
+     */
     AMW_Command_Takeoff(float alt);
 
     virtual void run(bool attempt);

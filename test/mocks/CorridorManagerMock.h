@@ -24,6 +24,11 @@ public:
             markCorridorsReservedLists.pop_front();
             delete corridors;
         }
+        while (!reserveCorridorsLists.empty()) {
+            std::list<AMW_Corridor*>* corridors = reserveCorridorsLists.front();
+            reserveCorridorsLists.pop_front();
+            delete corridors;
+        }
         while (!freeCorridorsLists.empty()) {
             std::list<AMW_Corridor*>* corridors = freeCorridorsLists.front();
             freeCorridorsLists.pop_front();
@@ -38,6 +43,7 @@ public:
 
     std::list<std::list<AMW_Corridor*>*> markCorridorsReservedLists;
     std::list<std::list<AMW_Corridor*>*> freeCorridorsLists;
+    std::list<std::list<AMW_Corridor*>*> reserveCorridorsLists;
 
     static void setInstance(CorridorManagerMock* instance) {
         AMW_Corridor_Manager::module = instance;
@@ -48,6 +54,16 @@ public:
     bool markCorridorsReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors);
 
     void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
+
+    bool reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures);
+
+    void markCorridorConflictResolved(const AMW_Module_Identifier* module);
+
+    bool hasCorridorConflict(const AMW_Module_Identifier* module) const;
+
+    bool corridorsAreReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors) const;
+
+    bool isReservingCorridors(const AMW_Module_Identifier* module) const;
 };
 
 #endif /* MOCKS_CORRIDORMANAGERMOCK_H_ */

@@ -22,30 +22,30 @@ public:
 
 
     virtual AMW_Corridor::Type getType(void) const {
-        return (AMW_Corridor::Type) mock().actualCall("CgetType").onObject(const_cast<DummyCorridor*>(this)).returnIntValue();
+        return (AMW_Corridor::Type) mock("Corridor").actualCall("getType").onObject(const_cast<DummyCorridor*>(this)).returnIntValueOrDefault(1);
     }
 
     virtual void setReverseDirection(bool newValue) {
-        mock().actualCall("CreverseDirection").onObject(this).withParameter("newValue", newValue);
+        mock("Corridor").actualCall("setReverseDirection").onObject(this).withParameter("newValue", newValue);
     }
 
     virtual void setInCorridor(bool newValue) {
-        mock().actualCall("CsetInCorridor").onObject(this).withParameter("newValue", newValue);
+        mock("Corridor").actualCall("setInCorridor").onObject(this).withParameter("newValue", newValue);
     }
 
     virtual void setCompleted(bool newValue) {
-        mock().actualCall("CsetCompleted").onObject(this).withParameter("newValue", newValue);
+        mock("Corridor").actualCall("setCompleted").onObject(this).withParameter("newValue", newValue);
     }
 
     virtual Vector3f getStartPoint(bool checkFullCorridor = true) const {
-        return *((Vector3f*) mock().actualCall("CgetStartPoint").onObject(const_cast<DummyCorridor*>(this)).withParameter("checkFullCorridor", checkFullCorridor).returnPointerValue());
+        return *((Vector3f*) mock("Corridor").actualCall("getStartPoint").onObject(const_cast<DummyCorridor*>(this)).withParameter("checkFullCorridor", checkFullCorridor).returnPointerValue());
     }
     virtual Vector3f getEndPoint() const {
-        return *((Vector3f*) mock().actualCall("CgetEndPoint").onObject(const_cast<DummyCorridor*>(this)).returnPointerValue());
+        return *((Vector3f*) mock("Corridor").actualCall("getEndPoint").onObject(const_cast<DummyCorridor*>(this)).returnPointerValue());
     }
 
     virtual bool checkForConflicts(bool checkFullCorridor = true) const {
-        return mock().actualCall("CcheckForConflicts").onObject(const_cast<DummyCorridor*>(this)).withParameter("checkFullCorridor", checkFullCorridor).returnIntValue();
+        return mock("Corridor").actualCall("checkForConflicts").onObject(const_cast<DummyCorridor*>(this)).withParameter("checkFullCorridor", checkFullCorridor).returnIntValueOrDefault(1);
     };
 };
 
@@ -57,11 +57,11 @@ public:
     }
 
     virtual void setAltitude(float newAltitude) {
-        mock().actualCall("CsetAltitude").onObject(this).withParameter("newAltitude", newAltitude);
+        mock("Corridor").actualCall("setAltitude").onObject(this).withParameter("newAltitude", newAltitude);
     }
 
     virtual float getAltitude(void) const {
-        return (float) mock().actualCall("CgetAltitude").onObject(const_cast<CorridorMock*>(this)).returnDoubleValue();
+        return (float) mock("Corridor").actualCall("getAltitude").onObject(const_cast<CorridorMock*>(this)).returnDoubleValueOrDefault(0.0);
     }
 
     virtual ~CorridorMock() {
@@ -87,11 +87,11 @@ public:
         }
 
 
-        return (AMW_Corridor_Conflict*) mock().actualCall("CcheckConflicts").onObject(const_cast<CorridorMock*>(this)).withParameter("checkFullCorridor", checkFullCorridor).returnPointerValue();
+        return (AMW_Corridor_Conflict*) mock("Corridor").actualCall("checkConflicts").onObject(const_cast<CorridorMock*>(this)).withParameter("checkFullCorridor", checkFullCorridor).returnPointerValueOrDefault(0);
     }
 
     virtual uint8_t getId() const {
-        return (uint8_t) mock().actualCall("CgetId").onObject(const_cast<CorridorMock*>(this)).returnIntValue();
+        return (uint8_t) mock("Corridor").actualCall("getId").onObject(const_cast<CorridorMock*>(this)).returnIntValueOrDefault(1);
     }
 };
 

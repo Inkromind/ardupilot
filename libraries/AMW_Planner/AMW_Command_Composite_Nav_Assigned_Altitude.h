@@ -14,12 +14,40 @@
 #include <AMW_List.h>
 #include <AMW_Corridors.h>
 
+#define AMW_COMMAND_COMPOSITE_NAV_DESTINATION_RADIUS 200.0f
+#define AMW_COMMAND_BATTERY_TAKEOFF_LIMIT 40
+
+/**
+ * A command/goal representing a takeoff, navigation to and landing at
+ * another location.
+ *
+ * This command will be completed right away if already landed at the
+ * destination.
+ *
+ * This command will attempt reserve 2 vertical corridors and 1 horizontal
+ * representing its flight path before takeoff.
+ * If reservation fails, the command will fail.
+ * If a corridor conflict is detected during its flight, it will in first
+ * instance turn back and land at its starting location before attempting
+ * to reserve a new set of corridors.
+ * If a corridor conflict is detected while flying back, it will land right
+ * away and attempt to reserve a new set of corridors.
+ *
+ * If this command should only use 1 attempt to start, the reservation
+ * process will fail after going through all the flight levels,
+ * otherwise the default number of rounds will be used.
+ */
 class AMW_Command_Composite_Nav_Assigned_Altitude: public AMW_Command_Composite {
 public:
+    /**
+     * @param destination The location to fly to and land at (relative to origin)
+     */
     AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f destination);
     virtual ~AMW_Command_Composite_Nav_Assigned_Altitude() {
         clearReservedCorridors();
     }
+
+    enum CommandState { INIT, WAITING_FOR_CORRIDORS, FAILED, COMPLETED, NORMAL, RETURNTOSTART, LAND };
 
 protected:
     virtual void startCommand(bool attempt);
@@ -28,25 +56,36 @@ protected:
 
     virtual void completedSubCommand(void);
 
-private:
-
-    enum CommandState { INIT, WAITING_FOR_CORRIDORS, FAILED, COMPLETED, NORMAL, RETURNTOSTART, LAND };
-
     CommandState currentState;
     Vector3f destination;
     Vector2f startLocation;
 
     AMW_List<AMW_Corridor*> corridors;
+private:
 
-    void resetSubCommands(void);
-
+    /**
+     * Set the subcommands used for its normal execution
+     */
     void setNormalSubCommands(void);
+
+    /**
+     * Make the necessary corridors for normal execution/return to start
+     */
     void getCorridors(void);
 
+    /**
+     * Free and clear the reserved corridors
+     */
     void clearReservedCorridors(void);
 
+    /**
+     * Return to start
+     */
     void returnToStart(void);
 
+    /**
+     * Land
+     */
     void land(void);
 };
 

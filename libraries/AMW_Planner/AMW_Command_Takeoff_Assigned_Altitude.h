@@ -10,6 +10,9 @@
 
 #include "AMW_Command_Takeoff.h"
 
+/**
+ * Takeoff to the altitude reserved by the corridormanager
+ */
 class AMW_Command_Takeoff_Assigned_Altitude: public AMW_Command_Takeoff {
 public:
     AMW_Command_Takeoff_Assigned_Altitude() : AMW_Command_Takeoff(1500) {};

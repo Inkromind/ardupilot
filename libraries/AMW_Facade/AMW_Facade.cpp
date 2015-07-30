@@ -42,8 +42,8 @@ void AMW_Facade::returnHome() {
     AMW_Planner::returnHome();
 }
 
-void AMW_Facade::addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation, bool estimate) {
-    AMW_Task_Planner::getInstance()->addPackage(new AMW_Task_Package(id, pickupLocation, deliveryLocation), estimate);
+float AMW_Facade::addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation, bool estimate) {
+    return AMW_Task_Planner::getInstance()->addPackage(new AMW_Task_Package(id, pickupLocation, deliveryLocation), estimate);
 }
 
 AMW_Corridor_Conflict* AMW_Facade::checkReservationRequest(const AMW_List<AMW_Corridor*>* corridors) {
@@ -68,4 +68,7 @@ void AMW_Facade::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
 
 bool AMW_Facade::isBatteryEmpty() {
     return AMW_Planner::isBatteryEmpty();
+}
+void AMW_Facade::markBatteryEmpty() {
+    AMW_Planner::markBatteryEmpty();
 }

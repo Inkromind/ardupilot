@@ -1454,22 +1454,26 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     }
 
     case MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE_ESTIMATE: {
-        mavlink_mad_request_package_estimate_t packet;
-        mavlink_msg_mad_request_package_estimate_decode(msg, &packet);
-        Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
-        Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
-        float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, true);
-        mavlink_msg_mad_package_estimate_send_buf(msg, chan, packet.package_id, estimate);
+        if (!AMW_Facade::isBatteryEmpty()) {
+            mavlink_mad_request_package_estimate_t packet;
+            mavlink_msg_mad_request_package_estimate_decode(msg, &packet);
+            Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
+            Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
+            float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, true);
+            mavlink_msg_mad_package_estimate_send_buf(msg, chan, packet.package_id, estimate);
+        }
         break;
     }
 
     case MAVLINK_MSG_ID_MAD_ASSIGN_PACKAGE: {
-        mavlink_mad_assign_package_t packet;
-        mavlink_msg_mad_assign_package_decode(msg, &packet);
-        Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
-        Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
-        float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, false);
-        mavlink_msg_mad_confirm_package_send_buf(msg, chan, packet.package_id, estimate);
+        if (!AMW_Facade::isBatteryEmpty()) {
+            mavlink_mad_assign_package_t packet;
+            mavlink_msg_mad_assign_package_decode(msg, &packet);
+            Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
+            Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
+            float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, false);
+            mavlink_msg_mad_confirm_package_send_buf(msg, chan, packet.package_id, estimate);
+        }
         break;
     }
 

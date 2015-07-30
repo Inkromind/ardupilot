@@ -33,7 +33,7 @@ public:
             delete iterator;
             broadcastReservationRequestLists.push_back(corridorList);
         }
-        mock().actualCall("CFbroadcastReservationRequest").onObject(this).withParameter("reservationId", reservationId);
+        mock("ComFacade").actualCall("broadcastReservationRequest").onObject(this).withParameter("reservationId", reservationId);
     }
     void broadcastCorridors(
             AMW_List<AMW_Corridor*>* corridors) {
@@ -46,7 +46,7 @@ public:
             delete iterator;
             broadcastCorridorsLists.push_back(corridorList);
         }
-        mock().actualCall("CFbroadcastCorridors").onObject(this);
+        mock("ComFacade").actualCall("broadcastCorridors").onObject(this);
     }
 
     ~CommunicationFacadeMock() {

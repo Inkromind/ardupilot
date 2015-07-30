@@ -11,6 +11,9 @@
 #include "AMW_Command.h"
 #include <AMW_Queue.h>
 
+/**
+ * A command consisting of one or more subcommands
+ */
 class AMW_Command_Composite: public AMW_Command {
 public:
     AMW_Command_Composite() : AMW_Command() {}
@@ -34,7 +37,6 @@ public:
                 return;
         }
         subCommands.front()->run(attempt);
-        commandStarted = true;
         if (subCommands.front()->isComplete()) {
             delete subCommands.front();
             subCommands.pop();
@@ -60,10 +62,19 @@ public:
     };
 
 protected:
+    /**
+     * A subcommand has completed
+     */
     virtual void completedSubCommand() { }
 
+    /**
+     * Update the status of the command
+     */
     virtual void updateStatus(void) = 0;
 
+    /**
+     * Clear all subcommands
+     */
     virtual void clearSubCommands() {
         while (!subCommands.empty()) {
             delete subCommands.front();
@@ -71,6 +82,12 @@ protected:
         }
     }
 
+    /**
+     * Start the command
+     *
+     * @param attempt Set to true to only do a single attempt
+     * at starting the command and fail right away.
+     */
     virtual void startCommand(bool attempt) {
         commandStarted = true;
     }

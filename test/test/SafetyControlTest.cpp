@@ -65,8 +65,8 @@ TEST(SafetyControl, RunFirstBehaviour) {
     SCmodule->getBehaviours()->push_back(behaviour2);
     SCmodule->getBehaviours()->push_back(behaviour3);
 
-    mock().expectOneCall("BisActive").onObject(behaviour1).andReturnValue(true);
-    mock().expectOneCall("Bperform").onObject(behaviour1).andReturnValue(true);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour1).andReturnValue(true);
+    mock("Behaviour").expectOneCall("perform").onObject(behaviour1).andReturnValue(true);
 
     SCmodule->run();
 
@@ -81,11 +81,11 @@ TEST(SafetyControl, RunLastBehaviour) {
     SCmodule->getBehaviours()->push_back(behaviour2);
     SCmodule->getBehaviours()->push_back(behaviour3);
 
-    mock().expectOneCall("BisActive").onObject(behaviour1).andReturnValue(false);
-    mock().expectOneCall("BisActive").onObject(behaviour2).andReturnValue(true);
-    mock().expectOneCall("Bperform").onObject(behaviour2).andReturnValue(false);
-    mock().expectOneCall("BisActive").onObject(behaviour3).andReturnValue(true);
-    mock().expectOneCall("Bperform").onObject(behaviour3).andReturnValue(true);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour1).andReturnValue(false);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour2).andReturnValue(true);
+    mock("Behaviour").expectOneCall("perform").onObject(behaviour2).andReturnValue(false);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour3).andReturnValue(true);
+    mock("Behaviour").expectOneCall("perform").onObject(behaviour3).andReturnValue(true);
 
     SCmodule->run();
 
@@ -100,11 +100,11 @@ TEST(SafetyControl, RunNoBehaviourActive) {
     SCmodule->getBehaviours()->push_back(behaviour2);
     SCmodule->getBehaviours()->push_back(behaviour3);
 
-    mock().expectOneCall("BisActive").onObject(behaviour1).andReturnValue(false);
-    mock().expectOneCall("BisActive").onObject(behaviour2).andReturnValue(true);
-    mock().expectOneCall("Bperform").onObject(behaviour2).andReturnValue(false);
-    mock().expectOneCall("BisActive").onObject(behaviour3).andReturnValue(true);
-    mock().expectOneCall("Bperform").onObject(behaviour3).andReturnValue(false);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour1).andReturnValue(false);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour2).andReturnValue(true);
+    mock("Behaviour").expectOneCall("perform").onObject(behaviour2).andReturnValue(false);
+    mock("Behaviour").expectOneCall("isActive").onObject(behaviour3).andReturnValue(true);
+    mock("Behaviour").expectOneCall("perform").onObject(behaviour3).andReturnValue(false);
 
     SCmodule->run();
 

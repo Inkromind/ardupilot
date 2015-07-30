@@ -22,6 +22,7 @@ bool AC_Behaviour_Battery_Monitor::isActive(void) {
         AC_CommunicationFacade::sendDebug(PSTR("Battery Low! Landing..."));
 #endif
         activated = true;
+        AMW_Facade::markBatteryEmpty();
     }
     return activated;
 }

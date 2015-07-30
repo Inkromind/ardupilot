@@ -67,7 +67,7 @@ public:
      */
     virtual bool reservationHasFailed(const AMW_Module_Identifier* module) const {
         if (reservedModule != module || !module)
-            return false;
+            return true;
         return failed;
     }
 
@@ -96,13 +96,15 @@ public:
      * If another module with an equal or higher priority already has corridors
      * reserved or is currently trying to reserve corridors, the given module
      * will not be able to reserve corridors.
+     *
+     * @return True if the module was able to mark the corridors as reserved. False otherwise
      */
     virtual bool markCorridorsReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors);
 
     /**
      * Get the altitude of the last succesfull reservation for module.
      */
-    virtual bool getReservedAltitude(const AMW_Module_Identifier* module) const {
+    virtual float getReservedAltitude(const AMW_Module_Identifier* module) const {
         if (reservedModule != module || !module)
             return 0;
         return reservedAltitude;
@@ -142,7 +144,7 @@ public:
     virtual void broadcastReservedCorridors(void);
 
     /**
-     * A broadcast of reserved corridors was reserved
+     * A broadcast of reserved corridors was received
      */
     virtual void receivedCorridorBroadcast(const AMW_List<AMW_Corridor*>* corridors);
 

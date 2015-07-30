@@ -19,7 +19,6 @@ AMW_Task_Planner::AMW_Task_Planner() {
     paused = true;
     homeBase = Vector2f();
     idleTask = 0;
-    assignedAltitude = 1500;
     returningHome = false;
     idleTaskCompleted = false;
     batteryEmpty = false;
@@ -111,6 +110,7 @@ void AMW_Task_Planner::returnHome() {
 #ifdef AMW_PLANNER_DEBUG
     AC_CommunicationFacade::sendDebug(PSTR("Returning Home"));
 #endif
+    paused = false;
 }
 
 void AMW_Task_Planner::resumeMission(void) {
