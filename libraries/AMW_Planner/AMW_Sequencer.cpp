@@ -78,6 +78,7 @@ void AMW_Sequencer::checkExecutingTask() {
 
     if (!firstTask) {
         if (forceTask) {
+            AC_Facade::getFacade()->loiter();
             executingCurrentTask = true;
             if (currentPlan) {
                 delete currentPlan;
@@ -92,6 +93,8 @@ void AMW_Sequencer::checkExecutingTask() {
         }
     }
     else if (!currentTask || forceTask) {
+        if (currentTask)
+            AC_Facade::getFacade()->loiter();
         startNewTask(firstTask);
     }
     else if (firstTask != currentTask) {
@@ -108,7 +111,11 @@ void AMW_Sequencer::checkExecutingTask() {
 void AMW_Sequencer::tryNewTask(AMW_Task* task) {
     if (!task)
         return;
-    if (task == tempTask)
+    if (!currentTask) {
+        startNewTask(task);
+        return;
+    }
+    if (task == tempTask && tempPlan)
         return;
 
     tempTask = task;
@@ -125,7 +132,7 @@ void AMW_Sequencer::tryNewTask(AMW_Task* task) {
 
     if (!tempPlan) {
         executingCurrentTask = true;
-        AMW_Task_Planner::getInstance()->completeFirstTask(tempTask);
+        AMW_Task_Planner::getInstance()->completedTask(tempTask);
         tempTask = 0;
 #ifdef AMW_PLANNER_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("No Plan for new task, continuing old task"));
@@ -173,7 +180,7 @@ void AMW_Sequencer::startNewTask(AMW_Task* task) {
 
     currentPlan = currentTask->generatePlan();
     if (!currentPlan) {
-        AMW_Task_Planner::getInstance()->completeFirstTask(currentTask);
+        AMW_Task_Planner::getInstance()->completedTask(currentTask);
         currentTask = 0;
 #ifdef AMW_PLANNER_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("No Plan for task"));
@@ -189,7 +196,7 @@ void AMW_Sequencer::executeCurrentTask() {
     if (currentPlan->isComplete()) {
         delete currentPlan;
         currentPlan = 0;
-        AMW_Task_Planner::getInstance()->completeFirstTask(currentTask);
+        AMW_Task_Planner::getInstance()->completedTask(currentTask);
         currentTask = 0;
         #ifdef AMW_PLANNER_DEBUG
             AC_CommunicationFacade::sendDebug(PSTR("Plan completed"));
@@ -199,7 +206,7 @@ void AMW_Sequencer::executeCurrentTask() {
         // TODO: Abort Plan
         delete currentPlan;
         currentPlan = 0;
-        AMW_Task_Planner::getInstance()->completeFirstTask(currentTask);
+        AMW_Task_Planner::getInstance()->completedTask(currentTask);
         currentTask = 0;
         #ifdef AMW_PLANNER_DEBUG
             AC_CommunicationFacade::sendDebug(PSTR("Plan failed"));
@@ -215,7 +222,7 @@ void AMW_Sequencer::executeTempTask() {
     if (tempPlan->isComplete()) {
         delete tempPlan;
         tempPlan = 0;
-        AMW_Task_Planner::getInstance()->completeFirstTask(tempTask);
+        AMW_Task_Planner::getInstance()->completedTask(tempTask);
         tempTask = 0;
 #ifdef AMW_PLANNER_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("New Plan completed"));
@@ -224,6 +231,9 @@ void AMW_Sequencer::executeTempTask() {
     else if (tempPlan->hasFailed()) {
         delete tempPlan;
         tempPlan = 0;
+        executingCurrentTask = true;
+        if (currentPlan)
+            currentPlan->resume();
     }
     else if (tempPlan->hasStarted()) {
         delete currentPlan;
@@ -232,7 +242,7 @@ void AMW_Sequencer::executeTempTask() {
         tempPlan = 0;
         tempTask = 0;
         executingCurrentTask = true;
-        AMW_Task_Planner::getInstance()->switchedToFirstTask(currentTask);
+        AMW_Task_Planner::getInstance()->switchedToTask(currentTask);
     }
 }
 
@@ -289,7 +299,7 @@ void AMW_Sequencer::resumeMission(void) {
                 tempPlan = 0;
                 currentPlan->resume();
                 executingCurrentTask = true;
-                AMW_Task_Planner::getInstance()->switchedToFirstTask(currentTask);
+                AMW_Task_Planner::getInstance()->switchedToTask(currentTask);
             }
         }
         else if (currentTask == firstTask) {
@@ -298,15 +308,27 @@ void AMW_Sequencer::resumeMission(void) {
         else
             startNewTask(firstTask);
     }
-    else if (!firstTask)
-        return;
+    else if (!firstTask) {
+        if (!executingCurrentTask && tempTask) {
+            if (tempPlan)
+                tempPlan->resume();
+            else
+                tryNewTask(tempTask);
+        }
+        else if (currentTask) {
+            if (currentPlan)
+                currentPlan->resume();
+            else
+                startNewTask(currentTask);
+        }
+    }
     else if (tempTask == firstTask && !executingCurrentTask) {
         if (tempPlan)
             tempPlan->resume();
         else
             tryNewTask(firstTask);
     }
-    else if (currentTask == firstTask && executingCurrentTask)
+    else if (currentTask == firstTask)
         cancelTempTaskContinueCurrentTask(true);
     else
         tryNewTask(firstTask);

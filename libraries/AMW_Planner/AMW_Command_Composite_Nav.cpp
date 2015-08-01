@@ -5,7 +5,7 @@
  *      Author: Arne
  */
 
-#include "AMW_Command_Composite_Nav_Assigned_Altitude.h"
+#include "AMW_Command_Composite_Nav.h"
 #include "AMW_Command_Nav_Assigned_Altitude.h"
 #include "AMW_Command_Takeoff_Assigned_Altitude.h"
 #include "AMW_Command_Land.h"
@@ -17,13 +17,18 @@
 #include "AMW_Task_Planner.h"
 #include <stdint.h>
 
-AMW_Command_Composite_Nav_Assigned_Altitude::AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f newDestination) : AMW_Command_Composite() {
+AMW_Command_Composite_Nav::AMW_Command_Composite_Nav(Vector2f newDestination, bool returningHome) : AMW_Command_Composite() {
     destination = Vector3f(newDestination.x, newDestination.y, 0);
     currentState = INIT;
+#ifdef AMW_COMMAND_ONLY_LAND_AT_BASE
+    this->returningHome = returningHome;
+#else
+    this->returningHome = true;
+#endif
     setNormalSubCommands();
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::completedSubCommand() {
+void AMW_Command_Composite_Nav::completedSubCommand() {
     if (subCommands.empty()) {
         clearReservedCorridors();
     }
@@ -71,9 +76,9 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::completedSubCommand() {
     }
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::startCommand(bool attempt) {
+void AMW_Command_Composite_Nav::startCommand(bool attempt) {
     if (currentState == INIT) {
-        if (AC_Facade::getFacade()->getBattery()->capacity_remaining_pct() < AMW_COMMAND_BATTERY_TAKEOFF_LIMIT) {
+        if (AC_Facade::getFacade()->getBattery()->capacity_remaining_pct() < AMW_PLANNER_BATTERY_TAKEOFF_LIMIT) {
             AMW_Task_Planner::getInstance()->markBatteryEmpty();
             failed = true;
             return;
@@ -83,9 +88,9 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::startCommand(bool attempt) {
         getCorridors();
         bool reserving = false;
         if (attempt)
-            reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(0, &corridors, 1);
+            reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors, 1);
         else
-            reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(0, &corridors);
+            reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
         if (!reserving) {
             failed = true;
             currentState = FAILED;
@@ -96,7 +101,7 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::startCommand(bool attempt) {
     }
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
+void AMW_Command_Composite_Nav::updateStatus() {
     if (completed || failed)
         return;
 
@@ -174,14 +179,15 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
 
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::setNormalSubCommands() {
+void AMW_Command_Composite_Nav::setNormalSubCommands() {
     clearSubCommands();
     subCommands.push(new AMW_Command_Takeoff_Assigned_Altitude());
     subCommands.push(new AMW_Command_Nav_Assigned_Altitude(Vector2f(destination.x, destination.y)));
-    subCommands.push(new AMW_Command_Land());
+    if (returningHome)
+        subCommands.push(new AMW_Command_Land());
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::returnToStart() {
+void AMW_Command_Composite_Nav::returnToStart() {
     uint32_t remainingCommands = subCommands.size();
     clearSubCommands();
 
@@ -216,25 +222,29 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::returnToStart() {
     currentState = RETURNTOSTART;
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::land() {
+void AMW_Command_Composite_Nav::land() {
     clearSubCommands();
     clearReservedCorridors();
     Vector3f position = AC_Facade::getFacade()->getRealPosition();
     corridors.push_back(new AMW_Vertical_Corridor(Vector2f(position.x, position.y), position.z));
     AMW_Corridor_Manager::getInstance()->markCorridorsReserved(AMW_Planner::getModuleIdentifier(), &corridors);
+#ifdef AMW_COMMAND_ONLY_LAND_AT_BASE
+    subCommands.push(new AMW_Command_Nav_Altitude(AMW_COMMAND_HOVER_ALTITUDE));
+#else
     subCommands.push(new AMW_Command_Land());
+#endif
     subCommands.push(new AMW_Command_Delay(30 + rand() % 10));
     currentState = LAND;
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::clearReservedCorridors() {
+void AMW_Command_Composite_Nav::clearReservedCorridors() {
     if (!corridors.empty()) {
         AMW_Corridor_Manager::getInstance()->freeCorridors(&corridors);
         corridors.clear();
     }
 }
 
-void AMW_Command_Composite_Nav_Assigned_Altitude::getCorridors() {
+void AMW_Command_Composite_Nav::getCorridors() {
     if (!corridors.empty()) {
         clearReservedCorridors();
     }

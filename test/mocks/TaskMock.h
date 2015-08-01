@@ -25,26 +25,21 @@ public:
     };
 
 
-    virtual Vector2f getStartPosition(Vector2f currentPosition) const {
-        return *((Vector2f*) mock("Task").actualCall("getStartPosition").onObject(const_cast<TaskMock*>(this)).
-                withParameter("currentPositionX", currentPosition.x).withParameter("currentPositionY", currentPosition.y).returnPointerValue());
+    virtual Vector2f getStartPosition() const {
+        return *((Vector2f*) mock("Task").actualCall("getStartPosition").onObject(const_cast<TaskMock*>(this))
+                .returnPointerValue());
     }
 
-    /**
-     * Get the last location this task has to go to
-     *
-     * @param currentPosition The current position
-     */
-    virtual Vector2f getEndPosition(Vector2f currentPosition) const {
-        return *((Vector2f*) mock("Task").actualCall("getEndPosition").onObject(const_cast<TaskMock*>(this)).
-                withParameter("currentPositionX", currentPosition.x).withParameter("currentPositionY", currentPosition.y).returnPointerValue());
+    virtual Vector2f getEndPosition() const {
+        return *((Vector2f*) mock("Task").actualCall("getEndPosition").onObject(const_cast<TaskMock*>(this))
+                .returnPointerValue());
     }
 
     /**
      * Mark this task as completed
      */
-    virtual void completeTask(void) {
-        mock("Task").actualCall("completeTask").onObject(this);
+    virtual void completedTask(void) {
+        mock("Task").actualCall("completedTask").onObject(this);
     }
 };
 

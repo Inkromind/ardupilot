@@ -10,7 +10,7 @@
 #include "CppUTestExt/MockSupport.h"
 
 //Class being tested
-#include "../../libraries/AMW_Planner/AMW_Command_Composite_Nav_Assigned_Altitude.h"
+#include "../../libraries/AMW_Planner/AMW_Command_Composite_Nav.h"
 
 //Mocks
 #include "../mocks/CommandMock.h"
@@ -25,10 +25,10 @@ FacadeMock* CCNfacadeMock = 0;
 BattMonitorMock* CCNbatteryMock = 0;
 TaskPlannerMock* CCNtaskPlannerMock = 0;
 
-class DummyCompositeNavCommand : public AMW_Command_Composite_Nav_Assigned_Altitude {
+class DummyCompositeNavCommand : public AMW_Command_Composite_Nav {
 public:
-    DummyCompositeNavCommand(void) : AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f(0, 0)) {}
-    DummyCompositeNavCommand(Vector2f newDestination) : AMW_Command_Composite_Nav_Assigned_Altitude(newDestination) {}
+    DummyCompositeNavCommand(void) : AMW_Command_Composite_Nav(Vector2f(0, 0)) {}
+    DummyCompositeNavCommand(Vector2f newDestination) : AMW_Command_Composite_Nav(newDestination) {}
 
     AMW_Queue<AMW_Command*>* getSubCommands() {
         return &subCommands;
@@ -130,7 +130,7 @@ TEST(CommandCompositeNav, destructor) {
 
 TEST(CommandCompositeNav, startCommandBatteryTooLow) {
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT - 1);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT - 1);
     mock("TaskPlanner").expectOneCall("markBatteryEmpty").onObject(CCNtaskPlannerMock);
 
     CCNcommand->runStartCommand(true);
@@ -144,7 +144,7 @@ TEST(CommandCompositeNav, startCommandAttemptTrueReserving) {
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -152,7 +152,7 @@ TEST(CommandCompositeNav, startCommandAttemptTrueReserving) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS,
             command->getState());
     CHECK_EQUAL(1, (int) CCNcorridorManagerMock->reserveCorridorsLists.size());
     std::list<AMW_Corridor*>* reservedCorridors = CCNcorridorManagerMock->reserveCorridorsLists.front();
@@ -193,7 +193,7 @@ TEST(CommandCompositeNav, startCommandAttemptFalseReserving) {
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -201,7 +201,7 @@ TEST(CommandCompositeNav, startCommandAttemptFalseReserving) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS,
             command->getState());
     CHECK_EQUAL(1, (int) CCNcorridorManagerMock->reserveCorridorsLists.size());
     std::list<AMW_Corridor*>* reservedCorridors = CCNcorridorManagerMock->reserveCorridorsLists.front();
@@ -241,7 +241,7 @@ TEST(CommandCompositeNav, startCommandAttemptTrueNotReserving) {
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(false);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -249,7 +249,7 @@ TEST(CommandCompositeNav, startCommandAttemptTrueNotReserving) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::FAILED,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::FAILED,
             command->getState());
     CHECK_TRUE(command->hasFailed());
 
@@ -262,7 +262,7 @@ TEST(CommandCompositeNav, startCommandAttemptFalseNotReserving) {
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 5).andReturnValue(false);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -270,7 +270,7 @@ TEST(CommandCompositeNav, startCommandAttemptFalseNotReserving) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::FAILED,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::FAILED,
             command->getState());
     CHECK_TRUE(command->hasFailed());
 
@@ -279,11 +279,11 @@ TEST(CommandCompositeNav, startCommandAttemptFalseNotReserving) {
     delete command;
 }
 TEST(CommandCompositeNav, startCommandAlreadyStarted) {
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     CCNcommand->runStartCommand(true);
 
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
 }
 
@@ -338,7 +338,7 @@ TEST(CommandCompositeNav, updateStatusInitConflict)
     CCNcommand->runUpdateStatus();
 
     CHECK_FALSE(CCNcommand->isComplete());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::INIT,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::INIT,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, updateStatusCorridorConflictNormal3CommandsRemaining) {
@@ -348,7 +348,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal3CommandsRemaining) 
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -372,7 +372,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal3CommandsRemaining) 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
     CHECK_FALSE(CCNcommand->isComplete());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
     CHECK_EQUAL(2, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(corridor1, CCNcommand->getCorridors()->front());
@@ -388,7 +388,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal2CommandsRemaining) 
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -411,7 +411,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal2CommandsRemaining) 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
     CHECK_FALSE(CCNcommand->isComplete());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
     CHECK_EQUAL(3, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(corridor1, CCNcommand->getCorridors()->front());
@@ -429,7 +429,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal1CommandsRemaining) 
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -451,7 +451,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal1CommandsRemaining) 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
     CHECK_FALSE(CCNcommand->isComplete());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
     CHECK_EQUAL(4, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(corridor1, CCNcommand->getCorridors()->front());
@@ -469,7 +469,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal0CommandsRemaining) 
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -491,7 +491,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictNormal0CommandsRemaining) 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
     CHECK_FALSE(CCNcommand->isComplete());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
     CHECK_EQUAL(4, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(corridor1, CCNcommand->getCorridors()->front());
@@ -507,7 +507,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictReturnToStart) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -520,7 +520,7 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictReturnToStart) {
     CCNcommand->runUpdateStatus();
 
     CHECK_FALSE(CCNcommand->isComplete());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
     CHECK_EQUAL(2, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(1, CCNcommand->getCorridors()->size());
@@ -537,14 +537,14 @@ TEST(CommandCompositeNav, updateStatusCorridorConflictReturnToStart) {
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 }
 TEST(CommandCompositeNav, updateStatusCorridorConflictLand) {
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::LAND);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
 
     CCNcommand->runUpdateStatus();
 
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, updateStatusWaitingCorridorsReserved) {
@@ -554,7 +554,7 @@ TEST(CommandCompositeNav, updateStatusWaitingCorridorsReserved) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -565,7 +565,7 @@ TEST(CommandCompositeNav, updateStatusWaitingCorridorsReserved) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::NORMAL,
             CCNcommand->getState());
     CHECK_TRUE(CCNcommand->hasStarted());
 
@@ -579,7 +579,7 @@ TEST(CommandCompositeNav, updateStatusWaitingReservationFailed) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -591,7 +591,7 @@ TEST(CommandCompositeNav, updateStatusWaitingReservationFailed) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::FAILED,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::FAILED,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_TRUE(CCNcommand->hasFailed());
@@ -603,7 +603,7 @@ TEST(CommandCompositeNav, updateStatusWaitingReserving) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -615,7 +615,7 @@ TEST(CommandCompositeNav, updateStatusWaitingReserving) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_FALSE(CCNcommand->hasFailed());
@@ -629,7 +629,7 @@ TEST(CommandCompositeNav, updateStatusWaitingNotReservingFailed) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -643,7 +643,7 @@ TEST(CommandCompositeNav, updateStatusWaitingNotReservingFailed) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::FAILED,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::FAILED,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_TRUE(CCNcommand->hasFailed());
@@ -655,7 +655,7 @@ TEST(CommandCompositeNav, updateStatusWaitingNotReserving) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(true);
     mock("CorManager").expectOneCall("markCorridorConflictResolved").onObject(CCNcorridorManagerMock);
@@ -668,7 +668,7 @@ TEST(CommandCompositeNav, updateStatusWaitingNotReserving) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::WAITING_FOR_CORRIDORS,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::WAITING_FOR_CORRIDORS,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_FALSE(CCNcommand->hasFailed());
@@ -684,7 +684,7 @@ TEST(CommandCompositeNav, updateStatusNormalNotReserved) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(false);
@@ -694,7 +694,7 @@ TEST(CommandCompositeNav, updateStatusNormalNotReserved) {
 
     CCNcommand->runUpdateStatus();
 
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
     CHECK_EQUAL(2, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(1, CCNcommand->getCorridors()->size());
@@ -717,7 +717,7 @@ TEST(CommandCompositeNav, updateStatusNormalReserved) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(true);
@@ -726,7 +726,7 @@ TEST(CommandCompositeNav, updateStatusNormalReserved) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::NORMAL,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_FALSE(CCNcommand->hasFailed());
@@ -734,13 +734,13 @@ TEST(CommandCompositeNav, updateStatusNormalReserved) {
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 }
 TEST(CommandCompositeNav, updateStatusReturnToStartNotReservedNoCorridors) {
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
 
     CCNcommand->runUpdateStatus();
 
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_FALSE(CCNcommand->hasFailed());
@@ -753,7 +753,7 @@ TEST(CommandCompositeNav, updateStatusReturnToStartNotReservedCorridors) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(false);
@@ -763,7 +763,7 @@ TEST(CommandCompositeNav, updateStatusReturnToStartNotReservedCorridors) {
 
     CCNcommand->runUpdateStatus();
 
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
     CHECK_EQUAL(2, CCNcommand->getSubCommands()->size());
     CHECK_EQUAL(1, CCNcommand->getCorridors()->size());
@@ -786,7 +786,7 @@ TEST(CommandCompositeNav, updateStatusReturnToStartReservedCorridors) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(true);
@@ -795,7 +795,7 @@ TEST(CommandCompositeNav, updateStatusReturnToStartReservedCorridors) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_FALSE(CCNcommand->hasFailed());
@@ -803,13 +803,13 @@ TEST(CommandCompositeNav, updateStatusReturnToStartReservedCorridors) {
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 }
 TEST(CommandCompositeNav, updateStatusLandNotReservedNoCorridors) {
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::LAND);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
 
     CCNcommand->runUpdateStatus();
 
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_FALSE(CCNcommand->hasFailed());
@@ -817,7 +817,7 @@ TEST(CommandCompositeNav, updateStatusLandNotReservedNoCorridors) {
 TEST(CommandCompositeNav, updateStatusLandNotReservedCorridors) {
     CorridorMock* corridor1 = new CorridorMock();
     CCNcommand->getCorridors()->push_back(corridor1);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::LAND);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(false);
@@ -827,7 +827,7 @@ TEST(CommandCompositeNav, updateStatusLandNotReservedCorridors) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
     CHECK_EQUAL(1, CCNcommand->getCorridors()->size());
     CHECK_EQUAL(corridor1, CCNcommand->getCorridors()->front());
@@ -837,7 +837,7 @@ TEST(CommandCompositeNav, updateStatusLandNotReservedCorridors) {
 TEST(CommandCompositeNav, updateStatusLandReservedCorridors) {
     CorridorMock* corridor1 = new CorridorMock();
     CCNcommand->getCorridors()->push_back(corridor1);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::LAND);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(true);
@@ -846,7 +846,7 @@ TEST(CommandCompositeNav, updateStatusLandReservedCorridors) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
@@ -860,7 +860,7 @@ TEST(CommandCompositeNav, completedSubCommandNormal2Remaining) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("Corridor").expectOneCall("setCompleted").onObject(corridor1).withParameter("newValue", true);
     mock("Corridor").expectOneCall("setInCorridor").onObject(corridor1).withParameter("newValue", false);
@@ -870,7 +870,7 @@ TEST(CommandCompositeNav, completedSubCommandNormal2Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::NORMAL,
             CCNcommand->getState());
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
@@ -886,7 +886,7 @@ TEST(CommandCompositeNav, completedSubCommandNormal1Remaining) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("Corridor").expectOneCall("setCompleted").onObject(corridor2).withParameter("newValue", true);
     mock("Corridor").expectOneCall("setInCorridor").onObject(corridor2).withParameter("newValue", false);
@@ -896,7 +896,7 @@ TEST(CommandCompositeNav, completedSubCommandNormal1Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::NORMAL,
             CCNcommand->getState());
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
@@ -914,7 +914,7 @@ TEST(CommandCompositeNav, completedSubCommandNormal0Remaining) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::NORMAL);
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 
@@ -922,7 +922,7 @@ TEST(CommandCompositeNav, completedSubCommandNormal0Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::NORMAL,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::NORMAL,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, completedSubCommandRTS3Remaining) {
@@ -932,7 +932,7 @@ TEST(CommandCompositeNav, completedSubCommandRTS3Remaining) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("Corridor").expectOneCall("setCompleted").onObject(corridor3).withParameter("newValue", true);
     mock("Corridor").expectOneCall("setInCorridor").onObject(corridor3).withParameter("newValue", false);
@@ -942,7 +942,7 @@ TEST(CommandCompositeNav, completedSubCommandRTS3Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
@@ -956,7 +956,7 @@ TEST(CommandCompositeNav, completedSubCommandRTS2Remaining) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("Corridor").expectOneCall("setCompleted").onObject(corridor2).withParameter("newValue", true);
     mock("Corridor").expectOneCall("setInCorridor").onObject(corridor2).withParameter("newValue", false);
@@ -966,7 +966,7 @@ TEST(CommandCompositeNav, completedSubCommandRTS2Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
@@ -982,7 +982,7 @@ TEST(CommandCompositeNav, completedSubCommandRTS1Remaining) {
     CCNcommand->getCorridors()->push_back(corridor1);
     CCNcommand->getCorridors()->push_back(corridor2);
     CCNcommand->getCorridors()->push_back(corridor3);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 
@@ -990,7 +990,7 @@ TEST(CommandCompositeNav, completedSubCommandRTS1Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, completedSubCommandRTS0Remaining) {
@@ -1000,14 +1000,14 @@ TEST(CommandCompositeNav, completedSubCommandRTS0Remaining) {
     CCNcommand->getSubCommands()->pop();
     delete CCNcommand->getSubCommands()->front();
     CCNcommand->getSubCommands()->pop();
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::RETURNTOSTART);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::RETURNTOSTART);
     CCNcommand->setCommandStarted(true);
 
     CCNcommand->runCompletedSubCommand();
 
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_EQUAL(3, CCNcommand->getSubCommands()->size());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::INIT,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::INIT,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, completedSubCommandLand1Remaining) {
@@ -1017,7 +1017,7 @@ TEST(CommandCompositeNav, completedSubCommandLand1Remaining) {
     CCNcommand->getSubCommands()->pop();
     CorridorMock* corridor1 = new CorridorMock();
     CCNcommand->getCorridors()->push_back(corridor1);
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::LAND);
 
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 
@@ -1025,7 +1025,7 @@ TEST(CommandCompositeNav, completedSubCommandLand1Remaining) {
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::LAND,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, completedSubCommandLand0Remaining) {
@@ -1035,14 +1035,14 @@ TEST(CommandCompositeNav, completedSubCommandLand0Remaining) {
     CCNcommand->getSubCommands()->pop();
     delete CCNcommand->getSubCommands()->front();
     CCNcommand->getSubCommands()->pop();
-    CCNcommand->setState(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::LAND);
+    CCNcommand->setState(AMW_Command_Composite_Nav::CommandState::LAND);
     CCNcommand->setCommandStarted(true);
 
     CCNcommand->runCompletedSubCommand();
 
     CHECK_FALSE(CCNcommand->hasStarted());
     CHECK_EQUAL(3, CCNcommand->getSubCommands()->size());
-    CHECK_EQUAL(AMW_Command_Composite_Nav_Assigned_Altitude::CommandState::INIT,
+    CHECK_EQUAL(AMW_Command_Composite_Nav::CommandState::INIT,
             CCNcommand->getState());
 }
 TEST(CommandCompositeNav, scenarioNormal) {
@@ -1053,7 +1053,7 @@ TEST(CommandCompositeNav, scenarioNormal) {
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -1183,7 +1183,7 @@ TEST(CommandCompositeNav, scenarioReservationFailure) {
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -1241,7 +1241,7 @@ TEST(CommandCompositeNav, scenarioCorridorConflict) {
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -1386,7 +1386,7 @@ TEST(CommandCompositeNav, scenarioCorridorConflict) {
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position2);
 
@@ -1453,7 +1453,7 @@ TEST(CommandCompositeNav, scenarioDoubleCorridorConflict) {
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
@@ -1603,7 +1603,7 @@ TEST(CommandCompositeNav, scenarioDoubleCorridorConflict) {
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
-    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_COMMAND_BATTERY_TAKEOFF_LIMIT);
+    mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
     mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position2);
 

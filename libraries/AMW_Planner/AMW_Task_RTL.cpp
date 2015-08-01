@@ -7,7 +7,7 @@
 
 #include "AMW_Task_RTL.h"
 #include "AMW_Task_Planner.h"
-#include "AMW_Command_Composite_Nav_Assigned_Altitude.h"
+#include "AMW_Command_Composite_Nav.h"
 #include "AMW_Command_Disarm.h"
 #include <AC_CommunicationFacade.h>
 #include "AMW_Commands_Plan.h"
@@ -18,7 +18,7 @@ AMW_Task_RTL::AMW_Task_RTL() {
 
 AMW_Command* AMW_Task_RTL::generatePlan(void) const {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
-    plan->addNewCommand(new AMW_Command_Composite_Nav_Assigned_Altitude(AMW_Task_Planner::getInstance()->getHomeBase()));
+    plan->addNewCommand(new AMW_Command_Composite_Nav(AMW_Task_Planner::getInstance()->getHomeBase(), true));
     plan->addNewCommand(new AMW_Command_Disarm());
 #ifdef AMW_TASK_DEBUG
     AC_CommunicationFacade::sendDebug(PSTR("Generated plan to return home"));

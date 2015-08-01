@@ -15,7 +15,10 @@
 #include <AMW_Corridors.h>
 
 #define AMW_COMMAND_COMPOSITE_NAV_DESTINATION_RADIUS 200.0f
-#define AMW_COMMAND_BATTERY_TAKEOFF_LIMIT 40
+#ifndef TESTENV
+    #define AMW_COMMAND_ONLY_LAND_AT_BASE
+#endif
+#define AMW_COMMAND_HOVER_ALTITUDE 100
 
 /**
  * A command/goal representing a takeoff, navigation to and landing at
@@ -37,13 +40,13 @@
  * process will fail after going through all the flight levels,
  * otherwise the default number of rounds will be used.
  */
-class AMW_Command_Composite_Nav_Assigned_Altitude: public AMW_Command_Composite {
+class AMW_Command_Composite_Nav: public AMW_Command_Composite {
 public:
     /**
      * @param destination The location to fly to and land at (relative to origin)
      */
-    AMW_Command_Composite_Nav_Assigned_Altitude(Vector2f destination);
-    virtual ~AMW_Command_Composite_Nav_Assigned_Altitude() {
+    AMW_Command_Composite_Nav(Vector2f destination, bool returningHome = false);
+    virtual ~AMW_Command_Composite_Nav() {
         clearReservedCorridors();
     }
 
@@ -55,6 +58,16 @@ protected:
     virtual void updateStatus(void);
 
     virtual void completedSubCommand(void);
+
+    /**
+     * Make the necessary corridors for normal execution/return to start
+     */
+    void getCorridors(void);
+
+    /**
+     * Free and clear the reserved corridors
+     */
+    void clearReservedCorridors(void);
 
     CommandState currentState;
     Vector3f destination;
@@ -69,16 +82,6 @@ private:
     void setNormalSubCommands(void);
 
     /**
-     * Make the necessary corridors for normal execution/return to start
-     */
-    void getCorridors(void);
-
-    /**
-     * Free and clear the reserved corridors
-     */
-    void clearReservedCorridors(void);
-
-    /**
      * Return to start
      */
     void returnToStart(void);
@@ -87,6 +90,8 @@ private:
      * Land
      */
     void land(void);
+
+    bool returningHome;
 };
 
 #endif /* AMW_COMMAND_COMPOSITE_NAV_ASSIGNED_ALTITUDE_H_ */

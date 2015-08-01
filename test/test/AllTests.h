@@ -27,6 +27,13 @@
 
 IMPORT_TEST_GROUP(BatteryMonitor);
 IMPORT_TEST_GROUP(List);
+IMPORT_TEST_GROUP(Queue);
 IMPORT_TEST_GROUP(SafetyControl);
 IMPORT_TEST_GROUP(SegmentDistance);
 IMPORT_TEST_GROUP(Corridor);
+IMPORT_TEST_GROUP(Corridors);
+IMPORT_TEST_GROUP(CorridorManager);
+IMPORT_TEST_GROUP(CommandComposite);
+IMPORT_TEST_GROUP(CommandCompositeNav);
+IMPORT_TEST_GROUP(Sequencer);
+IMPORT_TEST_GROUP(TaskPlanner);

@@ -19,17 +19,17 @@ class AMW_Task_RTL: public AMW_Task {
 public:
     AMW_Task_RTL();
 
-    AMW_Command* generatePlan(void) const;
+    virtual AMW_Command* generatePlan(void) const;
 
-    Vector2f getEndPosition(Vector3f currentPosition) const {
+    virtual Vector2f getEndPosition() const {
         return AMW_Task_Planner::getInstance()->getHomeBase();
     }
 
-    Vector2f getStartPosition(Vector3f currentPosition) const {
-        return getEndPosition(currentPosition);
+    virtual Vector2f getStartPosition() const {
+        return AMW_Task_Planner::getInstance()->getHomeBase();
     }
 
-    void completeTask(void);
+    virtual void completeTask(void);
 };
 
 #endif /* AMW_TASK_RTL_H_ */

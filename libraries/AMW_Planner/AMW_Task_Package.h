@@ -28,11 +28,11 @@ public:
 
     AMW_Command* generatePlan(void) const;
 
-    Vector2f getEndPosition(Vector2f currentPosition) const {
+    Vector2f getEndPosition() const {
         return deliveryLocation;
     }
 
-    Vector2f getStartPosition(Vector2f currentPosition) const {
+    Vector2f getStartPosition() const {
         return pickupLocation;
     }
 

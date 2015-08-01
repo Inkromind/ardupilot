@@ -43,7 +43,7 @@ void AMW_Facade::returnHome() {
 }
 
 float AMW_Facade::addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation, bool estimate) {
-    return AMW_Task_Planner::getInstance()->addPackage(new AMW_Task_Package(id, pickupLocation, deliveryLocation), estimate);
+    return AMW_Task_Planner::getInstance()->addTask(new AMW_Task_Package(id, pickupLocation, deliveryLocation), estimate);
 }
 
 AMW_Corridor_Conflict* AMW_Facade::checkReservationRequest(const AMW_List<AMW_Corridor*>* corridors) {

@@ -23,13 +23,13 @@ public:
     }
 
 
-    std::list<AMW_Task*> completeFirstTaskList;
-    std::list<AMW_Task*> switchedToFirstTaskList;
+    std::list<AMW_Task*> completedTaskList;
+    std::list<AMW_Task*> switchedToTaskList;
 
     virtual ~TaskPlannerMock() {
-        while (!completeFirstTaskList.empty()) {
-            delete completeFirstTaskList.front();
-            completeFirstTaskList.pop_front();
+        while (!completedTaskList.empty()) {
+            delete completedTaskList.front();
+            completedTaskList.pop_front();
         }
     }
 
@@ -42,14 +42,14 @@ public:
         return (AMW_Task*) mock("TaskPlanner").actualCall("getFirstTask").onObject(this).returnPointerValue();
     }
 
-    void completeFirstTask(AMW_Task* task) {
-        completeFirstTaskList.push_back(task);
-        mock("TaskPlanner").actualCall("completeFirstTask").onObject(this);
+    void completedTask(AMW_Task* task) {
+        completedTaskList.push_back(task);
+        mock("TaskPlanner").actualCall("completedTask").onObject(this);
     }
 
-    void switchedToFirstTask(AMW_Task* task) {
-        switchedToFirstTaskList.push_back(task);
-        mock("TaskPlanner").actualCall("switchedToFirstTask").onObject(this);
+    void switchedToTask(AMW_Task* task) {
+        switchedToTaskList.push_back(task);
+        mock("TaskPlanner").actualCall("switchedToTask").onObject(this);
     }
 };
 

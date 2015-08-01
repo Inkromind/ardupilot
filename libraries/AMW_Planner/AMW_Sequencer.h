@@ -19,6 +19,23 @@ class AMW_Sequencer {
 public:
     /**
      * Run the sequencer
+     *
+     * The first task in the Task Planner will be executed.
+     *
+     * If the Task Planner supplies a new task before before the previous one
+     * has been completed, it will pause the old task and run the new task
+     * as a temporary task. Tasks marked as temporary will be "attempted" to
+     * run and can fail faster.
+     * If a temporary task fails, the old task will be resumed. The temporary
+     * task will not be attempted again until the old task completes (and at
+     * that point is still the first task). If a new first task is given before
+     * the old task completes, this new task will also be executed as a
+     * temporary task.
+     *
+     * If the Task Planner "forces" the first task, it will be run as the main
+     * task and remove the old task and temporary task if they exist.
+     * If the Task Planner "forces" a 0 task, the current and old task
+     * will be deleted
      */
     virtual void run();
 
@@ -41,6 +58,23 @@ public:
 
     /**
      * Resume the mission
+     *
+     * If it was already executing the first task in the Task Planner
+     * as either the current task or the temporary task, and the Task Planner
+     * is not forcing the task, it will resume the task as the current task
+     * or temporary task depending on how it was executing it beforehand.
+     *
+     * If it was already executing the first task in the Task Planner
+     * and the Task Planner is forcing the task, it will be resumed
+     * as the current plan and any temporary task will be removed.
+     *
+     * If the Task Planner returns a 0 task, the task that was executing
+     * will be resumed if the 0 task is not forced. If the 0 task is forced,
+     * the Sequencer will loiter and remove any current and/or temporary task.
+     *
+     * If it was not executing the first task in the Task Planner,
+     * it will be started as either a current task or a temporary task
+     * similar to starting a new task during normal operation.
      */
     void resumeMission(void);
 

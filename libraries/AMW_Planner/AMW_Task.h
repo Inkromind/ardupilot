@@ -10,6 +10,7 @@
 
 #include "AMW_Command.h"
 #include "../AP_Math/vector2.h"
+#include <math.h>
 
 #ifndef TESTENV
     //#define AMW_TASK_DEBUG
@@ -32,8 +33,8 @@ public:
      *
      * @param currentPosition The current position
      */
-    virtual Vector2f getStartPosition(Vector2f currentPosition) const {
-        return currentPosition;
+    virtual Vector2f getStartPosition() const {
+        return Vector2f(NAN, NAN);
     }
 
     /**
@@ -41,14 +42,14 @@ public:
      *
      * @param currentPosition The current position
      */
-    virtual Vector2f getEndPosition(Vector2f currentPosition) const {
-        return currentPosition;
+    virtual Vector2f getEndPosition() const {
+        return Vector2f(NAN, NAN);
     }
 
     /**
      * Mark this task as completed
      */
-    virtual void completeTask(void) {
+    virtual void completedTask(void) {
         return;
     }
 
