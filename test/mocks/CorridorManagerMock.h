@@ -64,6 +64,10 @@ public:
     bool corridorsAreReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors) const;
 
     bool isReservingCorridors(const AMW_Module_Identifier* module) const;
+
+    bool reservationHasFailed(const AMW_Module_Identifier* module) const;
+
+    float getReservedAltitude(const AMW_Module_Identifier* module) const;
 };
 
 #endif /* MOCKS_CORRIDORMANAGERMOCK_H_ */

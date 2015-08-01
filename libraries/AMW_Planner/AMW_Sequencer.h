@@ -43,19 +43,19 @@ public:
      * Resume the mission
      */
     void resumeMission(void);
-private:
+
+protected:
+    AMW_Sequencer();
 
     bool sequencerInitialized;
     static AMW_Sequencer* sequencer;
     bool paused;
 
     AMW_Task* currentTask;
-    AMW_Task* newTask;
+    AMW_Task* tempTask;
     AMW_Command* currentPlan;
-    AMW_Command* newPlan;
+    AMW_Command* tempPlan;
     bool executingCurrentTask;
-
-    AMW_Sequencer();
 
     /**
      * Start a new task
@@ -76,7 +76,7 @@ private:
     /**
      * Try to execute a new task
      */
-    void executeNewTask(void);
+    void executeTempTask(void);
 
     /**
      * Check which task should be executed
@@ -88,8 +88,8 @@ private:
      *
      * @param removeNewTask Set to true if the new task should be forgotten
      */
-    void cancelNewTaskContinueCurrentTask(bool removeNewTask = false);
-protected:
+    void cancelTempTaskContinueCurrentTask(bool removeNewTask = false);
+
     virtual ~AMW_Sequencer();
 
 };

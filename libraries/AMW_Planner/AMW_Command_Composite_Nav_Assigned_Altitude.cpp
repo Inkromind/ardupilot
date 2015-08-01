@@ -56,8 +56,6 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::completedSubCommand() {
             corridors.get(0)->setInCorridor(true); // Vertical 1
         }
         else if (subCommands.size() == 1) {
-            corridors.get(0)->setCompleted(true); // Horizontal
-            corridors.get(0)->setInCorridor(false);
             clearReservedCorridors();
         }
     }
@@ -98,8 +96,6 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::startCommand(bool attempt) {
     }
 }
 
-
-
 void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
     if (completed || failed)
         return;
@@ -127,17 +123,18 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
         AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
         if (currentState == NORMAL && corridorConflict) {
             returnToStart();
+            updateStatus();
             return;
         }
         if (currentState == RETURNTOSTART && corridorConflict) {
             land();
+            updateStatus();
             return;
         }
     }
 
     if (currentState != INIT) {
 
-        bool isReservingCorridors = AMW_Corridor_Manager::getInstance()->isReservingCorridors(AMW_Planner::getModuleIdentifier());
         bool corridorsAreReserved = false;
         if (!corridors.empty())
             corridorsAreReserved = AMW_Corridor_Manager::getInstance()->corridorsAreReserved(AMW_Planner::getModuleIdentifier(), &corridors);
@@ -151,11 +148,13 @@ void AMW_Command_Composite_Nav_Assigned_Altitude::updateStatus() {
             else if (AMW_Corridor_Manager::getInstance()->reservationHasFailed(AMW_Planner::getModuleIdentifier())) {
                 failed = true;
                 currentState = FAILED;
+                clearReservedCorridors();
             }
-            else if (!isReservingCorridors) {
+            else if (!AMW_Corridor_Manager::getInstance()->isReservingCorridors(AMW_Planner::getModuleIdentifier())) {
                 if (!AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors)) {
                     failed = true;
                     currentState = FAILED;
+                    clearReservedCorridors();
                 }
             }
         }

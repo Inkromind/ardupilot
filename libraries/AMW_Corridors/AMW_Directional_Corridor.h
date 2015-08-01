@@ -21,18 +21,6 @@ public:
         return (checkFullCorridor || !completed);
     }
 
-    virtual void setReverseDirection(bool newValue) {
-        reverseDirection = newValue;
-    }
-
-    virtual void setInCorridor(bool newValue) {
-        inCorridor = newValue;
-    }
-
-    virtual void setCompleted(bool newValue) {
-        completed = newValue;
-    }
-
     virtual Vector3f getStartPoint(bool checkFullCorridor) const {
         if (checkFullCorridor || !inCorridor) {
             if (!reverseDirection)
@@ -54,20 +42,10 @@ public:
 
 
 protected:
-    bool reverseDirection;
-    bool inCorridor;
-    bool completed;
-
     AMW_Directional_Corridor() : AMW_Corridor() {
-        reverseDirection = false;
-        completed = false;
-        inCorridor = false;
     };
 
     AMW_Directional_Corridor(uint8_t id) : AMW_Corridor(id) {
-        reverseDirection = false;
-        completed = false;
-        inCorridor = false;
     };
 
     virtual Vector3f getStart(void) const = 0;

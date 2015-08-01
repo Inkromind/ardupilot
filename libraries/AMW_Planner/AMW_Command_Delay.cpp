@@ -18,12 +18,12 @@ AMW_Command_Delay::AMW_Command_Delay(uint32_t delay) : AMW_Command() {
 void AMW_Command_Delay::run(bool attempt) {
     updateStatus();
 
+    if (completed)
+        return;
+
     AC_Facade::getFacade()->loiter();
 
     if (commandStarted)
-        return;
-
-    if (completed)
         return;
 
     this->start = AC_Facade::getFacade()->getTimeMillis();

@@ -61,3 +61,11 @@ bool CorridorManagerMock::corridorsAreReserved(const AMW_Module_Identifier* modu
 bool CorridorManagerMock::isReservingCorridors(const AMW_Module_Identifier* module) const {
     return mock("CorManager").actualCall("isReservingCorridors").onObject(const_cast<CorridorManagerMock*>(this)).returnIntValueOrDefault(1);
 }
+
+bool CorridorManagerMock::reservationHasFailed(const AMW_Module_Identifier* module) const {
+    return mock("CorManager").actualCall("reservationHasFailed").onObject(const_cast<CorridorManagerMock*>(this)).returnIntValueOrDefault(1);
+}
+
+float CorridorManagerMock::getReservedAltitude(const AMW_Module_Identifier* module) const {
+    return (float) mock("CorManager").actualCall("getReservedAltitude").onObject(const_cast<CorridorManagerMock*>(this)).returnDoubleValueOrDefault(1);
+}

@@ -12,7 +12,7 @@
 #include "AMW_Planner.h"
 
 void AMW_Command_Nav_Assigned_Altitude::run(bool attempt) {
-    if (!commandStarted)
+    if (!commandStarted && !completed)
         this->destination.z = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
     if (this->destination.z == 0)
         return;

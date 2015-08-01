@@ -15,7 +15,7 @@
  */
 class AMW_Command_Takeoff_Assigned_Altitude: public AMW_Command_Takeoff {
 public:
-    AMW_Command_Takeoff_Assigned_Altitude() : AMW_Command_Takeoff(1500) {};
+    AMW_Command_Takeoff_Assigned_Altitude() : AMW_Command_Takeoff(0) {};
 
     void run(bool attempt);
 };

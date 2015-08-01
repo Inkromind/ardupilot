@@ -91,17 +91,38 @@ public:
     /**
      * Set if this corridor is being travelled along in the opposite direction
      */
-    virtual void setReverseDirection(bool newValue) {}
+    virtual void setReverseDirection(bool newValue) {
+        reverseDirection = newValue;
+    }
+
+    /**
+     * Check if this corridor is being travelled along in the opposite direction
+     */
+    virtual bool isReverseDirection() { return reverseDirection; }
 
     /**
      * Set if currently in this corridor
      */
-    virtual void setInCorridor(bool newValue) {}
+    virtual void setInCorridor(bool newValue) {
+        inCorridor = newValue;
+    }
 
     /**
-     * Set if currently in this corridor
+     * Check if currently in this corridor
      */
-    virtual void setCompleted(bool newValue) {}
+    virtual bool isInCorridor() { return inCorridor; }
+
+    /**
+     * Set if this corridor has been completed
+     */
+    virtual void setCompleted(bool newValue) {
+        completed = newValue;
+    }
+
+    /**
+     * Check if this corridor has been completed
+     */
+    virtual bool isCompleted() { return completed; }
 
     /**
      * Get the starting point of this corridor
@@ -118,6 +139,10 @@ public:
 
     static uint8_t nextId;
 protected:
+    bool reverseDirection;
+    bool inCorridor;
+    bool completed;
+
     AMW_Corridor() {
         this->altitude = 0;
         this->id = AMW_Corridor::nextId;
@@ -125,10 +150,16 @@ protected:
             AMW_Corridor::nextId = 0;
         else
             AMW_Corridor::nextId++;
+        reverseDirection = false;
+        completed = false;
+        inCorridor = false;
     }
     AMW_Corridor(uint8_t id) {
         this->altitude = 0;
         this->id = id;
+        reverseDirection = false;
+        completed = false;
+        inCorridor = false;
     }
 
     float altitude;

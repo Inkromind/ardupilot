@@ -34,7 +34,8 @@ public:
     }
 
     bool destinationReached(const Vector3f& destination, float radius) {
-        return mock("Facade").actualCall("destinationReached").onObject(this).returnIntValueOrDefault(1);
+        return mock("Facade").actualCall("destinationReached").onObject(this).withDoubleParameter("destinationX", destination.x).
+                withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", destination.z).returnIntValueOrDefault(1);
     }
 
     bool isLanded(void) {
@@ -54,16 +55,16 @@ public:
     }
 
     bool takeOff(float altitude) {
-        return (bool) mock("Facade").actualCall("takeoff").onObject(this).withParameter("altitude", altitude).returnIntValueOrDefault(1);
+        return (bool) mock("Facade").actualCall("takeoff").onObject(this).withDoubleParameter("altitude", altitude).returnIntValueOrDefault(1);
     }
 
     bool navigateTo(const Vector3f& destination) {
-        return (bool) mock("Facade").actualCall("takeoff").onObject(this).withParameter("destinationX", destination.x).
-                withParameter("destinationY", destination.y).withParameter("destinationZ", destination.z).returnIntValueOrDefault(1);
+        return (bool) mock("Facade").actualCall("navigateTo").onObject(this).withDoubleParameter("destinationX", destination.x).
+                withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", destination.z).returnIntValueOrDefault(1);
     }
 
     bool navigateToAltitude(float altitude) {
-        return (bool) mock("Facade").actualCall("navigateToAltitude").onObject(this).withParameter("altitude", altitude).returnIntValueOrDefault(1);
+        return (bool) mock("Facade").actualCall("navigateToAltitude").onObject(this).withDoubleParameter("altitude", altitude).returnIntValueOrDefault(1);
     }
 
     bool armMotors() {
@@ -72,6 +73,10 @@ public:
 
     bool loiter() {
         return (bool) mock("Facade").actualCall("loiter").onObject(this).returnIntValueOrDefault(1);
+    }
+
+    bool altitudeReached(float altitude) {
+        return (bool) mock("Facade").actualCall("altitudeReached").onObject(this).withDoubleParameter("altitude", altitude).returnIntValueOrDefault(1);
     }
 };
 

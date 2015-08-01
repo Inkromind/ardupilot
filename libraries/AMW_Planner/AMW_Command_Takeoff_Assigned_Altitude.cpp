@@ -19,10 +19,11 @@ void AMW_Command_Takeoff_Assigned_Altitude::run(bool attempt) {
         altitude = AMW_Corridor_Manager::getInstance()->getReservedAltitude(AMW_Planner::getModuleIdentifier());
 #ifdef AMW_COMMAND_DEBUG
         if (altitude)
-            AC_CommunicationFacade::sendFormattedDebug(PSTR("Got assigned altitude (%.2fm)"), altitude / 1000);
+            AC_CommunicationFacade::sendFormattedDebug(PSTR("Got assigned altitude (%.2fm)"), altitude / 100);
 #endif
     }
 
-    AMW_Command_Takeoff::run(attempt);
+    if (altitude)
+        AMW_Command_Takeoff::run(attempt);
 
 }
