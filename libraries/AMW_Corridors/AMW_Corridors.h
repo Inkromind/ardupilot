@@ -12,6 +12,7 @@
 #include "AMW_Corridor.h"
 #include "AMW_Vertical_Corridor.h"
 #include "AMW_Horizontal_Corridor.h"
+#include "AMW_Position_Corridor.h"
 #include "AMW_Corridor_Conflict.h"
 
 

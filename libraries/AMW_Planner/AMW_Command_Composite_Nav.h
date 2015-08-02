@@ -45,7 +45,7 @@ public:
     /**
      * @param destination The location to fly to and land at (relative to origin)
      */
-    AMW_Command_Composite_Nav(Vector2f destination, bool returningHome = false);
+    AMW_Command_Composite_Nav(Vector2f newDestination, bool returnHome = false);
     virtual ~AMW_Command_Composite_Nav() {
         clearReservedCorridors();
     }

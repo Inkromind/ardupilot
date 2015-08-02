@@ -25,6 +25,7 @@
 #define CM_MAX_ROUND_DELAY_TIMEOUT 5
 
 //Includes
+#include <stdlib.h>
 
 class DummyCorridorManager : public AMW_Corridor_Manager {
 public:
@@ -122,6 +123,7 @@ TEST_GROUP(CorridorManager)
 {
     void setup()
     {
+        srand(1);
         CMfacadeMock = new FacadeMock();
         FacadeMock::setFacade(CMfacadeMock);
         CMcommFacadeMock = new CommunicationFacadeMock();

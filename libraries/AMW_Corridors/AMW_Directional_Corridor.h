@@ -45,7 +45,7 @@ protected:
     AMW_Directional_Corridor() : AMW_Corridor() {
     };
 
-    AMW_Directional_Corridor(uint8_t id) : AMW_Corridor(id) {
+    AMW_Directional_Corridor(uint8_t newId) : AMW_Corridor(newId) {
     };
 
     virtual Vector3f getStart(void) const = 0;

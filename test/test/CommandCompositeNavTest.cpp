@@ -20,6 +20,9 @@
 #include  "../mocks/BatteryMonitorMock.h"
 #include  "../mocks/TaskPlannerMock.h"
 
+//Includes
+#include <stdlib.h>
+
 CorridorManagerMock* CCNcorridorManagerMock = 0;
 FacadeMock* CCNfacadeMock = 0;
 BattMonitorMock* CCNbatteryMock = 0;
@@ -91,6 +94,7 @@ TEST_GROUP(CommandCompositeNav)
 {
     void setup()
     {
+        srand(1);
         CCNcommand = new DummyCompositeNavCommand();
         CCNcorridorManagerMock = new CorridorManagerMock();
         CorridorManagerMock::setInstance(CCNcorridorManagerMock);

@@ -2,6 +2,7 @@
 
 #include <AC_CommunicationFacade.h>
 #include <GCS.h>
+#include <AMW_Corridors.h>
 
 void AC_CommunicationFacade::broadcastReservationRequest(uint8_t reservationId, AMW_List<AMW_Corridor*>* corridors) {
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
@@ -43,17 +44,17 @@ void AC_CommunicationFacade::sendFormattedDebug(const prog_char_t *str, ...) {
 void GCS_MAVLINK::broadcastReservationRequest(uint8_t reservationId, AMW_Corridor* corridor) {
     float p1x, p1y, p2x, p2y;
     switch (corridor->getType()) {
-    case AMW_Corridor::Type::HORIZONTAL: {
+    case AMW_Corridor::HORIZONTAL: {
         Vector3f startpoint = corridor->getStartPoint(true);
-        Vector3f endpoint = corridor->getEndPoint(true);
+        Vector3f endpoint = corridor->getEndPoint();
         p1x = startpoint.x;
         p1y = startpoint.y;
         p2x = endpoint.x;
         p2y = endpoint.y;
         break;
     }
-    case AMW_Corridor::Type::VERTICAL:
-    case AMW_Corridor::Type::POSITION: {
+    case AMW_Corridor::VERTICAL:
+    case AMW_Corridor::POSITION: {
         Vector3f startpoint = corridor->getStartPoint(true);
         p1x = startpoint.x;
         p1y = startpoint.y;
@@ -61,6 +62,8 @@ void GCS_MAVLINK::broadcastReservationRequest(uint8_t reservationId, AMW_Corrido
         p2y = 0;
         break;
     }
+    default:
+        break;
     }
     mavlink_msg_mad_request_corridor_reservation_send(chan, 0, reservationId, corridor->getId(), (uint8_t)corridor->getType(), corridor->getAltitude(), p1x, p1y, p2x, p2y);
 }
@@ -68,24 +71,26 @@ void GCS_MAVLINK::broadcastReservationRequest(uint8_t reservationId, AMW_Corrido
 void GCS_MAVLINK::broadcastCorridor(AMW_Corridor* corridor) {
     float p1x, p1y, p2x, p2y;
     switch (corridor->getType()) {
-    case AMW_Corridor::Type::HORIZONTAL: {
+    case AMW_Corridor::HORIZONTAL: {
         Vector3f startpoint = corridor->getStartPoint(true);
-        Vector3f endpoint = corridor->getEndPoint(true);
+        Vector3f endpoint = corridor->getEndPoint();
         p1x = startpoint.x;
         p1y = startpoint.y;
         p2x = endpoint.x;
         p2y = endpoint.y;
         break;
     }
-    case AMW_Corridor::Type::VERTICAL:
-    case AMW_Corridor::Type::POSITION: {
-        Vector3f startpoint = corridor->getStartPoint(true);
+    case AMW_Corridor::VERTICAL:
+    case AMW_Corridor::POSITION: {
+        Vector3f startpoint = corridor->getStartPoint();
         p1x = startpoint.x;
         p1y = startpoint.y;
         p2x = 0;
         p2y = 0;
         break;
     }
+    default:
+        break;
     }
     mavlink_msg_mad_corridor_announcement_send(chan, 0, corridor->getId(), (uint8_t)corridor->getType(), corridor->getAltitude(), p1x, p1y, p2x, p2y);
 }

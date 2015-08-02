@@ -13,9 +13,9 @@
 
 class AMW_Vertical_Corridor: public AMW_Directional_Corridor {
 public:
-    AMW_Vertical_Corridor(Vector2f location);
-    AMW_Vertical_Corridor(Vector2f location, float altitude);
-    AMW_Vertical_Corridor(Vector2f location, float altitude, uint8_t id);
+    AMW_Vertical_Corridor(Vector2f newLocation);
+    AMW_Vertical_Corridor(Vector2f newLocation, float newAltitude);
+    AMW_Vertical_Corridor(Vector2f newLocation, float newAltitude, uint8_t newId);
     virtual ~AMW_Vertical_Corridor() {
     }
 

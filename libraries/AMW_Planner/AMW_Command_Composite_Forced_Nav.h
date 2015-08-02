@@ -16,8 +16,8 @@
  */
 class AMW_Command_Composite_Forced_Nav: public AMW_Command_Composite_Nav {
 public:
-    AMW_Command_Composite_Forced_Nav(Vector2f destination, bool returningHome = false) :
-        AMW_Command_Composite_Nav(destination, returningHome) {};
+    AMW_Command_Composite_Forced_Nav(Vector2f newDestination, bool returnHome = false) :
+        AMW_Command_Composite_Nav(newDestination, returnHome) {};
     virtual void startCommand(bool attempt);
 
     virtual void updateStatus(void);

@@ -154,9 +154,9 @@ protected:
         completed = false;
         inCorridor = false;
     }
-    AMW_Corridor(uint8_t id) {
+    AMW_Corridor(uint8_t newId) {
         this->altitude = 0;
-        this->id = id;
+        this->id = newId;
         reverseDirection = false;
         completed = false;
         inCorridor = false;

@@ -46,10 +46,10 @@ public:
     std::list<std::list<AMW_Corridor*>*> reserveCorridorsLists;
 
     static void setInstance(CorridorManagerMock* instance) {
-        AMW_Corridor_Manager::module = instance;
+        AMW_Corridor_Manager::instance = instance;
     }
     static void deleteInstance() {
-        AMW_Corridor_Manager::module = 0;
+        AMW_Corridor_Manager::instance = 0;
     }
     bool markCorridorsReserved(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors);
 

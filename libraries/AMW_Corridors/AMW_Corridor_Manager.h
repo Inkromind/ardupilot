@@ -157,7 +157,7 @@ public:
 protected:
     virtual ~AMW_Corridor_Manager() { }
 
-    static AMW_Corridor_Manager* module;
+    static AMW_Corridor_Manager* instance;
     AMW_Corridor_Manager();
 
     AMW_List<AMW_Corridor*> reservedCorridors;

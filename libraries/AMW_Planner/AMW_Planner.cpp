@@ -8,7 +8,6 @@
 #include "AMW_Planner.h"
 #include "AMW_Sequencer.h"
 #include <AC_Facade.h>
-#include <time.h>
 #include <stdlib.h>
 
 bool AMW_Planner::previousToggleState = true;
@@ -18,7 +17,7 @@ AMW_Module_Identifier* AMW_Planner::moduleIdentifier = new AMW_Module_Identifier
 void AMW_Planner::initPlanner() {
     if (initialized)
         return;
-    srand(time(NULL));
+    srand(AC_Facade::getFacade()->getTimeMillis());
     if (AC_Facade::getFacade()->initFlightMode()) {
         AMW_Task_Planner::getInstance()->init();
         AMW_Sequencer::getInstance()->init();

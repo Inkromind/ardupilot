@@ -7,15 +7,15 @@
 
 #include "AMW_Horizontal_Corridor.h"
 
-AMW_Horizontal_Corridor::AMW_Horizontal_Corridor(Vector2f startLocation, Vector2f destination) : AMW_Directional_Corridor() {
+AMW_Horizontal_Corridor::AMW_Horizontal_Corridor(Vector2f startLocation, Vector2f newDestination) : AMW_Directional_Corridor() {
     start = startLocation;
-    this->destination = destination;
+    this->destination = newDestination;
 }
 
-AMW_Horizontal_Corridor::AMW_Horizontal_Corridor(Vector2f startLocation, Vector2f destination, float altitude, uint8_t id) : AMW_Directional_Corridor(id) {
+AMW_Horizontal_Corridor::AMW_Horizontal_Corridor(Vector2f startLocation, Vector2f newDestination, float newAltitude, uint8_t newId) : AMW_Directional_Corridor(newId) {
     start = startLocation;
-    this->destination = destination;
-    this->altitude = altitude;
+    this->destination = newDestination;
+    this->altitude = newAltitude;
 }
 
 Vector3f AMW_Horizontal_Corridor::getStart(void) const {

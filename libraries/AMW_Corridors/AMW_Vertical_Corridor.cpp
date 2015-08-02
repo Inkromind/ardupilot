@@ -7,18 +7,18 @@
 
 #include "AMW_Vertical_Corridor.h"
 
-AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location) : AMW_Directional_Corridor() {
-    this->location = location;
+AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f newLocation) : AMW_Directional_Corridor() {
+    this->location = newLocation;
 }
 
-AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location, float altitude) {
-    this->location = location;
-    this->altitude = altitude;
+AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f newLocation, float newAltitude) {
+    this->location = newLocation;
+    this->altitude = newAltitude;
 }
 
-AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f location, float altitude, uint8_t id) : AMW_Directional_Corridor(id) {
-    this->altitude = altitude;
-    this->location = location;
+AMW_Vertical_Corridor::AMW_Vertical_Corridor(Vector2f newLocation, float newAltitude, uint8_t newId) : AMW_Directional_Corridor(newId) {
+    this->altitude = newAltitude;
+    this->location = newLocation;
 }
 
 Vector3f AMW_Vertical_Corridor::getStart(void) const {

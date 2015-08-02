@@ -13,7 +13,7 @@
 #include <AC_CommunicationFacade.h>
 #include <AC_Facade.h>
 
-AMW_Corridor_Manager* AMW_Corridor_Manager::module = 0;
+AMW_Corridor_Manager* AMW_Corridor_Manager::instance = 0;
 uint8_t AMW_Corridor::nextId = 0;
 
 AMW_Corridor_Manager::AMW_Corridor_Manager() {
@@ -30,7 +30,7 @@ AMW_Corridor_Manager::AMW_Corridor_Manager() {
     maxFailures = 0;
 }
 
-bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures) {
+bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t newMaxFailures) {
     if (!module || !corridors || corridors->empty() || !canReserveCorridors(module))
         return false;
     setNewModule(module);
@@ -49,17 +49,17 @@ bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module,
     failures = 0;
     failed = false;
     preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
-    this->maxFailures = maxFailures;
+    this->maxFailures = newMaxFailures;
     startReservationRound();
 
     return true;
 }
 
 AMW_Corridor_Manager* AMW_Corridor_Manager::getInstance(void) {
-    if (!AMW_Corridor_Manager::module) {
-        AMW_Corridor_Manager::module = new AMW_Corridor_Manager();
+    if (!AMW_Corridor_Manager::instance) {
+        AMW_Corridor_Manager::instance = new AMW_Corridor_Manager();
     }
-    return AMW_Corridor_Manager::module;
+    return AMW_Corridor_Manager::instance;
 }
 
 bool AMW_Corridor_Manager::canReserveCorridors(const AMW_Module_Identifier* module) const {

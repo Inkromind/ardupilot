@@ -7,6 +7,7 @@
 
 #include "AMW_Command_Composite_Nav.h"
 #include "AMW_Command_Nav_Assigned_Altitude.h"
+#include "AMW_Command_Nav_Altitude.h"
 #include "AMW_Command_Takeoff_Assigned_Altitude.h"
 #include "AMW_Command_Land.h"
 #include "AMW_Command_Delay.h"
@@ -17,11 +18,11 @@
 #include "AMW_Task_Planner.h"
 #include <stdint.h>
 
-AMW_Command_Composite_Nav::AMW_Command_Composite_Nav(Vector2f newDestination, bool returningHome) : AMW_Command_Composite() {
+AMW_Command_Composite_Nav::AMW_Command_Composite_Nav(Vector2f newDestination, bool returnHome) : AMW_Command_Composite() {
     destination = Vector3f(newDestination.x, newDestination.y, 0);
     currentState = INIT;
 #ifdef AMW_COMMAND_ONLY_LAND_AT_BASE
-    this->returningHome = returningHome;
+    this->returningHome = returnHome;
 #else
     this->returningHome = true;
 #endif

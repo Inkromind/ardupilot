@@ -1482,18 +1482,20 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         mavlink_msg_mad_request_corridor_reservation_decode(msg, &packet);
         AMW_Corridor* corridor = 0;
         switch (packet.corridor_type) {
-        case AMW_Corridor::Type::HORIZONTAL: {
+        case AMW_Corridor::HORIZONTAL: {
             corridor = new AMW_Horizontal_Corridor(Vector2f(packet.p1x, packet.p1y), Vector2f(packet.p2x, packet.p2y), packet.alt, packet.corridor_id);
             break;
         }
-        case AMW_Corridor::Type::VERTICAL: {
+        case AMW_Corridor::VERTICAL: {
             corridor = new AMW_Vertical_Corridor(Vector2f(packet.p1x, packet.p1y), packet.alt, packet.corridor_id);
             break;
         }
-        case AMW_Corridor::Type::POSITION: {
+        case AMW_Corridor::POSITION: {
             corridor = new AMW_Position_Corridor(Vector3f(packet.p1x, packet.p1y, packet.alt));
             break;
         }
+        default:
+            break;
         }
         if (corridor) {
             AMW_List<AMW_Corridor*> corridors;
@@ -1509,31 +1511,33 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         }
         break;
     }
-    case MAD_CORRIDOR_RESERVATION_CONFLICT: {
+    case MAVLINK_MSG_ID_MAD_CORRIDOR_RESERVATION_CONFLICT: {
         mavlink_mad_corridor_reservation_conflict_t packet;
         mavlink_msg_mad_corridor_reservation_conflict_decode(msg, &packet);
-        AMW_Corridor_Conflict conflict = AMW_Corridor_Conflict<packet.preliminary_type, packet.preliminary_id, packet.preliminary_alt,
-        packet.conflicting_type, packet.conflicting_id, packet.conflicting_alt>;
+        AMW_Corridor_Conflict conflict(packet.preliminary_type, packet.preliminary_id, packet.preliminary_alt,
+        packet.conflicting_type, packet.conflicting_id, packet.conflicting_alt);
         AMW_Facade::reservationConflictReceived(packet.reservation_id, &conflict);
         break;
     }
-    case MAD_CORRIDOR_ANNOUNCEMENT: {
+    case MAVLINK_MSG_ID_MAD_CORRIDOR_ANNOUNCEMENT: {
         mavlink_mad_corridor_announcement_t packet;
         mavlink_msg_mad_corridor_announcement_decode(msg, &packet);
         AMW_Corridor* corridor = 0;
         switch (packet.corridor_type) {
-        case AMW_Corridor::Type::HORIZONTAL: {
+        case AMW_Corridor::HORIZONTAL: {
             corridor = new AMW_Horizontal_Corridor(Vector2f(packet.p1x, packet.p1y), Vector2f(packet.p2x, packet.p2y), packet.alt, packet.corridor_id);
             break;
         }
-        case AMW_Corridor::Type::VERTICAL: {
+        case AMW_Corridor::VERTICAL: {
             corridor = new AMW_Vertical_Corridor(Vector2f(packet.p1x, packet.p1y), packet.alt, packet.corridor_id);
             break;
         }
-        case AMW_Corridor::Type::POSITION: {
+        case AMW_Corridor::POSITION: {
             corridor = new AMW_Position_Corridor(Vector3f(packet.p1x, packet.p1y, packet.alt));
             break;
         }
+        default:
+            break;
         }
         if (corridor) {
             AMW_List<AMW_Corridor*> corridors;
