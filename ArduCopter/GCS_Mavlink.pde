@@ -1550,6 +1550,15 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x / 1000, currentLocation.y / 1000, currentLocation.z / 1000);
         break;
     }
+    case MAVLINK_MSG_ID_MAD_SET_HOMEBASE: {
+        mavlink_mad_set_homebase_t packet;
+        MAD_setHomebase(Vector2f(packet.x, packet.y));
+        break;
+    }
+    case MAVLINK_MSG_ID_MAD_RESET_HOMEBASE: {
+        MAD_resetHomebase();
+        break;
+    }
 
     }     // end switch
 } // end handle mavlink

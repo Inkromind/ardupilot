@@ -9,11 +9,23 @@ AC_Facade* AC_Facade::facade = 0;
 AC_ReactiveFacade* AC_ReactiveFacade::reactiveFacade = 0;
 
 bool MAD_navInitialized = false;
-Vector3f MAD_origin;
 
-void MAD_updateOrigin(void);
+// Takeoff location relative to homebase
+Vector3f MAD_takeoffLocation;
+// Homebase relative to origin
+Vector3f MAD_homebase;
+
+void MAD_updateTakeoffLocation(void);
+void MAD_resetHomebase(void);
+void MAD_setHomebase(Vector2f newHomebase);
 bool MAD_inControl(void);
 bool MAD_relativeDestinationReached(const Vector3f& destination, float radius = NEAR_DESTINATION_RADIUS);
+Vector3f MAD_convertExternToIntern(Vector3f position) {
+    return position - MAD_takeoffLocation - MAD_homebase;
+}
+Vector3f MAD_convertInternToExtern(Vector3f position) {
+    return position + MAD_takeoffLocation + MAD_homebase;
+}
 
 bool MAD_inControl() {
     if (control_mode != MAD)
@@ -54,12 +66,12 @@ bool AC_Facade::land() {
 bool AC_ReactiveFacade::navigateTo(const Vector3f& destination) {
     if (!initFlightMode())
         return false;
-    return mad_nav_start(destination + MAD_origin);
+    return mad_nav_start(MAD_convertExternToIntern(destination));
 }
 bool AC_Facade::navigateTo(const Vector3f& destination) {
     if (!MAD_inControl())
         return false;
-    return mad_nav_start(destination + MAD_origin);
+    return mad_nav_start(MAD_convertExternToIntern(destination));
 }
 
 bool AC_ReactiveFacade::navigateToAltitude(float altitude) {
@@ -129,7 +141,7 @@ bool AC_Facade::destinationReached(const Vector3f& destination, float radius) {
     if (control_mode != MAD)
         return false;
 
-    Vector3f relativeDestination = destination + MAD_origin;
+    Vector3f relativeDestination = MAD_convertExternToIntern(destination);
 
     return MAD_relativeDestinationReached(relativeDestination, radius);
 }
@@ -156,7 +168,7 @@ Vector3f AC_Facade::getRelativePosition() {
 }
 
 Vector3f AC_Facade::getRealPosition() {
-    return inertial_nav.get_position() - MAD_origin;
+    return MAD_convertInternToExtern(inertial_nav.get_position());
 }
 
 uint32_t AC_Facade::getCH8Position(void) {
@@ -175,10 +187,16 @@ uint32_t AC_Facade::getTimeMillis(void) {
     return hal.scheduler->millis();
 }
 
-void MAD_updateOrigin(void) {
+void MAD_updateTakeoffLocation(void) {
     if (MAD_navInitialized)
-        MAD_origin = MAD_origin - inertial_nav.get_position();
+        MAD_takeoffLocation = MAD_takeoffLocation + inertial_nav.get_position();
     else
         MAD_navInitialized = true;
+}
+void MAD_setHomebase(Vector2f newHomebase) {
+    MAD_homebase = Vector3f(newHomebase.x, newHomebase.y, 0);
+}
+void MAD_resetHomebase(void) {
+    MAD_takeoffLocation = Vector3f();
 }
 

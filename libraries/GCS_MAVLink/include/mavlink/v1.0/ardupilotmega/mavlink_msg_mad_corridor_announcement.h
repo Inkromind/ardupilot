@@ -1,6 +1,6 @@
 // MESSAGE MAD_CORRIDOR_ANNOUNCEMENT PACKING
 
-#define MAVLINK_MSG_ID_MAD_CORRIDOR_ANNOUNCEMENT 202
+#define MAVLINK_MSG_ID_MAD_CORRIDOR_ANNOUNCEMENT 204
 
 typedef struct __mavlink_mad_corridor_announcement_t
 {
@@ -15,10 +15,10 @@ typedef struct __mavlink_mad_corridor_announcement_t
 } mavlink_mad_corridor_announcement_t;
 
 #define MAVLINK_MSG_ID_MAD_CORRIDOR_ANNOUNCEMENT_LEN 23
-#define MAVLINK_MSG_ID_202_LEN 23
+#define MAVLINK_MSG_ID_204_LEN 23
 
 #define MAVLINK_MSG_ID_MAD_CORRIDOR_ANNOUNCEMENT_CRC 83
-#define MAVLINK_MSG_ID_202_CRC 83
+#define MAVLINK_MSG_ID_204_CRC 83
 
 
 

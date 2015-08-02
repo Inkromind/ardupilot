@@ -11,7 +11,7 @@ static void init_home()
 
     ahrs.set_home(loc);
 
-    MAD_updateOrigin();
+    MAD_updateTakeoffLocation();
 
     inertial_nav.setup_home_position();
 

@@ -88,3 +88,7 @@ bool AMW_Planner::isBatteryEmpty() {
 void AMW_Planner::markBatteryEmpty() {
     AMW_Task_Planner::getInstance()->markBatteryEmpty();
 }
+
+void AMW_Planner::setHomebase(Vector2f newHomebase) {
+    AMW_Task_Planner::getInstance()->setHomeBase(newHomebase);
+}

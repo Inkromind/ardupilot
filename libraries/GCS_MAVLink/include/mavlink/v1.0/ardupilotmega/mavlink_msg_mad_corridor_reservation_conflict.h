@@ -1,6 +1,6 @@
 // MESSAGE MAD_CORRIDOR_RESERVATION_CONFLICT PACKING
 
-#define MAVLINK_MSG_ID_MAD_CORRIDOR_RESERVATION_CONFLICT 201
+#define MAVLINK_MSG_ID_MAD_CORRIDOR_RESERVATION_CONFLICT 203
 
 typedef struct __mavlink_mad_corridor_reservation_conflict_t
 {
@@ -16,10 +16,10 @@ typedef struct __mavlink_mad_corridor_reservation_conflict_t
 } mavlink_mad_corridor_reservation_conflict_t;
 
 #define MAVLINK_MSG_ID_MAD_CORRIDOR_RESERVATION_CONFLICT_LEN 9
-#define MAVLINK_MSG_ID_201_LEN 9
+#define MAVLINK_MSG_ID_203_LEN 9
 
 #define MAVLINK_MSG_ID_MAD_CORRIDOR_RESERVATION_CONFLICT_CRC 17
-#define MAVLINK_MSG_ID_201_CRC 17
+#define MAVLINK_MSG_ID_203_CRC 17
 
 
 

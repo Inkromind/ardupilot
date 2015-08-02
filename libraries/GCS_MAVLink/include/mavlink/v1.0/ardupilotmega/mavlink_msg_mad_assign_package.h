@@ -1,6 +1,6 @@
 // MESSAGE MAD_ASSIGN_PACKAGE PACKING
 
-#define MAVLINK_MSG_ID_MAD_ASSIGN_PACKAGE 198
+#define MAVLINK_MSG_ID_MAD_ASSIGN_PACKAGE 200
 
 typedef struct __mavlink_mad_assign_package_t
 {
@@ -12,10 +12,10 @@ typedef struct __mavlink_mad_assign_package_t
 } mavlink_mad_assign_package_t;
 
 #define MAVLINK_MSG_ID_MAD_ASSIGN_PACKAGE_LEN 17
-#define MAVLINK_MSG_ID_198_LEN 17
+#define MAVLINK_MSG_ID_200_LEN 17
 
 #define MAVLINK_MSG_ID_MAD_ASSIGN_PACKAGE_CRC 254
-#define MAVLINK_MSG_ID_198_CRC 254
+#define MAVLINK_MSG_ID_200_CRC 254
 
 
 

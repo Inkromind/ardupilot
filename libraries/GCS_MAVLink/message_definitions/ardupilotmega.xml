@@ -481,7 +481,19 @@
       <field type="float" name="alt">Current altitude</field>
     </message>
     
-    <message name="MAD_REQUEST_PACKAGE_ESTIMATE" id="196">
+    <message name="MAD_SET_HOMEBASE" id="196">
+      <description>Set the location of the homebase relative to the origin</description>
+      <field type="float" name="x">X Coordinate of homebase</field>
+      <field type="float" name="y">Y Coordinate of homebase</field>
+    </message>
+    
+    <message name="MAD_RESET_HOMEBASE" id="197">
+      <description>Reset the homebase to the last takeoff location</description>
+      <field type="uint8_t" name="target_system">System which should execute the command</field>
+      <field type="uint8_t" name="target_component">Component which should execute the command, 0 for all components</field>
+    </message>
+    
+    <message name="MAD_REQUEST_PACKAGE_ESTIMATE" id="198">
       <description>Request an estimate for a new package to be transported</description>
       <field type="uint8_t" name="package_id">Unique package id</field>
       <field type="float" name="pickup_x">X Coordinate of pickup location</field>
@@ -490,13 +502,13 @@
       <field type="float" name="delivery_y">Y Coordinate of delivery location</field>
     </message>
     
-    <message name="MAD_PACKAGE_ESTIMATE" id="197">
+    <message name="MAD_PACKAGE_ESTIMATE" id="199">
       <description>Reply an estimate for a new package to be transported</description>
       <field type="uint8_t" name="package_id">Unique package id</field>
       <field type="float" name="estimate">Package estimate</field>
     </message>
     
-    <message name="MAD_ASSIGN_PACKAGE" id="198">
+    <message name="MAD_ASSIGN_PACKAGE" id="200">
       <description>Assign a new package to be transported</description>
       <field type="uint8_t" name="package_id">Unique package id</field>
       <field type="float" name="pickup_x">X Coordinate of pickup location</field>
@@ -505,13 +517,13 @@
       <field type="float" name="delivery_y">Y Coordinate of delivery location</field>
     </message>
     
-    <message name="MAD_CONFIRM_PACKAGE" id="199">
+    <message name="MAD_CONFIRM_PACKAGE" id="201">
       <description>Confirm succesfull assignment of a new package to be transported</description>
       <field type="uint8_t" name="package_id">Unique package id</field>
       <field type="float" name="estimate">Package estimate</field>
     </message>
     
-    <message name="MAD_REQUEST_CORRIDOR_RESERVATION" id="200">
+    <message name="MAD_REQUEST_CORRIDOR_RESERVATION" id="202">
       <description>Request a reservation for a new corridor</description>
       <field type="uint8_t" name="drone_id">Requesting drone id</field>
       <field type="uint8_t" name="reservation_id">Reservation ID</field>
@@ -524,7 +536,7 @@
       <field type="float" name="p2y">Point 2: Y</field>
     </message>
     
-    <message name="MAD_CORRIDOR_RESERVATION_CONFLICT" id="201">
+    <message name="MAD_CORRIDOR_RESERVATION_CONFLICT" id="203">
       <description>Reply a corridor reservation conflict</description>
       <field type="uint8_t" name="drone_id">Requesting drone id</field>
       <field type="uint8_t" name="conflicting_drone">Conflicting drone id</field>
@@ -537,7 +549,7 @@
       <field type="uint8_t" name="conflicting_alt">Conflicting Corridor Altitude</field>
     </message>
     
-    <message name="MAD_CORRIDOR_ANNOUNCEMENT" id="202">
+    <message name="MAD_CORRIDOR_ANNOUNCEMENT" id="204">
       <description>Announcement of reserved corridor</description>
       <field type="uint8_t" name="drone_id">Drone id</field>
       <field type="uint8_t" name="corridor_id">Corridor ID</field>

@@ -14,6 +14,7 @@
 
 #include "AMW_Task_Planner.h"
 #include <AMW_Modules.h>
+#include "../AP_Math/vector2.h"
 
 /**
  * Facade to the Planner Module
@@ -47,6 +48,11 @@ public:
      * Return and land at the home location
      */
     static void returnHome(void);
+
+    /**
+     * Set the homebase location
+     */
+    static void setHomebase(Vector2f newHomebase);
 
     /**
      * Check if the battery is empty

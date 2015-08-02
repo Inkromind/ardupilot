@@ -1,6 +1,6 @@
 // MESSAGE MAD_REQUEST_PACKAGE_ESTIMATE PACKING
 
-#define MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE_ESTIMATE 196
+#define MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE_ESTIMATE 198
 
 typedef struct __mavlink_mad_request_package_estimate_t
 {
@@ -12,10 +12,10 @@ typedef struct __mavlink_mad_request_package_estimate_t
 } mavlink_mad_request_package_estimate_t;
 
 #define MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE_ESTIMATE_LEN 17
-#define MAVLINK_MSG_ID_196_LEN 17
+#define MAVLINK_MSG_ID_198_LEN 17
 
 #define MAVLINK_MSG_ID_MAD_REQUEST_PACKAGE_ESTIMATE_CRC 154
-#define MAVLINK_MSG_ID_196_CRC 154
+#define MAVLINK_MSG_ID_198_CRC 154
 
 
 

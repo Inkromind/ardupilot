@@ -1,6 +1,6 @@
 // MESSAGE MAD_PACKAGE_ESTIMATE PACKING
 
-#define MAVLINK_MSG_ID_MAD_PACKAGE_ESTIMATE 197
+#define MAVLINK_MSG_ID_MAD_PACKAGE_ESTIMATE 199
 
 typedef struct __mavlink_mad_package_estimate_t
 {
@@ -9,10 +9,10 @@ typedef struct __mavlink_mad_package_estimate_t
 } mavlink_mad_package_estimate_t;
 
 #define MAVLINK_MSG_ID_MAD_PACKAGE_ESTIMATE_LEN 5
-#define MAVLINK_MSG_ID_197_LEN 5
+#define MAVLINK_MSG_ID_199_LEN 5
 
 #define MAVLINK_MSG_ID_MAD_PACKAGE_ESTIMATE_CRC 62
-#define MAVLINK_MSG_ID_197_CRC 62
+#define MAVLINK_MSG_ID_199_CRC 62
 
 
 

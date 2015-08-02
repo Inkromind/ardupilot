@@ -1,6 +1,6 @@
 // MESSAGE MAD_CONFIRM_PACKAGE PACKING
 
-#define MAVLINK_MSG_ID_MAD_CONFIRM_PACKAGE 199
+#define MAVLINK_MSG_ID_MAD_CONFIRM_PACKAGE 201
 
 typedef struct __mavlink_mad_confirm_package_t
 {
@@ -9,10 +9,10 @@ typedef struct __mavlink_mad_confirm_package_t
 } mavlink_mad_confirm_package_t;
 
 #define MAVLINK_MSG_ID_MAD_CONFIRM_PACKAGE_LEN 5
-#define MAVLINK_MSG_ID_199_LEN 5
+#define MAVLINK_MSG_ID_201_LEN 5
 
 #define MAVLINK_MSG_ID_MAD_CONFIRM_PACKAGE_CRC 138
-#define MAVLINK_MSG_ID_199_CRC 138
+#define MAVLINK_MSG_ID_201_CRC 138
 
 
 
