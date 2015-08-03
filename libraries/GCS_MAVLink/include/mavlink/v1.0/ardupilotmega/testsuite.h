@@ -2108,19 +2108,19 @@ static void mavlink_test_mad_corridor_reservation_conflict(uint8_t system_id, ui
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
 	mavlink_mad_corridor_reservation_conflict_t packet_in = {
-		5,72,139,206,17,84,151,218,29
+		17.0,45.0,29,96,163,230,41,108,175
     };
 	mavlink_mad_corridor_reservation_conflict_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
+        	packet1.preliminary_alt = packet_in.preliminary_alt;
+        	packet1.conflicting_alt = packet_in.conflicting_alt;
         	packet1.drone_id = packet_in.drone_id;
         	packet1.conflicting_drone = packet_in.conflicting_drone;
         	packet1.reservation_id = packet_in.reservation_id;
         	packet1.preliminary_id = packet_in.preliminary_id;
         	packet1.preliminary_type = packet_in.preliminary_type;
-        	packet1.preliminary_alt = packet_in.preliminary_alt;
         	packet1.conflicting_id = packet_in.conflicting_id;
         	packet1.conflicting_type = packet_in.conflicting_type;
-        	packet1.conflicting_alt = packet_in.conflicting_alt;
         
         
 

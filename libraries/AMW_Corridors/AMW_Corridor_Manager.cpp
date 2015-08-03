@@ -103,6 +103,10 @@ void AMW_Corridor_Manager::startReservationRound() {
     }
     delete iterator;
 
+#ifdef AMW_CORRIDOR_DEBUG
+    AC_CommunicationFacade::sendFormattedDebug(PSTR("Attempting to reserve corridors at altitude %.2f"), preliminaryAltitude / 100);
+#endif
+
     startWait(AMW_CORRIDOR_RESERVATION_TIMEOUT, AMW_CORRIDOR_RESERVATION_TIMEOUT_MAX_DELTA);
     AC_CommunicationFacade::broadcastReservationRequest(
             currentReservationId, &preliminaryCorridors);
@@ -130,6 +134,10 @@ void AMW_Corridor_Manager::checkTimeout(void) {
             }
             delete iterator;
             preliminaryCorridors.clear();
+
+#ifdef AMW_CORRIDOR_DEBUG
+            AC_CommunicationFacade::sendFormattedDebug(PSTR("Corridors reserved at altitude %.2f"), reservedAltitude / 100);
+#endif
         }
         else if (currentState == WAITING_FOR_RETRY) {
             preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
@@ -197,6 +205,9 @@ bool AMW_Corridor_Manager::markCorridorsReserved(const AMW_Module_Identifier* mo
     delete iterator;
     if (altitude != 0)
         reservedAltitude = altitude;
+#ifdef AMW_CORRIDOR_DEBUG
+    AC_CommunicationFacade::sendFormattedDebug(PSTR("Marking corridors as reserved at altitude %.2f"), reservedAltitude / 100);
+#endif
     return true;
 }
 
@@ -295,10 +306,16 @@ void AMW_Corridor_Manager::reservationConflictReceived(uint8_t reservationId, co
 void AMW_Corridor_Manager::reservationFailed(void) {
     failures++;
     if (failures >= maxFailures) {
+#ifdef AMW_CORRIDOR_DEBUG
+        AC_CommunicationFacade::sendDebug(PSTR("Reservation failed."));
+#endif
         preliminaryCorridors.clear();
         failed = true;
     }
     else {
+#ifdef AMW_CORRIDOR_DEBUG
+        AC_CommunicationFacade::sendDebug(PSTR("Reservation failed. Waiting before retry."));
+#endif
         startWait(AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY, AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY_MAX_DELTA);
         currentState = WAITING_FOR_RETRY;
     }
@@ -307,9 +324,15 @@ void AMW_Corridor_Manager::reservationFailed(void) {
 void AMW_Corridor_Manager::roundFailed(void) {
     preliminaryAltitude += AMW_CORRIDOR_ALTITUDE_HEIGHT;
     if (preliminaryAltitude > AMW_CORRIDOR_MAX_ALTITUDE) {
+#ifdef AMW_CORRIDOR_DEBUG
+        AC_CommunicationFacade::sendDebug(PSTR("Reservation failed. Max altitude reached."));
+#endif
         reservationFailed();
     }
     else {
+#ifdef AMW_CORRIDOR_DEBUG
+        AC_CommunicationFacade::sendDebug(PSTR("Reservation at altitude failed. Waiting before trying next altitude."));
+#endif
         startWait(AMW_CORRIDOR_RESERVATION_ROUND_DELAY, AMW_CORRIDOR_RESERVATION_ROUND_DELAY_MAX_DELTA);
         currentState = WAITING_FOR_NEXT_ROUND;
     }
@@ -318,7 +341,7 @@ void AMW_Corridor_Manager::roundFailed(void) {
 void AMW_Corridor_Manager::broadcastReservedCorridors(void) {
     if (reservedCorridors.empty()) {
         AMW_List<AMW_Corridor*> corridors;
-        AMW_Position_Corridor positionCorridor(AC_Facade::getFacade()->getRealPosition());
+        AMW_Position_Corridor positionCorridor(AC_Facade::getFacade()->getRealPosition(), 0);
         corridors.push_back(&positionCorridor);
         AC_CommunicationFacade::broadcastCorridors(&corridors);
     }
@@ -340,6 +363,9 @@ void AMW_Corridor_Manager::receivedCorridorBroadcast(const AMW_List<AMW_Corridor
     }
     delete iterator;
     if (conflict) {
+#ifdef AMW_CORRIDOR_DEBUG
+        AC_CommunicationFacade::sendDebug(PSTR("Corridor conflict detected."));
+#endif
         corridorConflict = true;
         delete conflict;
     }

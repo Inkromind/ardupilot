@@ -1,4 +1,4 @@
-﻿namespace SerialProxy
+namespace SerialProxy
 {
     partial class Form1
     {

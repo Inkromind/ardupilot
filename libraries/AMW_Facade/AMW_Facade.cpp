@@ -28,6 +28,7 @@ void AMW_Facade::run10Hz() {
 void AMW_Facade::run1Hz() {
     AMW_Planner::run1Hz();
     AMW_Corridor_Manager::getInstance()->broadcastReservedCorridors();
+    AMW_Corridor_Manager::getInstance()->checkTimeout();
 }
 
 void AMW_Facade::resumeMission() {
@@ -71,4 +72,9 @@ bool AMW_Facade::isBatteryEmpty() {
 }
 void AMW_Facade::markBatteryEmpty() {
     AMW_Planner::markBatteryEmpty();
+}
+
+
+void AMW_Facade::setHomebase(Vector2f newHomebase) {
+    AMW_Planner::setHomebase(newHomebase);
 }

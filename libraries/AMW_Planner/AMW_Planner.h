@@ -9,7 +9,7 @@
 #define AMW_PLANNER_H_
 
 #ifndef TESTENV
-//    #define AMW_PLANNER_DEBUG
+    #define AMW_PLANNER_DEBUG
 #endif
 
 #include "AMW_Task_Planner.h"

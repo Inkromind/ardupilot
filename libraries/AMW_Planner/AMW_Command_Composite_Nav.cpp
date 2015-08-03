@@ -47,6 +47,9 @@ void AMW_Command_Composite_Nav::completedSubCommand() {
     }
     else if (currentState == RETURNTOSTART) {
         if (subCommands.empty()) {
+#ifdef AMW_COMMAND_DEBUG
+            AC_CommunicationFacade::sendDebug("Returned to start. Retrying nav");
+#endif
             setNormalSubCommands();
             commandStarted = false;
             currentState = INIT;
@@ -67,6 +70,9 @@ void AMW_Command_Composite_Nav::completedSubCommand() {
     }
     else if (currentState == LAND) {
         if (subCommands.empty()) {
+#ifdef AMW_COMMAND_DEBUG
+            AC_CommunicationFacade::sendDebug("Landed. Retrying nav");
+#endif
             setNormalSubCommands();
             commandStarted = false;
             currentState = INIT;
@@ -95,9 +101,15 @@ void AMW_Command_Composite_Nav::startCommand(bool attempt) {
         if (!reserving) {
             failed = true;
             currentState = FAILED;
+#ifdef AMW_COMMAND_DEBUG
+            AC_CommunicationFacade::sendDebug(PSTR("Unable to reserve corridors for nav"));
+#endif
         }
         else {
             currentState = WAITING_FOR_CORRIDORS;
+#ifdef AMW_COMMAND_DEBUG
+            AC_CommunicationFacade::sendDebug(PSTR("Attempting to reserve corridors for nav"));
+#endif
         }
     }
 }
@@ -118,7 +130,7 @@ void AMW_Command_Composite_Nav::updateStatus() {
             clearReservedCorridors();
             AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
 #ifdef AMW_COMMAND_DEBUG
-            AC_CommunicationFacade::sendFormattedDebug(PSTR("Composite Nav Completed to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
+            AC_CommunicationFacade::sendFormattedDebug(PSTR("Already at <%.2f,%.2f>. Skipping Nav"), destination.x / 100, destination.y / 100);
 #endif
             return;
     }
@@ -128,11 +140,17 @@ void AMW_Command_Composite_Nav::updateStatus() {
     if (corridorConflict) {
         AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
         if (currentState == NORMAL && corridorConflict) {
+#ifdef AMW_COMMAND_DEBUG
+            AC_CommunicationFacade::sendDebug("Corridor conflict detected. Returning to start");
+#endif
             returnToStart();
             updateStatus();
             return;
         }
         if (currentState == RETURNTOSTART && corridorConflict) {
+#ifdef AMW_COMMAND_DEBUG
+            AC_CommunicationFacade::sendDebug("Corridor conflict detected. Landing");
+#endif
             land();
             updateStatus();
             return;
@@ -150,27 +168,49 @@ void AMW_Command_Composite_Nav::updateStatus() {
                 commandStarted = true;
                 currentState = NORMAL;
                 corridors.get(0)->setInCorridor(true);
+#ifdef AMW_COMMAND_DEBUG
+                AC_CommunicationFacade::sendFormattedDebug(PSTR("Corridors Reserved. Starting nav to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
+#endif
             }
             else if (AMW_Corridor_Manager::getInstance()->reservationHasFailed(AMW_Planner::getModuleIdentifier())) {
                 failed = true;
                 currentState = FAILED;
                 clearReservedCorridors();
+#ifdef AMW_COMMAND_DEBUG
+                AC_CommunicationFacade::sendFormattedDebug(PSTR("Corridor reservation failed. Nav to <%.2f,%.2f> failed"), destination.x / 100, destination.y / 100);
+#endif
             }
             else if (!AMW_Corridor_Manager::getInstance()->isReservingCorridors(AMW_Planner::getModuleIdentifier())) {
                 if (!AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors)) {
                     failed = true;
                     currentState = FAILED;
                     clearReservedCorridors();
+#ifdef AMW_COMMAND_DEBUG
+                    AC_CommunicationFacade::sendFormattedDebug(PSTR("Unable to restart corridor reservation for nav to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
+#endif
+                }
+                else {
+#ifdef AMW_COMMAND_DEBUG
+                    AC_CommunicationFacade::sendFormattedDebug(PSTR("Restarted corridor reservation for nav to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
+#endif
                 }
             }
         }
         else if (currentState == NORMAL) {
-            if (!corridorsAreReserved)
+            if (!corridorsAreReserved) {
+#ifdef AMW_COMMAND_DEBUG
+                AC_CommunicationFacade::sendDebug("Error. Corridors no longer reserved. Landing");
+#endif
                 land();
+            }
         }
         else if (currentState == RETURNTOSTART) {
-            if (!corridorsAreReserved && !corridors.empty())
+            if (!corridorsAreReserved && !corridors.empty()) {
                 land();
+#ifdef AMW_COMMAND_DEBUG
+                AC_CommunicationFacade::sendDebug("Error. Corridors no longer reserved. Landing");
+#endif
+            }
         }
         else if (currentState == LAND) {
             if (!corridorsAreReserved && !corridors.empty())
@@ -186,6 +226,8 @@ void AMW_Command_Composite_Nav::setNormalSubCommands() {
     subCommands.push(new AMW_Command_Nav_Assigned_Altitude(Vector2f(destination.x, destination.y)));
     if (returningHome)
         subCommands.push(new AMW_Command_Land());
+    else
+        subCommands.push(new AMW_Command_Nav_Altitude(AMW_COMMAND_HOVER_ALTITUDE));
 }
 
 void AMW_Command_Composite_Nav::returnToStart() {
@@ -205,8 +247,12 @@ void AMW_Command_Composite_Nav::returnToStart() {
         subCommands.push(new AMW_Command_Takeoff_Assigned_Altitude());
     if (remainingCommands <= 2)
         subCommands.push(new AMW_Command_Nav_Assigned_Altitude(startLocation));
+#ifdef AMW_COMMAND_ONLY_LAND_AT_BASE
+    subCommands.push(new AMW_Command_Nav_Altitude(AMW_COMMAND_HOVER_ALTITUDE));
+#else
     subCommands.push(new AMW_Command_Land());
-    subCommands.push(new AMW_Command_Delay(30 + rand() % 10));
+#endif
+    subCommands.push(new AMW_Command_Delay((30 + rand() % 10) * 1000));
 
     if (subCommands.size() == 4) {
         corridors.get(2)->setInCorridor(true);
@@ -234,7 +280,7 @@ void AMW_Command_Composite_Nav::land() {
 #else
     subCommands.push(new AMW_Command_Land());
 #endif
-    subCommands.push(new AMW_Command_Delay(30 + rand() % 10));
+    subCommands.push(new AMW_Command_Delay((30 + rand() % 10) * 1000));
     currentState = LAND;
 }
 

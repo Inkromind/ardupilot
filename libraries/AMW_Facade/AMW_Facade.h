@@ -99,6 +99,11 @@ public:
     static bool isBatteryEmpty(void);
 
     /**
+     * Set the homebase location
+     */
+    static void setHomebase(Vector2f newHomebase);
+
+    /**
      * Mark the battery as empty
      */
     static void markBatteryEmpty(void);

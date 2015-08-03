@@ -11,6 +11,13 @@
 #include <stdint.h>
 #include "CommunicationFacadeStub.h"
 
+#ifndef TESTENV
+typedef char prog_char_t;
+
+#define PSTR(s) (__extension__({static prog_char __c[] PROGMEM = (s); \
+                                  (prog_char_t *)&__c[0];
+#endif
+
 CommunicationFacadeStub* CommunicationFacadeStub::facade = 0;
 
 void AC_CommunicationFacade::broadcastReservationRequest(uint8_t reservationId,

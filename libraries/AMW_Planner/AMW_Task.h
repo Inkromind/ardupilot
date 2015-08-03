@@ -13,7 +13,7 @@
 #include <math.h>
 
 #ifndef TESTENV
-    //#define AMW_TASK_DEBUG
+    #define AMW_TASK_DEBUG
 #endif
 
 /**
@@ -53,7 +53,7 @@ public:
         return;
     }
 
-    int32_t taskId;
+    uint32_t taskId;
 };
 
 #endif /* AMW_TASK_H_ */

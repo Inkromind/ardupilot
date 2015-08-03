@@ -4,6 +4,8 @@
 #include <AC_ReactiveFacade.h>
 #include <AC_SafetyControl.h>
 #include "control_mad.h"
+#include <AC_CommunicationFacade.h>
+#include <AMW_Facade.h>
 
 AC_Facade* AC_Facade::facade = 0;
 AC_ReactiveFacade* AC_ReactiveFacade::reactiveFacade = 0;
@@ -17,7 +19,7 @@ Vector3f MAD_homebase;
 
 void MAD_updateTakeoffLocation(void);
 void MAD_resetHomebase(void);
-void MAD_setHomebase(Vector2f newHomebase);
+void MAD_setHomebase(float x, float y);
 bool MAD_inControl(void);
 bool MAD_relativeDestinationReached(const Vector3f& destination, float radius = NEAR_DESTINATION_RADIUS);
 Vector3f MAD_convertExternToIntern(Vector3f position) {
@@ -193,8 +195,10 @@ void MAD_updateTakeoffLocation(void) {
     else
         MAD_navInitialized = true;
 }
-void MAD_setHomebase(Vector2f newHomebase) {
-    MAD_homebase = Vector3f(newHomebase.x, newHomebase.y, 0);
+void MAD_setHomebase(float x, float y) {
+    MAD_homebase = Vector3f(x, y, 0);
+    AMW_Facade::setHomebase(Vector2f(x, y));
+    AC_CommunicationFacade::sendFormattedDebug(PSTR("Setting homebase to <%.2f, %.2f>"), x, y);
 }
 void MAD_resetHomebase(void) {
     MAD_takeoffLocation = Vector3f();

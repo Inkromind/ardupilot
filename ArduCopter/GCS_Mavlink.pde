@@ -1457,10 +1457,11 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         if (!AMW_Facade::isBatteryEmpty()) {
             mavlink_mad_request_package_estimate_t packet;
             mavlink_msg_mad_request_package_estimate_decode(msg, &packet);
-            Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
-            Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
+            Vector2f pickupLocation = Vector2f(packet.pickup_x, packet.pickup_y);
+            Vector2f deliveryLocation = Vector2f(packet.delivery_x, packet.delivery_y);
             float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, true);
-            mavlink_msg_mad_package_estimate_send_buf(msg, chan, packet.package_id, estimate);
+            if (estimate)
+                mavlink_msg_mad_package_estimate_send_buf(msg, chan, packet.package_id, estimate);
         }
         break;
     }
@@ -1469,8 +1470,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         if (!AMW_Facade::isBatteryEmpty()) {
             mavlink_mad_assign_package_t packet;
             mavlink_msg_mad_assign_package_decode(msg, &packet);
-            Vector2f pickupLocation = Vector2f(packet.pickup_x * 100, packet.pickup_y * 100);
-            Vector2f deliveryLocation = Vector2f(packet.delivery_x * 100, packet.delivery_y * 100);
+            Vector2f pickupLocation = Vector2f(packet.pickup_x, packet.pickup_y);
+            Vector2f deliveryLocation = Vector2f(packet.delivery_x, packet.delivery_y);
             float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, false);
             mavlink_msg_mad_confirm_package_send_buf(msg, chan, packet.package_id, estimate);
         }
@@ -1556,7 +1557,8 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     }
     case MAVLINK_MSG_ID_MAD_SET_HOMEBASE: {
         mavlink_mad_set_homebase_t packet;
-        MAD_setHomebase(Vector2f(packet.x, packet.y));
+        mavlink_msg_mad_set_homebase_decode(msg, &packet);
+        MAD_setHomebase(packet.x, packet.y);
         break;
     }
     case MAVLINK_MSG_ID_MAD_RESET_HOMEBASE: {

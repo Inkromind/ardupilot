@@ -13,7 +13,7 @@
 #include <stdint.h>
 
 // Default acceptance radius for nav
-#define NEAR_DESTINATION_RADIUS     20.0f
+#define NEAR_DESTINATION_RADIUS     100.0f
 
 /**
  * A facade allowing access to ArduCopter.

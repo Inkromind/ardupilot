@@ -21,7 +21,7 @@ AMW_Task_Planner::AMW_Task_Planner() {
     homeBase = Vector2f();
     idleTask = 0;
     returningHome = false;
-    idleTaskCompleted = false;
+    idleTaskCompleted = true;
     batteryEmpty = false;
 }
 
@@ -36,9 +36,6 @@ AMW_Task_Planner::~AMW_Task_Planner() {
 
 AMW_Task_Planner* AMW_Task_Planner::getInstance() {
     if (!AMW_Task_Planner::planner) {
-#ifdef AMW_PLANNER_DEBUG
-    AC_CommunicationFacade::sendDebug(PSTR("Creating Task Planner..."));
-#endif
         AMW_Task_Planner::planner = new AMW_Task_Planner();
     }
     return AMW_Task_Planner::planner;
@@ -112,6 +109,7 @@ void AMW_Task_Planner::pauseMission() {
 void AMW_Task_Planner::returnHome() {
     returningHome = true;
     delete idleTask;
+    idleTask = 0;
 #ifdef AMW_PLANNER_DEBUG
     AC_CommunicationFacade::sendDebug(PSTR("Returning Home"));
 #endif
@@ -145,8 +143,12 @@ float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
     if (estimate) {
         uint8_t remainingBattery = AC_Facade::getFacade()->getBattery()->capacity_remaining_pct();
         uint8_t batteryEstimate = (plan.size() + 2) * 5;
-        if (remainingBattery - batteryEstimate < AMW_PLANNER_BATTERY_TAKEOFF_LIMIT)
+        if (remainingBattery - batteryEstimate < AMW_PLANNER_BATTERY_TAKEOFF_LIMIT) {
+#ifdef AMW_PLANNER_DEBUG
+            AC_CommunicationFacade::sendDebug(PSTR("Not enough remaining battery for task."));
+#endif
             return 0;
+        }
     }
 
     uint32_t currentIndex = 0;
@@ -160,13 +162,16 @@ float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
         endLocation = homeBase;
     float packageDistance = (endLocation - startLocation).length();
     float minDistance = -1;
+    uint32_t taskId = task->taskId;
+    bool alreadyAdded = false;
 
     AMW_List<AMW_Task*>::Iterator* iterator = plan.iterator();
     while (iterator->hasNext()) {
-#ifdef AMW_PLANNER_DEBUG
-    //AC_CommunicationFacade::sendDebug(PSTR("Checking next index"));
-#endif
         AMW_Task *nextTask = iterator->next();
+        if (taskId == nextTask->taskId) {
+            alreadyAdded = true;
+            break;
+        }
         if (currentIndex > 0) {
             Vector2f nextStartPosition = nextTask->getStartPosition();
             if (nextStartPosition.is_nan())
@@ -186,6 +191,9 @@ float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
             position = endPosition;
     }
     delete iterator;
+    if (alreadyAdded)
+        return 0;
+
     float distance = (position - startLocation).length() + packageDistance + (endLocation - homeBase).length() - (position - homeBase).length();
     if (minDistance == -1 || distance <= minDistance) {
         minDistance = distance;
@@ -194,8 +202,9 @@ float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
 
     if (!estimate) {
         plan.insert(bestPosition, task);
+        idleTaskCompleted = true;
 #ifdef AMW_PLANNER_DEBUG
-        AC_CommunicationFacade::sendFormattedDebug(PSTR("Added new task #%d at index %d/%d"), task->id, bestPosition, plan.size());
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Added new task #%d at index %d/%d"), task->taskId, bestPosition, plan.size());
 #endif
     }
 

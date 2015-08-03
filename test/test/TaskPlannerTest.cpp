@@ -74,6 +74,7 @@ TEST_GROUP(TaskPlanner)
         TPplanner->setPlanner();
         TPplanner->setPaused(false);
         TPplanner->init();
+        TPplanner->setIdleTaskCompleted(false);
         TPfacadeMock = new FacadeMock();
         FacadeMock::setFacade(TPfacadeMock);
         TPbatteryMock = new BattMonitorMock();
@@ -129,7 +130,7 @@ TEST(TaskPlanner, getFirstTaskReturningHomeNotCompletedNoIdleTask)
 
     CHECK_TRUE(force);
     CHECK_TRUE(task);
-    CHECK_EQUAL(11, task->taskId);
+    CHECK_EQUAL(8, task->taskId);
     CHECK_EQUAL(0, (home - task->getEndPosition()).length());
 }
 TEST(TaskPlanner, getFirstTaskReturningHomeNotCompletedIdleTask)
@@ -332,6 +333,7 @@ TEST(TaskPlanner, addTaskEstimateBatteryEmpty)
 {
     TPplanner->markBatteryEmpty();
     TaskMock task;
+    task.taskId = 21;
 
     CHECK_EQUAL(0, TPplanner->addTask(&task, false));
 
@@ -343,6 +345,7 @@ TEST(TaskPlanner, addTaskEstimateBatteryTooLow)
     TPplanner->getPlan()->push_back(new TaskMock());
     TPplanner->getPlan()->push_back(new TaskMock());
     TaskMock task;
+    task.taskId = 21;
 
     mock("Facade").expectOneCall("getBattery").onObject(TPfacadeMock).andReturnValue(TPbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(54);
@@ -353,6 +356,7 @@ TEST(TaskPlanner, addTaskEstimateBatteryTooLow)
 TEST(TaskPlanner, addTaskEmptyPlan)
 {
     TaskMock* task = new TaskMock();
+    task->taskId = 21;
     Vector2f homeBase = Vector2f(2,3);
     TPplanner->setHomeBase(homeBase);
     Vector2f startLocation = Vector2f(5, 6);
@@ -372,6 +376,7 @@ TEST(TaskPlanner, addTaskEmptyPlan)
 TEST(TaskPlanner, addTaskEmptyPlanEstimate)
 {
     TaskMock* task = new TaskMock();
+    task->taskId = 21;
     Vector2f homeBase = Vector2f(2,3);
     TPplanner->setHomeBase(homeBase);
     Vector2f startLocation = Vector2f(5, 6);
@@ -393,9 +398,13 @@ TEST(TaskPlanner, addTaskEmptyPlanEstimate)
 TEST(TaskPlanner, addTaskFrontOfPlan)
 {
     TaskMock* task1 = new TaskMock();
+    task1->taskId = 21;
     TaskMock* task2 = new TaskMock();
+    task2->taskId = 22;
     TaskMock* task3 = new TaskMock();
+    task3->taskId = 23;
     TaskMock* newTask = new TaskMock();
+    newTask->taskId = 24;
     Vector2f homeBase = Vector2f(0,0);
     TPplanner->setHomeBase(homeBase);
     Vector2f newStartLocation = Vector2f(2, 4);
@@ -429,9 +438,13 @@ TEST(TaskPlanner, addTaskFrontOfPlan)
 TEST(TaskPlanner, addTaskMiddleOfPlan)
 {
     TaskMock* task1 = new TaskMock();
+    task1->taskId = 21;
     TaskMock* task2 = new TaskMock();
+    task2->taskId = 22;
     TaskMock* task3 = new TaskMock();
+    task3->taskId = 23;
     TaskMock* newTask = new TaskMock();
+    newTask->taskId = 24;
     Vector2f homeBase = Vector2f(0,0);
     TPplanner->setHomeBase(homeBase);
     //Vector2f startLocation1 = Vector2f(1, 1);
@@ -463,12 +476,47 @@ TEST(TaskPlanner, addTaskMiddleOfPlan)
     CHECK_EQUAL(4, TPplanner->getPlan()->size());
     CHECK_EQUAL(newTask, TPplanner->getPlan()->get(2));
 }
+TEST(TaskPlanner, addTaskAlreadyAdded)
+{
+    TaskMock* task1 = new TaskMock();
+    task1->taskId = 21;
+    TaskMock* task2 = new TaskMock();
+    task2->taskId = 22;
+    TaskMock* task3 = new TaskMock();
+    task3->taskId = 23;
+    TaskMock* newTask = new TaskMock();
+    newTask->taskId = 22;
+    Vector2f homeBase = Vector2f(0,0);
+    TPplanner->setHomeBase(homeBase);
+    //Vector2f startLocation1 = Vector2f(1, 1);
+    Vector2f endLocation1 = Vector2f(2, 3);
+    Vector2f newStartLocation = Vector2f(7, 9);
+    Vector2f newEndLocation = Vector2f(9, 9);
+    TPplanner->getPlan()->push_back(task1);
+    TPplanner->getPlan()->push_back(task2);
+    TPplanner->getPlan()->push_back(task3);
+
+    mock("Task").expectOneCall("getStartPosition").onObject(newTask).andReturnValue(&newStartLocation);
+    mock("Task").expectOneCall("getEndPosition").onObject(newTask).andReturnValue(&newEndLocation);
+    mock("Task").expectOneCall("getEndPosition").onObject(task1).andReturnValue(&endLocation1);
+
+    float estimate = TPplanner->addTask(newTask, false);
+
+    CHECK_EQUAL(0, estimate);
+    CHECK_EQUAL(3, TPplanner->getPlan()->size());
+
+    delete newTask;
+}
 TEST(TaskPlanner, addTaskBackOfPlan)
 {
     TaskMock* task1 = new TaskMock();
+    task1->taskId = 21;
     TaskMock* task2 = new TaskMock();
+    task2->taskId = 22;
     TaskMock* task3 = new TaskMock();
+    task3->taskId = 23;
     TaskMock* newTask = new TaskMock();
+    newTask->taskId = 24;
     Vector2f homeBase = Vector2f(0,0);
     TPplanner->setHomeBase(homeBase);
     //Vector2f startLocation1 = Vector2f(1, 1);
@@ -516,6 +564,7 @@ TEST(TaskPlanner, ScenarioNormal)
     TPplanner->completedTask(idleTask);
 
     TaskMock* task1 = new TaskMock();
+    task1->taskId = 21;
     Vector2f startLocation1 = Vector2f(1, 1);
     Vector2f endLocation1 = Vector2f(2, 3);
     float expectedEstimate = (endLocation1 - startLocation1).length() +
@@ -532,6 +581,7 @@ TEST(TaskPlanner, ScenarioNormal)
     CHECK_FALSE(forceTask);
 
     TaskMock* task2 = new TaskMock();
+    task2->taskId = 22;
     Vector2f startLocation2 = Vector2f(6, 7);
     Vector2f endLocation2 = Vector2f(8, 9);
     expectedEstimate = (startLocation2 - endLocation2).length() +
@@ -548,6 +598,7 @@ TEST(TaskPlanner, ScenarioNormal)
     CHECK_FALSE(forceTask);
 
     TaskMock* task3 = new TaskMock();
+    task3->taskId = 23;
     Vector2f startLocation3 = Vector2f(3, 4);
     Vector2f endLocation3 = Vector2f(5, 6);
     expectedEstimate = (startLocation3 - endLocation3).length() +
@@ -604,6 +655,7 @@ TEST(TaskPlanner, ScenarioNewPackageWhileIdleReturning)
     TPplanner->completedTask(idleTask);
 
     TaskMock* task1 = new TaskMock();
+    task1->taskId = 21;
     Vector2f startLocation1 = Vector2f(1, 1);
     Vector2f endLocation1 = Vector2f(2, 3);
     float expectedEstimate = (endLocation1 - startLocation1).length() +
@@ -628,6 +680,7 @@ TEST(TaskPlanner, ScenarioNewPackageWhileIdleReturning)
     CHECK_TRUE(forceTask);
 
     TaskMock* task2 = new TaskMock();
+    task2->taskId = 22;
     Vector2f startLocation2 = Vector2f(6, 7);
     Vector2f endLocation2 = Vector2f(8, 9);
     expectedEstimate = (endLocation2 - startLocation1).length() +
@@ -662,6 +715,7 @@ TEST(TaskPlanner, ScenarioRTS)
     TPplanner->completedTask(idleTask);
 
     TaskMock* task1 = new TaskMock();
+    task1->taskId = 20;
     Vector2f startLocation1 = Vector2f(1, 1);
     Vector2f endLocation1 = Vector2f(2, 3);
     float expectedEstimate = (endLocation1 - startLocation1).length() +
@@ -682,7 +736,7 @@ TEST(TaskPlanner, ScenarioRTS)
     idleTask = TPplanner->getFirstTask(&forceTask);
 
     CHECK_TRUE(idleTask);
-    CHECK_EQUAL(11, idleTask->taskId);
+    CHECK_EQUAL(8, idleTask->taskId);
     CHECK_TRUE(forceTask);
 
     mock("Task").expectOneCall("completedTask").onObject(task1);
@@ -704,6 +758,7 @@ TEST(TaskPlanner, ScenarioRTS)
     CHECK_TRUE(forceTask);
 
     TaskMock* task2 = new TaskMock();
+    task2->taskId = 21;
     Vector2f startLocation2 = Vector2f(6, 7);
     Vector2f endLocation2 = Vector2f(8, 9);
     expectedEstimate = (endLocation2 - startLocation1).length() +

@@ -1385,7 +1385,7 @@ TEST(CommandCompositeNav, scenarioCorridorConflict) {
     Vector3f position2 = Vector3f(5, 6, 0);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
-    mock("Facade").expectOneCall("getTimeMillis").onObject(CCNfacadeMock).andReturnValue(50);
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CCNfacadeMock).andReturnValue(40011);
     mock("Facade").expectOneCall("destinationReached").onObject(CCNfacadeMock).withDoubleParameter("destinationX", destination.x).
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
@@ -1602,7 +1602,7 @@ TEST(CommandCompositeNav, scenarioDoubleCorridorConflict) {
     position2 = Vector3f(5, 6, 0);
 
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
-    mock("Facade").expectOneCall("getTimeMillis").onObject(CCNfacadeMock).andReturnValue(50);
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CCNfacadeMock).andReturnValue(40011);
     mock("Facade").expectOneCall("destinationReached").onObject(CCNfacadeMock).withDoubleParameter("destinationX", destination.x).
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);

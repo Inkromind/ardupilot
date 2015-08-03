@@ -29,7 +29,7 @@ void AMW_Command_Delay::run(bool attempt) {
     this->start = AC_Facade::getFacade()->getTimeMillis();
     this->commandStarted = true;
 #ifdef AMW_COMMAND_DEBUG
-    AC_CommunicationFacade::sendDebug(PSTR("Starting delay"));
+    AC_CommunicationFacade::sendFormattedDebug(PSTR("Starting delay of %.2f sec"), duration / 1000);
 #endif
 }
 

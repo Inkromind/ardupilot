@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SerialProxy", "SerialProxy\SerialProxy.csproj", "{5337375B-6393-49B2-A544-B53AAFD1C4F9}"

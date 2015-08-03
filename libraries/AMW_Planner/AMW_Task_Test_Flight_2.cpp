@@ -19,7 +19,7 @@ AMW_Task_Test_Flight_2::AMW_Task_Test_Flight_2() { }
 AMW_Command* AMW_Task_Test_Flight_2::generatePlan(void) const {
     AMW_Commands_Plan* plan = new AMW_Commands_Plan();
 
-    plan->addNewCommand(new AMW_Command_Takeoff(1500));
+    plan->addNewCommand(new AMW_Command_Takeoff(3000));
     plan->addNewCommand(new AMW_Command_Nav(Vector3f(5000, -5000, 1500)));
     plan->addNewCommand(new AMW_Command_Land());
     plan->addNewCommand(new AMW_Command_Disarm());

@@ -9,7 +9,7 @@
 #define AMW_COMMAND_H_
 
 #ifndef TESTENV
-    //#define AMW_COMMAND_DEBUG
+    #define AMW_COMMAND_DEBUG
 #endif
 
 #include <AMW_Corridors.h>

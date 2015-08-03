@@ -13,7 +13,7 @@
 #include "AMW_Task_Planner.h"
 
 AMW_Task_RTL_Forced::AMW_Task_RTL_Forced() {
-    taskId = 11;
+    taskId = 8;
 }
 
 AMW_Command* AMW_Task_RTL_Forced::generatePlan(void) const {

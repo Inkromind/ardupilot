@@ -543,10 +543,10 @@
       <field type="uint8_t" name="reservation_id">Reservation ID</field>
       <field type="uint8_t" name="preliminary_id">Preliminary Corridor ID</field>
       <field type="uint8_t" name="preliminary_type">Preliminary Corridor Type</field>
-      <field type="uint8_t" name="preliminary_alt">Preliminary Corridor Altitude</field>
+      <field type="float" name="preliminary_alt">Preliminary Corridor Altitude</field>
       <field type="uint8_t" name="conflicting_id">Conflicting Corridor ID</field>
       <field type="uint8_t" name="conflicting_type">Conflicting Corridor Type</field>
-      <field type="uint8_t" name="conflicting_alt">Conflicting Corridor Altitude</field>
+      <field type="float" name="conflicting_alt">Conflicting Corridor Altitude</field>
     </message>
     
     <message name="MAD_CORRIDOR_ANNOUNCEMENT" id="204">
