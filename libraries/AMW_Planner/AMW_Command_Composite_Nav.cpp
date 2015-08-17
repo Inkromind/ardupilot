@@ -95,7 +95,7 @@ void AMW_Command_Composite_Nav::startCommand(bool attempt) {
         getCorridors();
         bool reserving = false;
         if (attempt)
-            reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors, 1);
+            reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors, 1, AC_Facade::getFacade()->getAltitude());
         else
             reserving = AMW_Corridor_Manager::getInstance()->reserveCorridors(AMW_Planner::getModuleIdentifier(), &corridors);
         if (!reserving) {

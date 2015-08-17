@@ -50,6 +50,10 @@ public:
         return failures;
     }
 
+    void setMinAltitude(float newMinAltitude) {
+        minAltitude = newMinAltitude;
+    }
+
     void setFailures(uint8_t newFailures) {
         failures = newFailures;
     }
@@ -147,8 +151,6 @@ TEST_GROUP(CorridorManager)
         delete CMidentifierHighPriority;
     }
 };
-
-//bool canReserveCorridors(const AMW_Module_Identifier* module) const;
 
 TEST(CorridorManager, canReserveCorridorsNullModule)
 {
@@ -404,6 +406,77 @@ TEST(CorridorManager, reserveCorridorsMaxReservationId)
     CHECK_EQUAL(10, CMmanager->getWaitStart());
     CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_RESERVATION_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_RESERVATION_TIMEOUT);
     CHECK_EQUAL(AMW_Corridor_Manager::State::REQUEST_SEND, CMmanager->getCurrentState());
+}
+
+TEST(CorridorManager, reserveCorridorsMinAltitudeTooBig)
+{
+    CorridorMock corridor1;
+    CorridorMock corridor2;
+    AMW_List<AMW_Corridor*> corridors;
+    corridors.push_back(&corridor1);
+    corridors.push_back(&corridor2);
+
+    CHECK_FALSE(CMmanager->reserveCorridors(CMidentifierLowPriority, &corridors, 2, 3001));
+
+    CHECK_EQUAL(CMidentifierLowPriority, CMmanager->getReservedModule());
+    CHECK_TRUE(CMmanager->getPreliminaryCorridors()->empty());
+    CHECK_TRUE(CMmanager->getReservedCorridors()->empty());
+}
+TEST(CorridorManager, reserveCorridorsMinAltitudeTooSmall)
+{
+    CorridorMock corridor1;
+    CorridorMock corridor2;
+    AMW_List<AMW_Corridor*> corridors;
+    corridors.push_back(&corridor1);
+    corridors.push_back(&corridor2);
+
+    mock("Corridor").expectNCalls(2, "setAltitude").onObject(&corridor1).withDoubleParameter("newAltitude", CM_MIN_ALTITUDE);
+    mock("Corridor").expectNCalls(2, "setAltitude").onObject(&corridor2).withDoubleParameter("newAltitude", CM_MIN_ALTITUDE);
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CMfacadeMock).andReturnValue(10);
+    mock("ComFacade").expectOneCall("broadcastReservationRequest").onObject(CMcommFacadeMock).withParameter("reservationId", 1);
+
+    CHECK_TRUE(CMmanager->reserveCorridors(CMidentifierLowPriority, &corridors, 2, 999));
+
+    CHECK_EQUAL(CMidentifierLowPriority, CMmanager->getReservedModule());
+    CHECK_EQUAL(2, CMmanager->getPreliminaryCorridors()->size());
+    CHECK_TRUE(CMmanager->getReservedCorridors()->empty());
+    CHECK_EQUAL(1, (int) CMcommFacadeMock->broadcastReservationRequestLists.size());
+    std::list<AMW_Corridor*>* broadcastedCorridors = CMcommFacadeMock->broadcastReservationRequestLists.front();
+    CHECK_EQUAL(2, (int) broadcastedCorridors->size());
+    CHECK_EQUAL(&corridor1, broadcastedCorridors->front());
+    CHECK_EQUAL(&corridor2, broadcastedCorridors->back());
+    CHECK_EQUAL(2, CMmanager->getMaxFailures());
+    CHECK_EQUAL(10, CMmanager->getWaitStart());
+    CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_RESERVATION_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_RESERVATION_TIMEOUT);
+    CHECK_EQUAL(CM_MIN_ALTITUDE, CMmanager->getPreliminaryAltitude());
+}
+TEST(CorridorManager, reserveCorridorsMinAltitude)
+{
+    CorridorMock corridor1;
+    CorridorMock corridor2;
+    AMW_List<AMW_Corridor*> corridors;
+    corridors.push_back(&corridor1);
+    corridors.push_back(&corridor2);
+
+    mock("Corridor").expectNCalls(2, "setAltitude").onObject(&corridor1).withDoubleParameter("newAltitude", 1001);
+    mock("Corridor").expectNCalls(2, "setAltitude").onObject(&corridor2).withDoubleParameter("newAltitude", 1001);
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CMfacadeMock).andReturnValue(10);
+    mock("ComFacade").expectOneCall("broadcastReservationRequest").onObject(CMcommFacadeMock).withParameter("reservationId", 1);
+
+    CHECK_TRUE(CMmanager->reserveCorridors(CMidentifierLowPriority, &corridors, 2, 1001));
+
+    CHECK_EQUAL(CMidentifierLowPriority, CMmanager->getReservedModule());
+    CHECK_EQUAL(2, CMmanager->getPreliminaryCorridors()->size());
+    CHECK_TRUE(CMmanager->getReservedCorridors()->empty());
+    CHECK_EQUAL(1, (int) CMcommFacadeMock->broadcastReservationRequestLists.size());
+    std::list<AMW_Corridor*>* broadcastedCorridors = CMcommFacadeMock->broadcastReservationRequestLists.front();
+    CHECK_EQUAL(2, (int) broadcastedCorridors->size());
+    CHECK_EQUAL(&corridor1, broadcastedCorridors->front());
+    CHECK_EQUAL(&corridor2, broadcastedCorridors->back());
+    CHECK_EQUAL(2, CMmanager->getMaxFailures());
+    CHECK_EQUAL(10, CMmanager->getWaitStart());
+    CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_RESERVATION_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_RESERVATION_TIMEOUT);
+    CHECK_EQUAL(1001, CMmanager->getPreliminaryAltitude());
 }
 
 TEST(CorridorManager, corridorsAreReservedNullModule)
@@ -1007,15 +1080,16 @@ TEST(CorridorManager, checkTimeoutRequestWaitingForRetryRetry)
     CMmanager->setCurrentState(AMW_Corridor_Manager::State::WAITING_FOR_RETRY);
     CMmanager->setWaitStart(10 * 1000);
     CMmanager->setWaitTimeout(5);
+    CMmanager->setMinAltitude(1010);
 
     mock("Facade").expectNCalls(2, "getTimeMillis").onObject(CMfacadeMock).andReturnValue(16 * 1000);
-    mock("Corridor").expectOneCall("setAltitude").onObject(&corridor).withDoubleParameter("newAltitude", CM_MIN_ALTITUDE);
-    mock("Corridor").expectOneCall("setAltitude").onObject(&corridor2).withDoubleParameter("newAltitude", CM_MIN_ALTITUDE);
+    mock("Corridor").expectOneCall("setAltitude").onObject(&corridor).withDoubleParameter("newAltitude", 1010);
+    mock("Corridor").expectOneCall("setAltitude").onObject(&corridor2).withDoubleParameter("newAltitude", 1010);
     mock("ComFacade").expectOneCall("broadcastReservationRequest").onObject(CMcommFacadeMock).withParameter("reservationId", 6);
 
     CMmanager->checkTimeout();
 
-    CHECK_EQUAL(CM_MIN_ALTITUDE, CMmanager->getPreliminaryAltitude());
+    CHECK_EQUAL(1010, CMmanager->getPreliminaryAltitude());
     CHECK_EQUAL(2, CMmanager->getPreliminaryCorridors()->size());
     CHECK_EQUAL(1, CMmanager->getReservedCorridors()->size());
     CHECK_EQUAL(&corridor3, CMmanager->getReservedCorridors()->front());
@@ -1519,6 +1593,85 @@ TEST(CorridorManager, ScenarioTestFailedReservation)
     CMmanager->reservationConflictReceived(1, &conflict);
 
     CHECK_FALSE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors));
+    CHECK_TRUE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
+    CHECK_FALSE(CMmanager->isReservingCorridors(CMidentifierLowPriority));
+}
+TEST(CorridorManager, ScenarioTestSuccesfullReservationWithRetry)
+{
+    CorridorMock* corridor1 = new CorridorMock();
+    CorridorMock* corridor2 = new CorridorMock();
+    AMW_List<AMW_Corridor*> corridors;
+    corridors.push_back(corridor1);
+    corridors.push_back(corridor2);
+    float minAltitude = 1750;
+
+    mock("Corridor").expectNCalls(2, "setAltitude").onObject(corridor1).withDoubleParameter("newAltitude", minAltitude);
+    mock("Corridor").expectNCalls(2, "setAltitude").onObject(corridor2).withDoubleParameter("newAltitude", minAltitude);
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CMfacadeMock).andReturnValue(10 * 1000);
+    mock("ComFacade").expectOneCall("broadcastReservationRequest").onObject(CMcommFacadeMock).withParameter("reservationId", 1);
+
+    CHECK_TRUE(CMmanager->reserveCorridors(CMidentifierLowPriority, &corridors, 3, minAltitude));
+
+    CHECK_EQUAL(CMidentifierLowPriority, CMmanager->getReservedModule());
+    CHECK_EQUAL(1, (int) CMcommFacadeMock->broadcastReservationRequestLists.size());
+    std::list<AMW_Corridor*>* broadcastedCorridors = CMcommFacadeMock->broadcastReservationRequestLists.front();
+    CMcommFacadeMock->broadcastReservationRequestLists.pop_front();
+    CHECK_EQUAL(2, (int) broadcastedCorridors->size());
+    CHECK_EQUAL(corridor1, broadcastedCorridors->front());
+    CHECK_EQUAL(corridor2, broadcastedCorridors->back());
+    CHECK_FALSE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors));
+    CHECK_FALSE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
+    CHECK_TRUE(CMmanager->isReservingCorridors(CMidentifierLowPriority));
+    delete broadcastedCorridors;
+
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CMfacadeMock).andReturnValue(10 * 1000 + CM_MIN_RESERVATION_TIMEOUT * 1000 );
+
+    CMmanager->checkTimeout();
+
+    CHECK_FALSE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors))
+    CHECK_FALSE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
+
+    AMW_Corridor_Conflict conflict(AMW_Corridor::Type::VERTICAL, 0, 0, AMW_Corridor::Type::HORIZONTAL, 0, 1000);
+
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CMfacadeMock).andReturnValue(30 * 1000);
+
+    CMmanager->reservationConflictReceived(1, &conflict);
+
+    CHECK_FALSE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors));
+    CHECK_FALSE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
+    CHECK_TRUE(CMmanager->isReservingCorridors(CMidentifierLowPriority));
+
+    mock("Facade").expectNCalls(2, "getTimeMillis").onObject(CMfacadeMock).andReturnValue(80 * 1000);
+    mock("Corridor").expectOneCall("setAltitude").onObject(corridor1).withDoubleParameter("newAltitude", minAltitude);
+    mock("Corridor").expectOneCall("setAltitude").onObject(corridor2).withDoubleParameter("newAltitude", minAltitude);
+    mock("ComFacade").expectOneCall("broadcastReservationRequest").onObject(CMcommFacadeMock).withParameter("reservationId", 2);
+
+    CMmanager->checkTimeout();
+
+    CHECK_EQUAL(1, (int) CMcommFacadeMock->broadcastReservationRequestLists.size());
+    broadcastedCorridors = CMcommFacadeMock->broadcastReservationRequestLists.front();
+    CMcommFacadeMock->broadcastReservationRequestLists.pop_front();
+    CHECK_EQUAL(2, (int) broadcastedCorridors->size());
+    CHECK_EQUAL(corridor1, broadcastedCorridors->front());
+    CHECK_EQUAL(corridor2, broadcastedCorridors->back());
+    CHECK_FALSE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors));
+    CHECK_FALSE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
+    CHECK_TRUE(CMmanager->isReservingCorridors(CMidentifierLowPriority));
+    delete broadcastedCorridors;
+
+    mock("Facade").expectOneCall("getTimeMillis").onObject(CMfacadeMock).andReturnValue(120 * 1000);
+
+    CMmanager->checkTimeout();
+
+    CHECK_TRUE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors));
+    CHECK_FALSE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
+    CHECK_EQUAL(minAltitude, CMmanager->getReservedAltitude());
+
+    CMmanager->freeCorridors(&corridors);
+
+    CHECK_FALSE(CMmanager->corridorsAreReserved(CMidentifierLowPriority, &corridors));
+    CHECK_TRUE(CMmanager->getReservedCorridors()->empty());
+    CHECK_TRUE(CMmanager->getPreliminaryCorridors()->empty());
     CHECK_TRUE(CMmanager->reservationHasFailed(CMidentifierLowPriority));
     CHECK_FALSE(CMmanager->isReservingCorridors(CMidentifierLowPriority));
 }

@@ -20,7 +20,7 @@ bool CorridorManagerMock::markCorridorsReserved(const AMW_Module_Identifier* mod
     return mock("CorManager").actualCall("markCorridorsReserved").onObject(this).returnIntValueOrDefault(1);
 }
 
-bool CorridorManagerMock::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures) {
+bool CorridorManagerMock::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures, float minAltitude) {
     if (corridors) {
         std::list<AMW_Corridor*>* corridorList = new std::list<AMW_Corridor*>;
         AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
@@ -30,7 +30,7 @@ bool CorridorManagerMock::reserveCorridors(const AMW_Module_Identifier* module, 
         delete iterator;
         reserveCorridorsLists.push_back(corridorList);
     }
-    return mock("CorManager").actualCall("reserveCorridors").onObject(this).withParameter("maxFailures", maxFailures).returnIntValueOrDefault(1);
+    return mock("CorManager").actualCall("reserveCorridors").onObject(this).withParameter("maxFailures", maxFailures).withParameter("minAltitude", minAltitude).returnIntValueOrDefault(1);
 }
 
 void CorridorManagerMock::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {

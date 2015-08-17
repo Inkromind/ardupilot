@@ -13,3 +13,10 @@ void AMW_Commands_Plan::addNewCommand(AMW_Command* command) {
         return;
     subCommands.push(command);
 }
+
+bool AMW_Commands_Plan::hasStarted(void) const {
+    if (completed || subCommands.empty())
+        return commandStarted;
+    else
+        return subCommands.front()->hasStarted();
+}

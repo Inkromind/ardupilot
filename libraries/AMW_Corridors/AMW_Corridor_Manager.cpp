@@ -28,9 +28,10 @@ AMW_Corridor_Manager::AMW_Corridor_Manager() {
     corridorConflict = false;
     currentState = IDLE;
     maxFailures = 0;
+    minAltitude = 0;
 }
 
-bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t newMaxFailures) {
+bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t newMaxFailures, float newMinAltitude) {
     if (!module || !corridors || corridors->empty() || !canReserveCorridors(module))
         return false;
     setNewModule(module);
@@ -38,17 +39,24 @@ bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module,
     preliminaryCorridors.clear();
     currentState = IDLE;
 
+    if (newMinAltitude > AMW_CORRIDOR_MAX_ALTITUDE)
+        return false;
+    else if (newMinAltitude < AMW_CORRIDOR_MIN_ALTITUDE)
+        minAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
+    else
+        minAltitude = newMinAltitude;
+
     AMW_List<AMW_Corridor*>::Iterator* iterator = corridors->iterator();
     while (iterator->hasNext()) {
         AMW_Corridor* corridor = iterator->next();
-        corridor->setAltitude(AMW_CORRIDOR_MIN_ALTITUDE);
+        corridor->setAltitude(minAltitude);
         preliminaryCorridors.push_back(corridor);
     }
     delete iterator;
 
     failures = 0;
     failed = false;
-    preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
+    preliminaryAltitude = minAltitude;
     this->maxFailures = newMaxFailures;
     startReservationRound();
 
@@ -140,7 +148,7 @@ void AMW_Corridor_Manager::checkTimeout(void) {
 #endif
         }
         else if (currentState == WAITING_FOR_RETRY) {
-            preliminaryAltitude = AMW_CORRIDOR_MIN_ALTITUDE;
+            preliminaryAltitude = minAltitude;
             startReservationRound();
         }
         else if (currentState == WAITING_FOR_NEXT_ROUND) {

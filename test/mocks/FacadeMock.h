@@ -25,6 +25,10 @@ public:
         return *((Vector3f*) mock("Facade").actualCall("getRealPosition").onObject(this).returnPointerValue());
     }
 
+    float getAltitude(void) {
+        return (float) mock("Facade").actualCall("getAltitude").onObject(this).returnDoubleValueOrDefault(0.0);
+    }
+
     uint32_t getTimeMillis(void) {
         return (uint32_t) mock("Facade").actualCall("getTimeMillis").onObject(this).returnIntValueOrDefault(0);
     }

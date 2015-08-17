@@ -56,9 +56,10 @@ public:
      * @param module The module attempting to reserve the corridors
      * @param corridors The list of corridors to reserve
      * @param maxFailures The maximum number of tries before giving up
+     * @param minAltitude The minimum altitude at which to reserve corridors
      * @return True if the reservation process was started, false otherwise
      */
-    virtual bool reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures = AMW_CORRIDOR_MAX_FAILURES);
+    virtual bool reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures = AMW_CORRIDOR_MAX_FAILURES, float minAltitude = AMW_CORRIDOR_MIN_ALTITUDE);
 
     /**
      * Check if the given set of corridors is reserved to the given module
@@ -176,6 +177,7 @@ protected:
     bool failed;
     State currentState;
     uint8_t maxFailures;
+    float minAltitude;
 
     bool corridorConflict;
     const AMW_Module_Identifier* reservedModule;

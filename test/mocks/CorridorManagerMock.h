@@ -55,7 +55,7 @@ public:
 
     void freeCorridors(AMW_List<AMW_Corridor*>* corridors);
 
-    bool reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures);
+    bool reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t maxFailures, float minAltitude);
 
     void markCorridorConflictResolved(const AMW_Module_Identifier* module);
 

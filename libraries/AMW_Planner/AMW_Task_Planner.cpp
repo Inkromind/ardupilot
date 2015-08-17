@@ -138,7 +138,7 @@ void AMW_Task_Planner::toggleMission(void) {
 
 float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
     if (!task || batteryEmpty)
-        return 0;
+        return -1;
 
     if (estimate) {
         uint8_t remainingBattery = AC_Facade::getFacade()->getBattery()->capacity_remaining_pct();
@@ -147,7 +147,7 @@ float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
 #ifdef AMW_PLANNER_DEBUG
             AC_CommunicationFacade::sendDebug(PSTR("Not enough remaining battery for task."));
 #endif
-            return 0;
+            return -1;
         }
     }
 
@@ -192,7 +192,7 @@ float AMW_Task_Planner::addTask(AMW_Task *task, bool estimate) {
     }
     delete iterator;
     if (alreadyAdded)
-        return 0;
+        return -1;
 
     float distance = (position - startLocation).length() + packageDistance + (endLocation - homeBase).length() - (position - homeBase).length();
     if (minDistance == -1 || distance <= minDistance) {

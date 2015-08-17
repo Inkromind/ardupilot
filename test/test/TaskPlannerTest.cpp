@@ -325,7 +325,7 @@ TEST(TaskPlanner, switchedToTaskDifferentFromIdleTask)
 
 TEST(TaskPlanner, addTaskNullTask)
 {
-    CHECK_EQUAL(0, TPplanner->addTask(0, false));
+    CHECK_EQUAL(-1, TPplanner->addTask(0, false));
 
     CHECK_TRUE(TPplanner->getPlan()->empty());
 }
@@ -335,7 +335,7 @@ TEST(TaskPlanner, addTaskEstimateBatteryEmpty)
     TaskMock task;
     task.taskId = 21;
 
-    CHECK_EQUAL(0, TPplanner->addTask(&task, false));
+    CHECK_EQUAL(-1, TPplanner->addTask(&task, false));
 
     CHECK_TRUE(TPplanner->getPlan()->empty());
 }
@@ -350,7 +350,7 @@ TEST(TaskPlanner, addTaskEstimateBatteryTooLow)
     mock("Facade").expectOneCall("getBattery").onObject(TPfacadeMock).andReturnValue(TPbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(54);
 
-    CHECK_EQUAL(0, TPplanner->addTask(&task, true));
+    CHECK_EQUAL(-1, TPplanner->addTask(&task, true));
     CHECK_EQUAL(3, TPplanner->getPlan()->size());
 }
 TEST(TaskPlanner, addTaskEmptyPlan)
@@ -502,7 +502,7 @@ TEST(TaskPlanner, addTaskAlreadyAdded)
 
     float estimate = TPplanner->addTask(newTask, false);
 
-    CHECK_EQUAL(0, estimate);
+    CHECK_EQUAL(-1, estimate);
     CHECK_EQUAL(3, TPplanner->getPlan()->size());
 
     delete newTask;

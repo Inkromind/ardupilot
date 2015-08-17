@@ -145,11 +145,13 @@ TEST(CommandCompositeNav, startCommandBatteryTooLow) {
 TEST(CommandCompositeNav, startCommandAttemptTrueReserving) {
     Vector3f position = Vector3f(1, 2, 0);
     Vector3f destination = Vector3f(10, 20, 0);
+    float currentAltitude = 30;
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("Facade").expectOneCall("getAltitude").onObject(CCNfacadeMock).andReturnValue(currentAltitude);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).withDoubleParameter("minAltitude", currentAltitude).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
     command->runStartCommand(true);
@@ -198,7 +200,7 @@ TEST(CommandCompositeNav, startCommandAttemptFalseReserving) {
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).andReturnValue(true);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
     command->runStartCommand(false);
@@ -242,11 +244,13 @@ TEST(CommandCompositeNav, startCommandAttemptFalseReserving) {
 
 TEST(CommandCompositeNav, startCommandAttemptTrueNotReserving) {
     Vector3f position = Vector3f(1, 2, 0);
+    float currentAltitude = 30;
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(false);
+    mock("Facade").expectOneCall("getAltitude").onObject(CCNfacadeMock).andReturnValue(currentAltitude);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).withDoubleParameter("minAltitude", currentAltitude).andReturnValue(false);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
     command->runStartCommand(true);
@@ -267,7 +271,7 @@ TEST(CommandCompositeNav, startCommandAttemptFalseNotReserving) {
 
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 5).andReturnValue(false);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(false);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
     command->runStartCommand(false);
@@ -640,7 +644,7 @@ TEST(CommandCompositeNav, updateStatusWaitingNotReservingFailed) {
     mock("CorManager").expectOneCall("isReservingCorridors").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("reservationHasFailed").onObject(CCNcorridorManagerMock).andReturnValue(false);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 5).andReturnValue(false);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(false);
     mock("CorManager").expectOneCall("freeCorridors").onObject(CCNcorridorManagerMock);
 
     CCNcommand->runUpdateStatus();
@@ -666,7 +670,7 @@ TEST(CommandCompositeNav, updateStatusWaitingNotReserving) {
     mock("CorManager").expectOneCall("isReservingCorridors").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("corridorsAreReserved").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("CorManager").expectOneCall("reservationHasFailed").onObject(CCNcorridorManagerMock).andReturnValue(false);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 5).andReturnValue(true);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(true);
 
     CCNcommand->runUpdateStatus();
 
@@ -1052,13 +1056,15 @@ TEST(CommandCompositeNav, completedSubCommandLand0Remaining) {
 TEST(CommandCompositeNav, scenarioNormal) {
     Vector3f position = Vector3f(1, 2, 0);
     Vector3f destination = Vector3f(10, 20, 0);
+    float currentAltitude = 30;
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
     mock("Facade").expectOneCall("destinationReached").onObject(CCNfacadeMock).withDoubleParameter("destinationX", destination.x).
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("Facade").expectOneCall("getAltitude").onObject(CCNfacadeMock).andReturnValue(currentAltitude);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).withDoubleParameter("minAltitude", currentAltitude).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
     command->run(true);
@@ -1182,13 +1188,16 @@ TEST(CommandCompositeNav, scenarioNormal) {
 TEST(CommandCompositeNav, scenarioReservationFailure) {
     Vector3f position = Vector3f(1, 2, 0);
     Vector3f destination = Vector3f(10, 20, 0);
+    float currentAltitude = 30;
+
     DummyCompositeNavCommand* command = new DummyCompositeNavCommand(Vector2f(10, 20));
     mock("Facade").expectOneCall("destinationReached").onObject(CCNfacadeMock).withDoubleParameter("destinationX", destination.x).
             withDoubleParameter("destinationY", destination.y).withDoubleParameter("destinationZ", 0).andReturnValue(false);
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("Facade").expectOneCall("getAltitude").onObject(CCNfacadeMock).andReturnValue(currentAltitude);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).withDoubleParameter("minAltitude", currentAltitude).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
     command->run(true);
@@ -1246,10 +1255,10 @@ TEST(CommandCompositeNav, scenarioCorridorConflict) {
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
-    command->run(true);
+    command->run(false);
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
@@ -1391,10 +1400,10 @@ TEST(CommandCompositeNav, scenarioCorridorConflict) {
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position2);
 
-    command->run(true);
+    command->run(false);
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
@@ -1458,10 +1467,10 @@ TEST(CommandCompositeNav, scenarioDoubleCorridorConflict) {
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position);
 
-    command->run(true);
+    command->run(false);
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();
@@ -1608,10 +1617,10 @@ TEST(CommandCompositeNav, scenarioDoubleCorridorConflict) {
     mock("CorManager").expectOneCall("hasCorridorConflict").onObject(CCNcorridorManagerMock).andReturnValue(false);
     mock("Facade").expectOneCall("getBattery").onObject(CCNfacadeMock).andReturnValue(CCNbatteryMock);
     mock("BattMonitor").expectOneCall("batteryCapacity").andReturnValue(AMW_PLANNER_BATTERY_TAKEOFF_LIMIT);
-    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", 1).andReturnValue(true);
+    mock("CorManager").expectOneCall("reserveCorridors").onObject(CCNcorridorManagerMock).withParameter("maxFailures", AMW_CORRIDOR_MAX_FAILURES).withDoubleParameter("minAltitude", AMW_CORRIDOR_MIN_ALTITUDE).andReturnValue(true);
     mock("Facade").expectOneCall("getRealPosition").onObject(CCNfacadeMock).andReturnValue(&position2);
 
-    command->run(true);
+    command->run(false);
 
     mock("CorManager").checkExpectations();
     mock("CorManager").clear();

@@ -27,6 +27,8 @@ public:
     void addNewCommand(AMW_Command* command);
 
     void updateStatus(void) {}
+
+    virtual bool hasStarted(void) const;
 };
 
 #endif /* AMW_COMMANDS_PLAN_H_ */

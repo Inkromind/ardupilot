@@ -1460,7 +1460,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
             Vector2f pickupLocation = Vector2f(packet.pickup_x, packet.pickup_y);
             Vector2f deliveryLocation = Vector2f(packet.delivery_x, packet.delivery_y);
             float estimate = AMW_Facade::addPackage(packet.package_id, pickupLocation, deliveryLocation, true);
-            if (estimate)
+            if (estimate >= 0)
                 mavlink_msg_mad_package_estimate_send_buf(msg, chan, packet.package_id, estimate);
         }
         break;
