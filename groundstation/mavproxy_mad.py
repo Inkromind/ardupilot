@@ -26,7 +26,7 @@ class MadModule(mp_module.MPModule):
         self.add_command('corridorConflict', self.cmd_corridorConflict, "Announce a new corridor conflict", ["<droneId> <resId> <prelId> <prelType> <prelAlt> <id> <type> <alt>"])
         self.add_command('announceCorridor', self.cmd_announceCorridor, "Announce a reserved corridor", ["<droneId> <id> <type> <x1> <y1> <x2> <y2>"])
         self.droneId = 0
-        self.showCorridors = True
+        self.showCorridors = False
         '''initialisation code'''
         
     def cmd_hideCorridors(self, args):
@@ -94,7 +94,7 @@ class MadModule(mp_module.MPModule):
         self.master.mav.mad_return_home_send(0, 0)
     
     def cmd_getLocation(self, args):
-        'Get location'''
+        ''''Get location'''
         print("Requesting location")
         self.master.mav.mad_get_current_location_send(0, 0)
     

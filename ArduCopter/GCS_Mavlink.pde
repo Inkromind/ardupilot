@@ -1552,7 +1552,7 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
 
     case MAVLINK_MSG_ID_MAD_GET_CURRENT_LOCATION: {
         Vector3f currentLocation = AC_Facade::getFacade()->getRealPosition();
-        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x / 1000, currentLocation.y / 1000, currentLocation.z / 1000);
+        mavlink_msg_mad_current_location_send_buf(msg, chan, currentLocation.x / 100, currentLocation.y / 100, currentLocation.z / 100);
         break;
     }
     case MAVLINK_MSG_ID_MAD_SET_HOMEBASE: {
