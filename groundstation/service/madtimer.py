@@ -5,12 +5,12 @@ class MADTimer():
     
     def __init__(self):
         self.con = rpyc.connect_by_service('MAD')
-        self.asyncFunc = rpyc.async(self.con.root.timeTick)
         
     def start(self):
         while True:
             time.sleep(0.2)
-            self.asyncFunc()
+            asyncFunc = rpyc.async(self.con.root.timeTick)
+            asyncFunc()
             
 
 if __name__ == "__main__":

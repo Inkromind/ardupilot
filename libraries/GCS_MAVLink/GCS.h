@@ -212,8 +212,7 @@ public:
     */
     static void send_statustext_all(const prog_char_t *msg);
 
-    void broadcastReservationRequest(uint8_t reservationId, AMW_Corridor* corridor);
-    void broadcastCorridor(AMW_Corridor* corridor);
+    void send_MADmsg(uint8_t id, ...);
 
 private:
     void        handleMessage(mavlink_message_t * msg);

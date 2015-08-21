@@ -75,11 +75,14 @@ AMW_Task* AMW_Task_Planner::getFirstTask(bool* forceTask) {
     }
 }
 
-void AMW_Task_Planner::completedTask(AMW_Task* task) {
+void AMW_Task_Planner::completedTask(AMW_Task* task, bool failed) {
     if (!task)
         return;
 
-    task->completedTask();
+    if (failed)
+        task->failedTask();
+    else
+        task->completedTask();
 
     uint32_t id = plan.size();
     while (id > 0) {

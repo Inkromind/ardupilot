@@ -30,6 +30,10 @@ public:
     virtual void broadcastCorridors(
             AMW_List<AMW_Corridor*>* corridors) {
     }
+    virtual void completedPackage(uint8_t packageId) {
+    }
+    virtual void failedPackage(uint8_t packageId) {
+    }
 
 protected:
     static CommunicationFacadeStub* facade;

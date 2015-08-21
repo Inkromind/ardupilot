@@ -57,8 +57,10 @@ public:
 
     /**
      * Completed a task
+     *
+     * @param failed Set as true to mark the task as failed
      */
-    virtual void completedTask(AMW_Task* task);
+    virtual void completedTask(AMW_Task* task, bool failed = false);
 
     /**
      * Switched to another task

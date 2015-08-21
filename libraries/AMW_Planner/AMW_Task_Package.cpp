@@ -38,9 +38,11 @@ AMW_Command* AMW_Task_Package::generatePlan(void) const {
     return plan;
 }
 
-void AMW_Task_Package::completeTask(void) {
-#ifdef AMW_TASK_DEBUG
-    AC_CommunicationFacade::sendFormattedDebug(PSTR("Completed package #%d"), id);
-#endif
+void AMW_Task_Package::completedTask(void) {
+    AC_CommunicationFacade::completedPackage(this->id);
+}
+
+void AMW_Task_Package::failedTask(void) {
+    AC_CommunicationFacade::failedPackage(this->id);
 }
 

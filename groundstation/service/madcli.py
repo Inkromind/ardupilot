@@ -143,7 +143,7 @@ class MADCLI(cmd.Cmd):
         try:
             clockTicker.kill()
         finally:
-            clockTicker = subprocess.Popen(['python', 'madclock.py'])
+            clockTicker = subprocess.Popen(['python', 'madtimer.py'])
         
     def emptyline(self):
         pass        

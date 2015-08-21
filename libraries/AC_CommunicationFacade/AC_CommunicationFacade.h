@@ -27,6 +27,16 @@ public:
      */
     static void broadcastCorridors(AMW_List<AMW_Corridor*>* corridors);
 
+    /**
+     * Mark a package as completed
+     */
+    static void completedPackage(uint8_t packageId);
+
+    /**
+     * Mark a package as completed
+     */
+    static void failedPackage(uint8_t packageId);
+
 
 #ifndef TESTENV
     static void sendDebug(const prog_char_t *str);

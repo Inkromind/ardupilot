@@ -36,7 +36,9 @@ public:
         return pickupLocation;
     }
 
-    void completeTask(void);
+    void completedTask(void);
+
+    void failedTask(void);
 
     Vector2f pickupLocation;
     Vector2f deliveryLocation;

@@ -29,3 +29,11 @@ void AC_CommunicationFacade::broadcastCorridors(
     CommunicationFacadeStub::getFacade()->broadcastCorridors(corridors);
 }
 
+void AC_CommunicationFacade::completedPackage(uint8_t packageId) {
+    CommunicationFacadeStub::getFacade()->completedPackage(packageId);
+}
+
+void AC_CommunicationFacade::failedPackage(uint8_t packageId) {
+    CommunicationFacadeStub::getFacade()->failedPackage(packageId);
+}
+

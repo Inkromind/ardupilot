@@ -265,6 +265,10 @@ class MadModule(mp_module.MPModule):
         if m.get_type() == 'MAD_CURRENT_LOCATION':
             print "Current Location: <%(x).2f,%(y).2f> | Altitude: %(altitude).2f" % \
                 {'x' : m.x, 'y': m.y, 'altitude': m.alt}
+        elif m.get_type() == 'MAD_FAILED_PACKAGE':
+            print "Failed package #%d" % m.package_id
+        elif m.get_type() == 'MAD_COMPLETED_PACKAGE':
+            print "Completed package #%d" % m.package_id
         elif m.get_type() == 'MAD_PACKAGE_ESTIMATE':
             print "Package estimate: ID #%(id)d | Estimate: %(estimate).2f" % \
                 {'id' : m.package_id, 'estimate' : m.estimate}

@@ -48,7 +48,7 @@ void AMW_Command_Composite_Nav::completedSubCommand() {
     else if (currentState == RETURNTOSTART) {
         if (subCommands.empty()) {
 #ifdef AMW_COMMAND_DEBUG
-            AC_CommunicationFacade::sendDebug("Returned to start. Retrying nav");
+            AC_CommunicationFacade::sendDebug(PSTR("Returned to start. Retrying nav"));
 #endif
             setNormalSubCommands();
             commandStarted = false;
@@ -71,7 +71,7 @@ void AMW_Command_Composite_Nav::completedSubCommand() {
     else if (currentState == LAND) {
         if (subCommands.empty()) {
 #ifdef AMW_COMMAND_DEBUG
-            AC_CommunicationFacade::sendDebug("Landed. Retrying nav");
+            AC_CommunicationFacade::sendDebug(PSTR("Landed. Retrying nav"));
 #endif
             setNormalSubCommands();
             commandStarted = false;
@@ -141,7 +141,7 @@ void AMW_Command_Composite_Nav::updateStatus() {
         AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
         if (currentState == NORMAL && corridorConflict) {
 #ifdef AMW_COMMAND_DEBUG
-            AC_CommunicationFacade::sendDebug("Corridor conflict detected. Returning to start");
+            AC_CommunicationFacade::sendDebug(PSTR("Corridor conflict detected. Returning to start"));
 #endif
             returnToStart();
             updateStatus();
@@ -149,7 +149,7 @@ void AMW_Command_Composite_Nav::updateStatus() {
         }
         if (currentState == RETURNTOSTART && corridorConflict) {
 #ifdef AMW_COMMAND_DEBUG
-            AC_CommunicationFacade::sendDebug("Corridor conflict detected. Landing");
+            AC_CommunicationFacade::sendDebug(PSTR("Corridor conflict detected. Landing"));
 #endif
             land();
             updateStatus();
@@ -199,7 +199,7 @@ void AMW_Command_Composite_Nav::updateStatus() {
         else if (currentState == NORMAL) {
             if (!corridorsAreReserved) {
 #ifdef AMW_COMMAND_DEBUG
-                AC_CommunicationFacade::sendDebug("Error. Corridors no longer reserved. Landing");
+                AC_CommunicationFacade::sendDebug(PSTR("Error. Corridors no longer reserved. Landing"));
 #endif
                 land();
             }
@@ -208,7 +208,7 @@ void AMW_Command_Composite_Nav::updateStatus() {
             if (!corridorsAreReserved && !corridors.empty()) {
                 land();
 #ifdef AMW_COMMAND_DEBUG
-                AC_CommunicationFacade::sendDebug("Error. Corridors no longer reserved. Landing");
+                AC_CommunicationFacade::sendDebug(PSTR("Error. Corridors no longer reserved. Landing"));
 #endif
             }
         }

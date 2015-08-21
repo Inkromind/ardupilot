@@ -41,6 +41,9 @@ public:
     virtual void completedTask(void) {
         mock("Task").actualCall("completedTask").onObject(this);
     }
+    virtual void failedTask(void) {
+        mock("Task").actualCall("failedTask").onObject(this);
+    }
 };
 
 #endif /* MOCKS_TASKMOCK_H_ */

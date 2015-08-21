@@ -53,6 +53,13 @@ public:
         return;
     }
 
+    /**
+     * Mark this task as failed
+     */
+    virtual void failedTask(void) {
+        return;
+    }
+
     uint32_t taskId;
 };
 

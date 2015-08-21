@@ -210,7 +210,7 @@ void AMW_Sequencer::executeCurrentTask() {
         // TODO: Abort Plan
         delete currentPlan;
         currentPlan = 0;
-        AMW_Task_Planner::getInstance()->completedTask(currentTask);
+        AMW_Task_Planner::getInstance()->completedTask(currentTask, true);
         currentTask = 0;
         #ifdef AMW_PLANNER_DEBUG
             AC_CommunicationFacade::sendDebug(PSTR("Plan failed"));
