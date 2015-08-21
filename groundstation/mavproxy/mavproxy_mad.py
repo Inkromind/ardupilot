@@ -9,6 +9,7 @@ import sys, traceback
 
 class MadModule(mp_module.MPModule):
     def __init__(self, mpstate):
+        '''initialisation code'''
         super(MadModule, self).__init__(mpstate, "MAD", "MAD module")
         self.add_command('setDroneId', self.cmd_setDroneId, "Set the drone id", ["<id>"])
         self.add_command('hideCorridors', self.cmd_hideCorridors, "Hide the corridor announcement")
@@ -27,18 +28,19 @@ class MadModule(mp_module.MPModule):
         self.add_command('announceCorridor', self.cmd_announceCorridor, "Announce a reserved corridor", ["<droneId> <id> <type> <x1> <y1> <x2> <y2>"])
         self.droneId = 0
         self.showCorridors = False
-        '''initialisation code'''
         
     def cmd_hideCorridors(self, args):
+        '''Hide corridor announcements'''
         print("Hiding Corridor Announcements")
         self.showCorridors = False
         
     def cmd_showCorridors(self, args):
+        '''Show corridor announcements'''
         print("Showing Corridor Announcements")
         self.showCorridors = True
         
     def cmd_init(self, args):
-        'Initialize Planners'''
+        '''Initialize Planners'''
         print("Initializing Planners")
         self.master.mav.mad_init_planner_send(0, 0)
         
@@ -259,30 +261,30 @@ class MadModule(mp_module.MPModule):
         
 
     def mavlink_packet(self, m):
-        'handle a mavlink packet'''
+        '''handle a mavlink packet'''
         if m.get_type() == 'MAD_CURRENT_LOCATION':
             print "Current Location: <%(x).2f,%(y).2f> | Altitude: %(altitude).2f" % \
-                {"x" : m.x, "y": m.y, "altitude": m.alt}
+                {'x' : m.x, 'y': m.y, 'altitude': m.alt}
         elif m.get_type() == 'MAD_PACKAGE_ESTIMATE':
             print "Package estimate: ID #%(id)d | Estimate: %(estimate).2f" % \
-                {"id" : m.package_id, "estimate" : m.estimate}
+                {'id' : m.package_id, 'estimate' : m.estimate}
         elif m.get_type() == 'MAD_CONFIRM_PACKAGE':
             print "Package confirmed: ID #%(id)d | Estimate: %(estimate).2f" % \
-                {"id" : m.package_id, "estimate" : m.estimate}
+                {'id' : m.package_id, 'estimate' : m.estimate}
         elif m.get_type() == 'MAD_REQUEST_CORRIDOR_RESERVATION':
             print "Corridor Requested: ResId: %(resId)d | Id: %(corId)d | Type: %(corType)d | Alt: %(alt).2f | <%(p1x).2f,%(p1y).2f> - <%(p2x).2f,%(p2y).2f>" % \
-                {"resId" : m.reservation_id, "corId" : m.corridor_id, "corType" : m.corridor_type,
-                 "alt" : m.alt, "p1x" : m.p1x, "p1y" : m.p1y, "p2x" : m.p2x, "p2y" : m.p2y}
+                {'resId' : m.reservation_id, 'corId' : m.corridor_id, 'corType' : m.corridor_type,
+                 'alt' : m.alt, 'p1x' : m.p1x, 'p1y' : m.p1y, 'p2x' : m.p2x, 'p2y' : m.p2y}
         elif m.get_type() == 'MAD_CORRIDOR_ANNOUNCEMENT':
             if self.showCorridors:
                 print "Corridor Announced: Id: %(corId)d | Type: %(corType)d | Alt: %(alt).2f | <%(p1x).2f,%(p1y).2f> - <%(p2x).2f,%(p2y).2f>" % \
-                    {"corId" : m.corridor_id, "corType" : m.corridor_type,
-                     "alt" : m.alt, "p1x" : m.p1x, "p1y" : m.p1y, "p2x" : m.p2x, "p2y" : m.p2y}
+                    {'corId' : m.corridor_id, 'corType' : m.corridor_type,
+                     'alt' : m.alt, 'p1x' : m.p1x, 'p1y' : m.p1y, 'p2x' : m.p2x, 'p2y' : m.p2y}
         elif m.get_type() == 'MAD_CORRIDOR_RESERVATION_CONFLICT':
             print "Reservation Conflict: Drone Id: %(droneId)d | ResId: %(resId)d | Id1: %(id1)d | Type1: %(type1)d | Alt1: %(alt1).2f | Id2: %(id2)d | Type2: %(type2)d | Alt2: %(alt2).2f" % \
-                {"droneId" : m.drone_id, "resId" : m.reservation_id,
-                 "id1" : m.preliminary_id, "type1" : m.preliminary_type, "alt1" : m.preliminary_alt,
-                 "id2" : m.conflicting_id, "type2" : m.conflicting_type, "alt2" : m.conflicting_alt}
+                {'droneId' : m.drone_id, 'resId' : m.reservation_id,
+                 'id1' : m.preliminary_id, 'type1' : m.preliminary_type, 'alt1' : m.preliminary_alt,
+                 'id2' : m.conflicting_id, 'type2' : m.conflicting_type, 'alt2' : m.conflicting_alt}
 
 def init(mpstate):
     '''initialise module'''

@@ -1,0 +1,1 @@
+python C:\Python27\Lib\site-packages\MAVProxy\mavproxy.py --master=com8 --baudrate=57600 --out=127.0.0.1:15441 --load-module=mad --load-module=madrelay --load-module=droneapi.module.api
