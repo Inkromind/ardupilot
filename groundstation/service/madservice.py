@@ -194,6 +194,14 @@ class MADService(rpyc.Service):
     def exposed_timeTick(self):
         self.checkOpenContracts()
         self.checkPendingAssignments()
+        
+    def exposed_logging_reply(self, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs):
+        print "Logging Reply %d: %d;%d;%d;%d;%.2f;%d;%d;%d;%d" % \
+        (self.droneId, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs)
+        
+    def exposed_msg_logging_reply(self, sent, received):
+        print "Msg Logging Reply %d: %d;%d" % \
+        (self.droneId, sent, received)
  
     def checkOpenContracts(self):
         MADService.dronesLock.acquire_read() # Acquire read lock

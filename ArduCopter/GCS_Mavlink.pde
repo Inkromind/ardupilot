@@ -1565,6 +1565,17 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
         MAD_resetHomebase();
         break;
     }
+    case MAVLINK_MSG_ID_MAD_GET_LOGGING: {
+        AMW_Logging_struct counters = AMW_Facade::getCounters();
+        mavlink_msg_mad_logging_reply_send_buf(msg, chan, counters.totalRetries, counters.totalRounds, counters.totalResFailures,
+                counters.totalCompletedRes, counters.sumLevels, counters.totalReturnToStarts, counters.totalEmergencyLandings,
+                counters.completedPackages, counters.failedPackages);
+        break;
+    }
+    case MAVLINK_MSG_ID_MAD_RESET_LOGGING: {
+        AMW_Facade::resetLogging();
+        break;
+    }
 
     }     // end switch
 } // end handle mavlink

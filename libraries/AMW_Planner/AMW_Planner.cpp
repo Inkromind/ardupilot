@@ -91,3 +91,17 @@ void AMW_Planner::markBatteryEmpty() {
 void AMW_Planner::setHomebase(Vector2f newHomebase) {
     AMW_Task_Planner::getInstance()->setHomeBase(newHomebase);
 }
+
+AMW_Planner_Counters_t AMW_Planner::getCounters() {
+    AMW_Planner_Counters_t counters;
+    AMW_Sequencer* sequencer = AMW_Sequencer::getInstance();
+    counters.completedPackages = sequencer->completedPackages;
+    counters.failedPackages = sequencer->failedPackages;
+    counters.totalEmergencyLandings = sequencer->totalEmergencyLandings;
+    counters.totalReturnToStarts = sequencer->totalReturnToStarts;
+    return counters;
+}
+
+void AMW_Planner::resetLogging() {
+    AMW_Sequencer::getInstance()->resetLogging();
+}

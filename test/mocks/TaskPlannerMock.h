@@ -42,7 +42,7 @@ public:
         return (AMW_Task*) mock("TaskPlanner").actualCall("getFirstTask").onObject(this).returnPointerValue();
     }
 
-    void completedTask(AMW_Task* task) {
+    void completedTask(AMW_Task* task, bool failed) {
         completedTaskList.push_back(task);
         mock("TaskPlanner").actualCall("completedTask").onObject(this);
     }

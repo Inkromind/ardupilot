@@ -29,6 +29,8 @@ AMW_Corridor_Manager::AMW_Corridor_Manager() {
     currentState = IDLE;
     maxFailures = 0;
     minAltitude = 0;
+
+    resetLogging();
 }
 
 bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module, const AMW_List<AMW_Corridor*>* corridors, uint8_t newMaxFailures, float newMinAltitude) {
@@ -36,6 +38,8 @@ bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module,
         return false;
     setNewModule(module);
 
+    if (currentState != IDLE)
+        this->totalResFailures++;
     preliminaryCorridors.clear();
     currentState = IDLE;
 
@@ -58,6 +62,7 @@ bool AMW_Corridor_Manager::reserveCorridors(const AMW_Module_Identifier* module,
     failed = false;
     preliminaryAltitude = minAltitude;
     this->maxFailures = newMaxFailures;
+    this->totalRetries++;
     startReservationRound();
 
     return true;
@@ -90,6 +95,8 @@ void AMW_Corridor_Manager::setNewModule(const AMW_Module_Identifier* module) {
         reservedModule = module;
         corridorConflict = false;
         reservedAltitude = 0;
+        if (currentState != IDLE)
+            this->totalResFailures++;
         preliminaryCorridors.clear();
         currentState = IDLE;
     }
@@ -103,6 +110,7 @@ void AMW_Corridor_Manager::increaseReservationId() {
 }
 
 void AMW_Corridor_Manager::startReservationRound() {
+    this->totalRounds++;
     increaseReservationId();
     AMW_List<AMW_Corridor*>::Iterator* iterator = preliminaryCorridors.iterator();
     while (iterator->hasNext()) {
@@ -143,12 +151,16 @@ void AMW_Corridor_Manager::checkTimeout(void) {
             delete iterator;
             preliminaryCorridors.clear();
 
+            this->totalCompletedRes++;
+            this->sumLevels += reservedAltitude/100;
+
 #ifdef AMW_CORRIDOR_DEBUG
             AC_CommunicationFacade::sendFormattedDebug(PSTR("Corridors reserved at altitude %.2f"), reservedAltitude / 100);
 #endif
         }
         else if (currentState == WAITING_FOR_RETRY) {
             preliminaryAltitude = minAltitude;
+            this->totalRetries++;
             startReservationRound();
         }
         else if (currentState == WAITING_FOR_NEXT_ROUND) {
@@ -252,6 +264,8 @@ void AMW_Corridor_Manager::freeCorridors(AMW_List<AMW_Corridor*>* corridors) {
     }
 
     if (preliminaryCorridors.empty()) {
+        if (currentState != IDLE)
+            this->totalResFailures++;
         currentState = IDLE;
     }
 
@@ -314,6 +328,7 @@ void AMW_Corridor_Manager::reservationConflictReceived(uint8_t reservationId, co
 void AMW_Corridor_Manager::reservationFailed(void) {
     failures++;
     if (failures >= maxFailures) {
+        this->totalResFailures++;
 #ifdef AMW_CORRIDOR_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("Reservation failed."));
 #endif
@@ -377,4 +392,12 @@ void AMW_Corridor_Manager::receivedCorridorBroadcast(const AMW_List<AMW_Corridor
         corridorConflict = true;
         delete conflict;
     }
+}
+
+void AMW_Corridor_Manager::resetLogging(void) {
+    totalRetries = 0;
+    totalResFailures = 0;
+    totalCompletedRes = 0;
+    totalRounds = 0;
+    sumLevels = 0;
 }

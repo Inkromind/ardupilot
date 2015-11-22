@@ -2289,6 +2289,143 @@ static void mavlink_test_mad_failed_package(uint8_t system_id, uint8_t component
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
+static void mavlink_test_mad_reset_logging(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_mad_reset_logging_t packet_in = {
+		5
+    };
+	mavlink_mad_reset_logging_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.drone_id = packet_in.drone_id;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_reset_logging_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_mad_reset_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_reset_logging_pack(system_id, component_id, &msg , packet1.drone_id );
+	mavlink_msg_mad_reset_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_reset_logging_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.drone_id );
+	mavlink_msg_mad_reset_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_mad_reset_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_reset_logging_send(MAVLINK_COMM_1 , packet1.drone_id );
+	mavlink_msg_mad_reset_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_mad_get_logging(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_mad_get_logging_t packet_in = {
+		5
+    };
+	mavlink_mad_get_logging_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.drone_id = packet_in.drone_id;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_get_logging_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_mad_get_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_get_logging_pack(system_id, component_id, &msg , packet1.drone_id );
+	mavlink_msg_mad_get_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_get_logging_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.drone_id );
+	mavlink_msg_mad_get_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_mad_get_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_get_logging_send(MAVLINK_COMM_1 , packet1.drone_id );
+	mavlink_msg_mad_get_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_mad_logging_reply(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_mad_logging_reply_t packet_in = {
+		17.0,17443,17547,17651,17755,17859,17963,18067,18171
+    };
+	mavlink_mad_logging_reply_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.flight_levels = packet_in.flight_levels;
+        	packet1.retries = packet_in.retries;
+        	packet1.rounds = packet_in.rounds;
+        	packet1.res_failures = packet_in.res_failures;
+        	packet1.res_succes = packet_in.res_succes;
+        	packet1.returns = packet_in.returns;
+        	packet1.lands = packet_in.lands;
+        	packet1.pack_completed = packet_in.pack_completed;
+        	packet1.pack_failed = packet_in.pack_failed;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_logging_reply_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_mad_logging_reply_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_logging_reply_pack(system_id, component_id, &msg , packet1.retries , packet1.rounds , packet1.res_failures , packet1.res_succes , packet1.flight_levels , packet1.returns , packet1.lands , packet1.pack_completed , packet1.pack_failed );
+	mavlink_msg_mad_logging_reply_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_logging_reply_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.retries , packet1.rounds , packet1.res_failures , packet1.res_succes , packet1.flight_levels , packet1.returns , packet1.lands , packet1.pack_completed , packet1.pack_failed );
+	mavlink_msg_mad_logging_reply_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_mad_logging_reply_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_logging_reply_send(MAVLINK_COMM_1 , packet1.retries , packet1.rounds , packet1.res_failures , packet1.res_succes , packet1.flight_levels , packet1.returns , packet1.lands , packet1.pack_completed , packet1.pack_failed );
+	mavlink_msg_mad_logging_reply_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
 static void mavlink_test_ardupilotmega(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 	mavlink_test_sensor_offsets(system_id, component_id, last_msg);
@@ -2339,6 +2476,9 @@ static void mavlink_test_ardupilotmega(uint8_t system_id, uint8_t component_id, 
 	mavlink_test_mad_corridor_announcement(system_id, component_id, last_msg);
 	mavlink_test_mad_completed_package(system_id, component_id, last_msg);
 	mavlink_test_mad_failed_package(system_id, component_id, last_msg);
+	mavlink_test_mad_reset_logging(system_id, component_id, last_msg);
+	mavlink_test_mad_get_logging(system_id, component_id, last_msg);
+	mavlink_test_mad_logging_reply(system_id, component_id, last_msg);
 }
 
 #ifdef __cplusplus

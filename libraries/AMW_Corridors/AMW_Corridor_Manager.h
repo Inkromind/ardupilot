@@ -159,6 +159,15 @@ public:
      * Check if the given module can reserve corridors
      */
     bool canReserveCorridors(const AMW_Module_Identifier* module) const;
+
+    void resetLogging(void);
+
+    uint16_t totalRetries;
+    uint16_t totalResFailures;
+    uint16_t totalCompletedRes;
+    uint16_t totalRounds;
+    float sumLevels;
+
 protected:
     virtual ~AMW_Corridor_Manager() { }
 

@@ -12,6 +12,7 @@
 #include "AMW_Commands_Plan.h"
 #include <AC_CommunicationFacade.h>
 #include "AMW_Planner.h"
+#include "AMW_Sequencer.h"
 
 AMW_Task_Package::AMW_Task_Package(uint8_t newId, Vector2f newPickupLocation, Vector2f newDeliveryLocation) {
     this->id = newId;
@@ -39,10 +40,12 @@ AMW_Command* AMW_Task_Package::generatePlan(void) const {
 }
 
 void AMW_Task_Package::completedTask(void) {
+    AMW_Sequencer::getInstance()->completedPackages++;
     AC_CommunicationFacade::completedPackage(this->id);
 }
 
 void AMW_Task_Package::failedTask(void) {
+    AMW_Sequencer::getInstance()->failedPackages++;
     AC_CommunicationFacade::failedPackage(this->id);
 }
 

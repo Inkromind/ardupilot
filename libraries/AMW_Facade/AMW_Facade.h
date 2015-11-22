@@ -18,6 +18,19 @@
  * Facade to the Autonomous MiddleWare
  * This serves as access point to the long term planner
  */
+
+struct AMW_Logging_struct {
+    uint16_t totalRetries;
+    uint16_t totalResFailures;
+    uint16_t totalCompletedRes;
+    uint16_t totalRounds;
+    float sumLevels;
+    uint16_t totalReturnToStarts;
+    uint16_t totalEmergencyLandings;
+    uint16_t completedPackages;
+    uint16_t failedPackages;
+};
+
 class AMW_Facade {
 
 public:
@@ -115,6 +128,10 @@ public:
     static void run10Hz();
 
     static void run1Hz();
+
+    static AMW_Logging_struct getCounters(void);
+
+    static void resetLogging(void);
 
 private:
     AMW_Facade();

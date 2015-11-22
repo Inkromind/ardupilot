@@ -19,6 +19,11 @@ class MadRelayModule(mp_module.MPModule):
         self.add_command('unregisterRelay', self.cmd_unregisterRelay, "Unregister the relay with the groundstation")
         self.connected = False
         self.droneId = -1
+        self.resetMsgCounters()
+        
+    def resetMsgCounters(self):
+        self.receivedMsg = 0;
+        self.sendMsg = 0;
     
     def cmd_registerRelay(self, args):
         '''Register the relay'''
@@ -75,6 +80,7 @@ class MadRelayModule(mp_module.MPModule):
                 deliveryY = int(msg["delivery"]["y"])
                 print("Requesting package #%d to be moved from <%d, %d> to <%d, %d>" % (id, pickupX, pickupY, deliveryX, deliveryY))
                 self.master.mav.mad_request_package_estimate_send(id, pickupX, pickupY, deliveryX, deliveryY)
+                self.receivedMsg += 1
             elif messageId == 'ASSIGN_PACKAGE':
                 # {"packageId" : id, "pickup": {"x": x, "y": y}, "delivery": {"x": x, "y": y}}
                 id = int(msg["packageId"])
@@ -84,6 +90,7 @@ class MadRelayModule(mp_module.MPModule):
                 deliveryY = int(msg["delivery"]["y"])
                 print("Assigning package #%d to be moved from <%d, %d> to <%d, %d>" % (id, pickupX, pickupY, deliveryX, deliveryY))
                 self.master.mav.mad_assign_package_send(id, pickupX, pickupY, deliveryX, deliveryY)
+                self.receivedMsg += 1
             elif messageId == 'REQUEST_CORRIDOR_RESERVATION':
                 # {'resId' : m.reservation_id, 'corId' : m.corridor_id, 'corType' : m.corridor_type,
                 #     'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
@@ -99,6 +106,7 @@ class MadRelayModule(mp_module.MPModule):
                 print("Requesting new corridor: DroneId: %d | ResId: %d | CorId: %d | Type: %d | Alt: %d | <%d, %d> | <%d, %d>" % \
                   (droneId, resId, corId, type, alt, x1, y1, x2, y2))
                 self.master.mav.mad_request_corridor_reservation_send(droneId, resId, corId, type, alt, x1, y1, x2, y2)
+                self.receivedMsg += 1
             elif messageId == 'CORRIDOR_ANNOUNCEMENT':
                 # {'corId' : m.corridor_id, 'corType' : m.corridor_type,
                 #         'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
@@ -113,6 +121,7 @@ class MadRelayModule(mp_module.MPModule):
                 print("Announcing corridor: DroneId: %d | CorId: %d | Type: %d | Alt: %d | <%d, %d> | <%d, %d>" % \
                   (droneId, corId, type, alt, x1, y1, x2, y2))
                 self.master.mav.mad_corridor_announcement_send(droneId, corId, type, alt, x1, y1, x2, y2)
+                self.receivedMsg += 1
             elif messageId == 'CORRIDOR_RESERVATION_CONFLICT':
                 #{'droneId' : m.drone_id, 'resId' : m.reservation_id,
                 #     'id1' : m.preliminary_id, 'type1' : m.preliminary_type, 'alt1' : m.preliminary_alt,
@@ -128,6 +137,20 @@ class MadRelayModule(mp_module.MPModule):
                 self.master.mav.mad_corridor_reservation_conflict_send(self.droneId, droneId, resId, prelId, prelType, prelAlt, id, type, alt)
                 print("Announcing corridor conflict: DroneId: %d | ResId: %d | PrelId: %d | PrelType: %d | PrelAlt: %d | Id: %d | Type: %d | Alt: %d" % \
                   (droneId, resId, prelId, prelType, prelAlt, id, type, alt))
+                self.receivedMsg += 1
+            elif messageId == 'RESET_COUNTERS':
+                print("Resetting logging counters")
+                self.master.mav.mad_reset_logging_send(0)
+            elif messageId == 'GET_COUNTERS':
+                print("Resetting logging counters")
+                self.master.mav.mad_get_logging_send(0)
+            elif messageId == 'RESET_MSG_COUNTERS':
+                print("Resetting msg counters")
+                self.resetMsgCounters()
+            elif messageId == 'GET_MSG_COUNTERS':
+                print("Getting msg counters")
+                asyncRelay = rpyc.async(self.con.root.msg_logging_reply)
+                asyncRelay(self.sendMsg, self.receivedMsg)
             else:
                 print "Received message: SenderId: %d | MessageId: %s | Payload: %s" % \
                 (senderId, messageId, payload)
@@ -143,31 +166,42 @@ class MadRelayModule(mp_module.MPModule):
                 if m.get_type() == 'MAD_PACKAGE_ESTIMATE':
                     asyncRelay = rpyc.async(self.con.root.add_estimate)
                     asyncRelay(m.package_id, m.estimate)
+                    self.sendMsg += 1
                 elif m.get_type() == 'MAD_COMPLETED_PACKAGE':
                     asyncRelay = rpyc.async(self.con.root.completed_package)
                     asyncRelay(m.package_id)
+                    self.sendMsg += 1
                 elif m.get_type() == 'MAD_FAILED_PACKAGE':
                     asyncRelay = rpyc.async(self.con.root.failed_package)
                     asyncRelay(m.package_id)
+                    self.sendMsg += 1
                 elif m.get_type() == 'MAD_CONFIRM_PACKAGE':
                     asyncRelay = rpyc.async(self.con.root.confirm_package_assignment)
                     asyncRelay(m.package_id, m.estimate)
+                    self.sendMsg += 1
                 elif m.get_type() == 'MAD_REQUEST_CORRIDOR_RESERVATION':
                     msg = {'resId' : m.reservation_id, 'corId' : m.corridor_id, 'corType' : m.corridor_type,
                            'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
                     asyncRelay = rpyc.async(self.con.root.broadcast)
                     asyncRelay('REQUEST_CORRIDOR_RESERVATION', json.dumps(msg))
+                    self.sendMsg += 1
                 elif m.get_type() == 'MAD_CORRIDOR_ANNOUNCEMENT':
                     msg = {'corId' : m.corridor_id, 'corType' : m.corridor_type,
                            'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
                     asyncRelay = rpyc.async(self.con.root.broadcast)
                     asyncRelay('CORRIDOR_ANNOUNCEMENT', json.dumps(msg))
+                    self.sendMsg += 1
                 elif m.get_type() == 'MAD_CORRIDOR_RESERVATION_CONFLICT':
                     msg = {'droneId' : m.drone_id, 'resId' : m.reservation_id,
                          'id1' : m.preliminary_id, 'type1' : m.preliminary_type, 'alt1' : m.preliminary_alt,
                          'id2' : m.conflicting_id, 'type2' : m.conflicting_type, 'alt2' : m.conflicting_alt}
                     asyncRelay = rpyc.async(self.con.root.unicast)
                     asyncRelay(m.drone_id, 'CORRIDOR_RESERVATION_CONFLICT', json.dumps(msg))
+                    self.sendMsg += 1
+                elif m.get_type() == 'MAD_LOGGING_REPLY':
+                    asyncRelay = rpyc.async(self.con.root.logging_reply)
+                    asyncRelay(m.retries, m.rounds, m.res_failures, m.res_succes, m.flight_levels, m.returns, 
+                               m.lands, m.pack_completed, m.pack_failed)
         except:
             print "Unexpected error:", sys.exc_info()[0]
             traceback.print_exc()

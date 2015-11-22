@@ -78,3 +78,24 @@ void AMW_Facade::markBatteryEmpty() {
 void AMW_Facade::setHomebase(Vector2f newHomebase) {
     AMW_Planner::setHomebase(newHomebase);
 }
+
+AMW_Logging_struct AMW_Facade::getCounters() {
+    AMW_Logging_struct counters;
+    AMW_Planner_Counters_t plannerCounters = AMW_Planner::getCounters();
+    AMW_Corridor_Manager* corridorManager = AMW_Corridor_Manager::getInstance();
+    counters.completedPackages = plannerCounters.completedPackages;
+    counters.failedPackages = plannerCounters.failedPackages;
+    counters.totalEmergencyLandings = plannerCounters.totalEmergencyLandings;
+    counters.totalReturnToStarts = plannerCounters.totalReturnToStarts;
+    counters.sumLevels = corridorManager->sumLevels;
+    counters.totalCompletedRes = corridorManager->totalCompletedRes;
+    counters.totalRetries = corridorManager->totalRetries;
+    counters.totalResFailures = corridorManager->totalResFailures;
+    counters.totalRounds = corridorManager->totalRounds;
+    return counters;
+}
+
+void AMW_Facade::resetLogging() {
+    AMW_Corridor_Manager::getInstance()->resetLogging();
+    AMW_Planner::resetLogging();
+}

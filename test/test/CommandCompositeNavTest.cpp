@@ -14,11 +14,12 @@
 
 //Mocks
 #include "../mocks/CommandMock.h"
-#include  "../mocks/CorridorManagerMock.h"
-#include  "../mocks/CorridorMock.h"
-#include  "../mocks/FacadeMock.h"
-#include  "../mocks/BatteryMonitorMock.h"
-#include  "../mocks/TaskPlannerMock.h"
+#include "../mocks/CorridorManagerMock.h"
+#include "../mocks/CorridorMock.h"
+#include "../mocks/FacadeMock.h"
+#include "../mocks/BatteryMonitorMock.h"
+#include "../mocks/TaskPlannerMock.h"
+#include "../mocks/SequencerMock.h"
 
 //Includes
 #include <stdlib.h>
@@ -27,6 +28,7 @@ CorridorManagerMock* CCNcorridorManagerMock = 0;
 FacadeMock* CCNfacadeMock = 0;
 BattMonitorMock* CCNbatteryMock = 0;
 TaskPlannerMock* CCNtaskPlannerMock = 0;
+SequencerMock* CCNsequencerMock = 0;
 
 class DummyCompositeNavCommand : public AMW_Command_Composite_Nav {
 public:
@@ -103,6 +105,8 @@ TEST_GROUP(CommandCompositeNav)
         CCNbatteryMock = new BattMonitorMock();
         CCNtaskPlannerMock = new TaskPlannerMock();
         TaskPlannerMock::setPlanner(CCNtaskPlannerMock);
+        CCNsequencerMock = new SequencerMock();
+        SequencerMock::setSequencer(CCNsequencerMock);
     }
     void teardown()
     {
@@ -113,6 +117,8 @@ TEST_GROUP(CommandCompositeNav)
         delete CCNfacadeMock;
         delete CCNbatteryMock;
         TaskPlannerMock::deletePlanner();
+        delete CCNsequencerMock;
+        SequencerMock::deleteSequencer();
         delete CCNtaskPlannerMock;
     }
 };

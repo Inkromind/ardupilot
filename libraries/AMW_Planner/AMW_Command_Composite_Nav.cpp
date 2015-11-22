@@ -17,6 +17,7 @@
 #include "AMW_Planner.h"
 #include "AMW_Task_Planner.h"
 #include <stdint.h>
+#include "AMW_Sequencer.h"
 
 AMW_Command_Composite_Nav::AMW_Command_Composite_Nav(Vector2f newDestination, bool returnHome) : AMW_Command_Composite() {
     destination = Vector3f(newDestination.x, newDestination.y, 0);
@@ -231,6 +232,7 @@ void AMW_Command_Composite_Nav::setNormalSubCommands() {
 }
 
 void AMW_Command_Composite_Nav::returnToStart() {
+    AMW_Sequencer::getInstance()->totalReturnToStarts++;
     uint32_t remainingCommands = subCommands.size();
     clearSubCommands();
 
@@ -270,6 +272,7 @@ void AMW_Command_Composite_Nav::returnToStart() {
 }
 
 void AMW_Command_Composite_Nav::land() {
+    AMW_Sequencer::getInstance()->totalEmergencyLandings++;
     clearSubCommands();
     clearReservedCorridors();
     Vector3f position = AC_Facade::getFacade()->getRealPosition();

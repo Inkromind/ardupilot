@@ -78,6 +78,13 @@ public:
      */
     void resumeMission(void);
 
+    void resetLogging();
+
+    uint16_t totalReturnToStarts;
+    uint16_t totalEmergencyLandings;
+    uint16_t completedPackages;
+    uint16_t failedPackages;
+
 protected:
     AMW_Sequencer();
 

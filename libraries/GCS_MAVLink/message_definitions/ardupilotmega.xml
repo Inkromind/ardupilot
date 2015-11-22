@@ -571,5 +571,28 @@
       <field type="uint8_t" name="package_id">Unique package id</field>
     </message>
     
+    <message name="MAD_RESET_LOGGING" id="207">
+      <description>Reset the logging counters</description>
+      <field type="uint8_t" name="drone_id">Drone id</field>
+    </message>
+    
+    <message name="MAD_GET_LOGGING" id="208">
+      <description>Failed a package</description>
+      <field type="uint8_t" name="drone_id">Drone id</field>
+    </message>
+    
+    <message name="MAD_LOGGING_REPLY" id="209">
+      <description>Logged counters</description>
+      <field type="uint16_t" name="retries">Total reservation retries</field>
+      <field type="uint16_t" name="rounds">Total reservation rounds</field>
+      <field type="uint16_t" name="res_failures">Total failed reservations</field>
+      <field type="uint16_t" name="res_succes">Total succesful reservations</field>
+      <field type="float" name="flight_levels">Summed flight levels</field>
+      <field type="uint16_t" name="returns">Total return to starts</field>
+      <field type="uint16_t" name="lands">Total emergency landings</field>
+      <field type="uint16_t" name="pack_completed">Total completed packages</field>
+      <field type="uint16_t" name="pack_failed">Total failed packages</field>
+    </message>
+    
      </messages>
 </mavlink>

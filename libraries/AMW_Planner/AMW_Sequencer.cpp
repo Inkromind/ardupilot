@@ -21,6 +21,8 @@ AMW_Sequencer::AMW_Sequencer() {
     tempPlan = 0;
     paused = true;
     executingCurrentTask = true;
+
+    resetLogging();
 }
 
 AMW_Sequencer::~AMW_Sequencer() {
@@ -207,7 +209,6 @@ void AMW_Sequencer::executeCurrentTask() {
         #endif
     }
     else if (currentPlan->hasFailed()) {
-        // TODO: Abort Plan
         delete currentPlan;
         currentPlan = 0;
         AMW_Task_Planner::getInstance()->completedTask(currentTask, true);
@@ -367,4 +368,11 @@ void AMW_Sequencer::toggleMission(void) {
         resumeMission();
     else
         pauseMission();
+}
+
+void AMW_Sequencer::resetLogging() {
+    totalReturnToStarts = 0;
+    totalEmergencyLandings = 0;
+    completedPackages = 0;
+    failedPackages = 0;
 }

@@ -3,6 +3,7 @@ import subprocess
 import sys
 import rpyc
 import time
+import json
 
 class MADCLI(cmd.Cmd):
     """CLI for the MAD Service."""
@@ -34,6 +35,38 @@ class MADCLI(cmd.Cmd):
         "Get the registered drones"
         try:
             print self.con.root.get_drones()
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
+    def do_resetCounters(self, line):
+        "Reset Logging Counters"
+        try:
+            print "Resetting Logging Counters"
+            self.con.root.broadcast("RESET_COUNTERS", json.dumps({}))
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
+    def do_getCounters(self, line):
+        "Get Logging Counters"
+        try:
+            print "Getting Logging Counters"
+            self.con.root.broadcast("GET_COUNTERS", json.dumps({}))
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
+    def do_resetMsgCounters(self, line):
+        "Reset Msg Counters"
+        try:
+            print "Resetting Msg Counters"
+            self.con.root.broadcast("RESET_MSG_COUNTERS", json.dumps({}))
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
+    def do_getMsgCounters(self, line):
+        "Get Msg Counters"
+        try:
+            print "Getting Msg Counters"
+            self.con.root.broadcast("GET_MSG_COUNTERS", json.dumps({}))
         except:
             print "Unexpected error:", sys.exc_info()[0]
         

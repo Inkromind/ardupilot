@@ -16,6 +16,13 @@
 #include <AMW_Modules.h>
 #include "../AP_Math/vector2.h"
 
+struct AMW_Planner_Counters_t {
+    uint16_t totalReturnToStarts;
+    uint16_t totalEmergencyLandings;
+    uint16_t completedPackages;
+    uint16_t failedPackages;
+};
+
 /**
  * Facade to the Planner Module
  */
@@ -70,6 +77,10 @@ public:
     static AMW_Module_Identifier* getModuleIdentifier(void) {
           return moduleIdentifier;
     }
+
+    static AMW_Planner_Counters_t getCounters(void);
+
+    static void resetLogging(void);
 
 private:
     AMW_Planner();
