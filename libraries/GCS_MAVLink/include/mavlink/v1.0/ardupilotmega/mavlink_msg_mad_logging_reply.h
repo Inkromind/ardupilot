@@ -5,6 +5,7 @@
 typedef struct __mavlink_mad_logging_reply_t
 {
  float flight_levels; ///< Summed flight levels
+ float distance; ///< Distance travelled
  uint16_t retries; ///< Total reservation retries
  uint16_t rounds; ///< Total reservation rounds
  uint16_t res_failures; ///< Total failed reservations
@@ -15,26 +16,27 @@ typedef struct __mavlink_mad_logging_reply_t
  uint16_t pack_failed; ///< Total failed packages
 } mavlink_mad_logging_reply_t;
 
-#define MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN 20
-#define MAVLINK_MSG_ID_209_LEN 20
+#define MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN 24
+#define MAVLINK_MSG_ID_209_LEN 24
 
-#define MAVLINK_MSG_ID_MAD_LOGGING_REPLY_CRC 127
-#define MAVLINK_MSG_ID_209_CRC 127
+#define MAVLINK_MSG_ID_MAD_LOGGING_REPLY_CRC 0
+#define MAVLINK_MSG_ID_209_CRC 0
 
 
 
 #define MAVLINK_MESSAGE_INFO_MAD_LOGGING_REPLY { \
 	"MAD_LOGGING_REPLY", \
-	9, \
+	10, \
 	{  { "flight_levels", NULL, MAVLINK_TYPE_FLOAT, 0, 0, offsetof(mavlink_mad_logging_reply_t, flight_levels) }, \
-         { "retries", NULL, MAVLINK_TYPE_UINT16_T, 0, 4, offsetof(mavlink_mad_logging_reply_t, retries) }, \
-         { "rounds", NULL, MAVLINK_TYPE_UINT16_T, 0, 6, offsetof(mavlink_mad_logging_reply_t, rounds) }, \
-         { "res_failures", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_mad_logging_reply_t, res_failures) }, \
-         { "res_succes", NULL, MAVLINK_TYPE_UINT16_T, 0, 10, offsetof(mavlink_mad_logging_reply_t, res_succes) }, \
-         { "returns", NULL, MAVLINK_TYPE_UINT16_T, 0, 12, offsetof(mavlink_mad_logging_reply_t, returns) }, \
-         { "lands", NULL, MAVLINK_TYPE_UINT16_T, 0, 14, offsetof(mavlink_mad_logging_reply_t, lands) }, \
-         { "pack_completed", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_mad_logging_reply_t, pack_completed) }, \
-         { "pack_failed", NULL, MAVLINK_TYPE_UINT16_T, 0, 18, offsetof(mavlink_mad_logging_reply_t, pack_failed) }, \
+         { "distance", NULL, MAVLINK_TYPE_FLOAT, 0, 4, offsetof(mavlink_mad_logging_reply_t, distance) }, \
+         { "retries", NULL, MAVLINK_TYPE_UINT16_T, 0, 8, offsetof(mavlink_mad_logging_reply_t, retries) }, \
+         { "rounds", NULL, MAVLINK_TYPE_UINT16_T, 0, 10, offsetof(mavlink_mad_logging_reply_t, rounds) }, \
+         { "res_failures", NULL, MAVLINK_TYPE_UINT16_T, 0, 12, offsetof(mavlink_mad_logging_reply_t, res_failures) }, \
+         { "res_succes", NULL, MAVLINK_TYPE_UINT16_T, 0, 14, offsetof(mavlink_mad_logging_reply_t, res_succes) }, \
+         { "returns", NULL, MAVLINK_TYPE_UINT16_T, 0, 16, offsetof(mavlink_mad_logging_reply_t, returns) }, \
+         { "lands", NULL, MAVLINK_TYPE_UINT16_T, 0, 18, offsetof(mavlink_mad_logging_reply_t, lands) }, \
+         { "pack_completed", NULL, MAVLINK_TYPE_UINT16_T, 0, 20, offsetof(mavlink_mad_logging_reply_t, pack_completed) }, \
+         { "pack_failed", NULL, MAVLINK_TYPE_UINT16_T, 0, 22, offsetof(mavlink_mad_logging_reply_t, pack_failed) }, \
          } \
 }
 
@@ -54,27 +56,30 @@ typedef struct __mavlink_mad_logging_reply_t
  * @param lands Total emergency landings
  * @param pack_completed Total completed packages
  * @param pack_failed Total failed packages
+ * @param distance Distance travelled
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_pack(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg,
-						       uint16_t retries, uint16_t rounds, uint16_t res_failures, uint16_t res_succes, float flight_levels, uint16_t returns, uint16_t lands, uint16_t pack_completed, uint16_t pack_failed)
+						       uint16_t retries, uint16_t rounds, uint16_t res_failures, uint16_t res_succes, float flight_levels, uint16_t returns, uint16_t lands, uint16_t pack_completed, uint16_t pack_failed, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN];
 	_mav_put_float(buf, 0, flight_levels);
-	_mav_put_uint16_t(buf, 4, retries);
-	_mav_put_uint16_t(buf, 6, rounds);
-	_mav_put_uint16_t(buf, 8, res_failures);
-	_mav_put_uint16_t(buf, 10, res_succes);
-	_mav_put_uint16_t(buf, 12, returns);
-	_mav_put_uint16_t(buf, 14, lands);
-	_mav_put_uint16_t(buf, 16, pack_completed);
-	_mav_put_uint16_t(buf, 18, pack_failed);
+	_mav_put_float(buf, 4, distance);
+	_mav_put_uint16_t(buf, 8, retries);
+	_mav_put_uint16_t(buf, 10, rounds);
+	_mav_put_uint16_t(buf, 12, res_failures);
+	_mav_put_uint16_t(buf, 14, res_succes);
+	_mav_put_uint16_t(buf, 16, returns);
+	_mav_put_uint16_t(buf, 18, lands);
+	_mav_put_uint16_t(buf, 20, pack_completed);
+	_mav_put_uint16_t(buf, 22, pack_failed);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN);
 #else
 	mavlink_mad_logging_reply_t packet;
 	packet.flight_levels = flight_levels;
+	packet.distance = distance;
 	packet.retries = retries;
 	packet.rounds = rounds;
 	packet.res_failures = res_failures;
@@ -110,28 +115,31 @@ static inline uint16_t mavlink_msg_mad_logging_reply_pack(uint8_t system_id, uin
  * @param lands Total emergency landings
  * @param pack_completed Total completed packages
  * @param pack_failed Total failed packages
+ * @param distance Distance travelled
  * @return length of the message in bytes (excluding serial stream start sign)
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_pack_chan(uint8_t system_id, uint8_t component_id, uint8_t chan,
 							   mavlink_message_t* msg,
-						           uint16_t retries,uint16_t rounds,uint16_t res_failures,uint16_t res_succes,float flight_levels,uint16_t returns,uint16_t lands,uint16_t pack_completed,uint16_t pack_failed)
+						           uint16_t retries,uint16_t rounds,uint16_t res_failures,uint16_t res_succes,float flight_levels,uint16_t returns,uint16_t lands,uint16_t pack_completed,uint16_t pack_failed,float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN];
 	_mav_put_float(buf, 0, flight_levels);
-	_mav_put_uint16_t(buf, 4, retries);
-	_mav_put_uint16_t(buf, 6, rounds);
-	_mav_put_uint16_t(buf, 8, res_failures);
-	_mav_put_uint16_t(buf, 10, res_succes);
-	_mav_put_uint16_t(buf, 12, returns);
-	_mav_put_uint16_t(buf, 14, lands);
-	_mav_put_uint16_t(buf, 16, pack_completed);
-	_mav_put_uint16_t(buf, 18, pack_failed);
+	_mav_put_float(buf, 4, distance);
+	_mav_put_uint16_t(buf, 8, retries);
+	_mav_put_uint16_t(buf, 10, rounds);
+	_mav_put_uint16_t(buf, 12, res_failures);
+	_mav_put_uint16_t(buf, 14, res_succes);
+	_mav_put_uint16_t(buf, 16, returns);
+	_mav_put_uint16_t(buf, 18, lands);
+	_mav_put_uint16_t(buf, 20, pack_completed);
+	_mav_put_uint16_t(buf, 22, pack_failed);
 
         memcpy(_MAV_PAYLOAD_NON_CONST(msg), buf, MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN);
 #else
 	mavlink_mad_logging_reply_t packet;
 	packet.flight_levels = flight_levels;
+	packet.distance = distance;
 	packet.retries = retries;
 	packet.rounds = rounds;
 	packet.res_failures = res_failures;
@@ -162,7 +170,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_pack_chan(uint8_t system_id
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_encode(uint8_t system_id, uint8_t component_id, mavlink_message_t* msg, const mavlink_mad_logging_reply_t* mad_logging_reply)
 {
-	return mavlink_msg_mad_logging_reply_pack(system_id, component_id, msg, mad_logging_reply->retries, mad_logging_reply->rounds, mad_logging_reply->res_failures, mad_logging_reply->res_succes, mad_logging_reply->flight_levels, mad_logging_reply->returns, mad_logging_reply->lands, mad_logging_reply->pack_completed, mad_logging_reply->pack_failed);
+	return mavlink_msg_mad_logging_reply_pack(system_id, component_id, msg, mad_logging_reply->retries, mad_logging_reply->rounds, mad_logging_reply->res_failures, mad_logging_reply->res_succes, mad_logging_reply->flight_levels, mad_logging_reply->returns, mad_logging_reply->lands, mad_logging_reply->pack_completed, mad_logging_reply->pack_failed, mad_logging_reply->distance);
 }
 
 /**
@@ -176,7 +184,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_encode(uint8_t system_id, u
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_encode_chan(uint8_t system_id, uint8_t component_id, uint8_t chan, mavlink_message_t* msg, const mavlink_mad_logging_reply_t* mad_logging_reply)
 {
-	return mavlink_msg_mad_logging_reply_pack_chan(system_id, component_id, chan, msg, mad_logging_reply->retries, mad_logging_reply->rounds, mad_logging_reply->res_failures, mad_logging_reply->res_succes, mad_logging_reply->flight_levels, mad_logging_reply->returns, mad_logging_reply->lands, mad_logging_reply->pack_completed, mad_logging_reply->pack_failed);
+	return mavlink_msg_mad_logging_reply_pack_chan(system_id, component_id, chan, msg, mad_logging_reply->retries, mad_logging_reply->rounds, mad_logging_reply->res_failures, mad_logging_reply->res_succes, mad_logging_reply->flight_levels, mad_logging_reply->returns, mad_logging_reply->lands, mad_logging_reply->pack_completed, mad_logging_reply->pack_failed, mad_logging_reply->distance);
 }
 
 /**
@@ -192,22 +200,24 @@ static inline uint16_t mavlink_msg_mad_logging_reply_encode_chan(uint8_t system_
  * @param lands Total emergency landings
  * @param pack_completed Total completed packages
  * @param pack_failed Total failed packages
+ * @param distance Distance travelled
  */
 #ifdef MAVLINK_USE_CONVENIENCE_FUNCTIONS
 
-static inline void mavlink_msg_mad_logging_reply_send(mavlink_channel_t chan, uint16_t retries, uint16_t rounds, uint16_t res_failures, uint16_t res_succes, float flight_levels, uint16_t returns, uint16_t lands, uint16_t pack_completed, uint16_t pack_failed)
+static inline void mavlink_msg_mad_logging_reply_send(mavlink_channel_t chan, uint16_t retries, uint16_t rounds, uint16_t res_failures, uint16_t res_succes, float flight_levels, uint16_t returns, uint16_t lands, uint16_t pack_completed, uint16_t pack_failed, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char buf[MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN];
 	_mav_put_float(buf, 0, flight_levels);
-	_mav_put_uint16_t(buf, 4, retries);
-	_mav_put_uint16_t(buf, 6, rounds);
-	_mav_put_uint16_t(buf, 8, res_failures);
-	_mav_put_uint16_t(buf, 10, res_succes);
-	_mav_put_uint16_t(buf, 12, returns);
-	_mav_put_uint16_t(buf, 14, lands);
-	_mav_put_uint16_t(buf, 16, pack_completed);
-	_mav_put_uint16_t(buf, 18, pack_failed);
+	_mav_put_float(buf, 4, distance);
+	_mav_put_uint16_t(buf, 8, retries);
+	_mav_put_uint16_t(buf, 10, rounds);
+	_mav_put_uint16_t(buf, 12, res_failures);
+	_mav_put_uint16_t(buf, 14, res_succes);
+	_mav_put_uint16_t(buf, 16, returns);
+	_mav_put_uint16_t(buf, 18, lands);
+	_mav_put_uint16_t(buf, 20, pack_completed);
+	_mav_put_uint16_t(buf, 22, pack_failed);
 
 #if MAVLINK_CRC_EXTRA
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MAD_LOGGING_REPLY, buf, MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN, MAVLINK_MSG_ID_MAD_LOGGING_REPLY_CRC);
@@ -217,6 +227,7 @@ static inline void mavlink_msg_mad_logging_reply_send(mavlink_channel_t chan, ui
 #else
 	mavlink_mad_logging_reply_t packet;
 	packet.flight_levels = flight_levels;
+	packet.distance = distance;
 	packet.retries = retries;
 	packet.rounds = rounds;
 	packet.res_failures = res_failures;
@@ -242,19 +253,20 @@ static inline void mavlink_msg_mad_logging_reply_send(mavlink_channel_t chan, ui
   is usually the receive buffer for the channel, and allows a reply to an
   incoming message with minimum stack space usage.
  */
-static inline void mavlink_msg_mad_logging_reply_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint16_t retries, uint16_t rounds, uint16_t res_failures, uint16_t res_succes, float flight_levels, uint16_t returns, uint16_t lands, uint16_t pack_completed, uint16_t pack_failed)
+static inline void mavlink_msg_mad_logging_reply_send_buf(mavlink_message_t *msgbuf, mavlink_channel_t chan,  uint16_t retries, uint16_t rounds, uint16_t res_failures, uint16_t res_succes, float flight_levels, uint16_t returns, uint16_t lands, uint16_t pack_completed, uint16_t pack_failed, float distance)
 {
 #if MAVLINK_NEED_BYTE_SWAP || !MAVLINK_ALIGNED_FIELDS
 	char *buf = (char *)msgbuf;
 	_mav_put_float(buf, 0, flight_levels);
-	_mav_put_uint16_t(buf, 4, retries);
-	_mav_put_uint16_t(buf, 6, rounds);
-	_mav_put_uint16_t(buf, 8, res_failures);
-	_mav_put_uint16_t(buf, 10, res_succes);
-	_mav_put_uint16_t(buf, 12, returns);
-	_mav_put_uint16_t(buf, 14, lands);
-	_mav_put_uint16_t(buf, 16, pack_completed);
-	_mav_put_uint16_t(buf, 18, pack_failed);
+	_mav_put_float(buf, 4, distance);
+	_mav_put_uint16_t(buf, 8, retries);
+	_mav_put_uint16_t(buf, 10, rounds);
+	_mav_put_uint16_t(buf, 12, res_failures);
+	_mav_put_uint16_t(buf, 14, res_succes);
+	_mav_put_uint16_t(buf, 16, returns);
+	_mav_put_uint16_t(buf, 18, lands);
+	_mav_put_uint16_t(buf, 20, pack_completed);
+	_mav_put_uint16_t(buf, 22, pack_failed);
 
 #if MAVLINK_CRC_EXTRA
     _mav_finalize_message_chan_send(chan, MAVLINK_MSG_ID_MAD_LOGGING_REPLY, buf, MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN, MAVLINK_MSG_ID_MAD_LOGGING_REPLY_CRC);
@@ -264,6 +276,7 @@ static inline void mavlink_msg_mad_logging_reply_send_buf(mavlink_message_t *msg
 #else
 	mavlink_mad_logging_reply_t *packet = (mavlink_mad_logging_reply_t *)msgbuf;
 	packet->flight_levels = flight_levels;
+	packet->distance = distance;
 	packet->retries = retries;
 	packet->rounds = rounds;
 	packet->res_failures = res_failures;
@@ -294,7 +307,7 @@ static inline void mavlink_msg_mad_logging_reply_send_buf(mavlink_message_t *msg
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_retries(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  4);
+	return _MAV_RETURN_uint16_t(msg,  8);
 }
 
 /**
@@ -304,7 +317,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_get_retries(const mavlink_m
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_rounds(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  6);
+	return _MAV_RETURN_uint16_t(msg,  10);
 }
 
 /**
@@ -314,7 +327,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_get_rounds(const mavlink_me
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_res_failures(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  8);
+	return _MAV_RETURN_uint16_t(msg,  12);
 }
 
 /**
@@ -324,7 +337,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_get_res_failures(const mavl
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_res_succes(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  10);
+	return _MAV_RETURN_uint16_t(msg,  14);
 }
 
 /**
@@ -344,7 +357,7 @@ static inline float mavlink_msg_mad_logging_reply_get_flight_levels(const mavlin
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_returns(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  12);
+	return _MAV_RETURN_uint16_t(msg,  16);
 }
 
 /**
@@ -354,7 +367,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_get_returns(const mavlink_m
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_lands(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  14);
+	return _MAV_RETURN_uint16_t(msg,  18);
 }
 
 /**
@@ -364,7 +377,7 @@ static inline uint16_t mavlink_msg_mad_logging_reply_get_lands(const mavlink_mes
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_pack_completed(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  16);
+	return _MAV_RETURN_uint16_t(msg,  20);
 }
 
 /**
@@ -374,7 +387,17 @@ static inline uint16_t mavlink_msg_mad_logging_reply_get_pack_completed(const ma
  */
 static inline uint16_t mavlink_msg_mad_logging_reply_get_pack_failed(const mavlink_message_t* msg)
 {
-	return _MAV_RETURN_uint16_t(msg,  18);
+	return _MAV_RETURN_uint16_t(msg,  22);
+}
+
+/**
+ * @brief Get field distance from mad_logging_reply message
+ *
+ * @return Distance travelled
+ */
+static inline float mavlink_msg_mad_logging_reply_get_distance(const mavlink_message_t* msg)
+{
+	return _MAV_RETURN_float(msg,  4);
 }
 
 /**
@@ -387,6 +410,7 @@ static inline void mavlink_msg_mad_logging_reply_decode(const mavlink_message_t*
 {
 #if MAVLINK_NEED_BYTE_SWAP
 	mad_logging_reply->flight_levels = mavlink_msg_mad_logging_reply_get_flight_levels(msg);
+	mad_logging_reply->distance = mavlink_msg_mad_logging_reply_get_distance(msg);
 	mad_logging_reply->retries = mavlink_msg_mad_logging_reply_get_retries(msg);
 	mad_logging_reply->rounds = mavlink_msg_mad_logging_reply_get_rounds(msg);
 	mad_logging_reply->res_failures = mavlink_msg_mad_logging_reply_get_res_failures(msg);

@@ -37,3 +37,7 @@ void AC_CommunicationFacade::failedPackage(uint8_t packageId) {
     CommunicationFacadeStub::getFacade()->failedPackage(packageId);
 }
 
+void AC_CommunicationFacade::sendLogging(float xPos, float yPos, float curAlt, float assAlt, float deviation) {
+
+}
+

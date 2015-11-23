@@ -41,7 +41,7 @@ void AMW_Command_Composite_Forced_Nav::updateStatus() {
             clearReservedCorridors();
             AMW_Corridor_Manager::getInstance()->markCorridorConflictResolved(AMW_Planner::getModuleIdentifier());
 #ifdef AMW_COMMAND_DEBUG
-            AC_CommunicationFacade::sendFormattedDebug(PSTR("Starting forced nav to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
+            AC_CommunicationFacade::sendFormattedDebug(PSTR("Completed forced nav to <%.2f,%.2f>"), destination.x / 100, destination.y / 100);
 #endif
             return;
     }

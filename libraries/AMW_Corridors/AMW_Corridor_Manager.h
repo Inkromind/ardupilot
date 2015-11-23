@@ -21,7 +21,7 @@ class AMW_Corridor_Conflict;
 
 #define AMW_CORRIDOR_MIN_ALTITUDE 1000
 #define AMW_CORRIDOR_ALTITUDE_HEIGHT 1000
-#define AMW_CORRIDOR_MAX_ALTITUDE 3000
+#define AMW_CORRIDOR_MAX_ALTITUDE 2000
 
 #ifndef UINT8_MAX
 #define AMW_MAX_RESERVATION_ID 0xff
@@ -29,8 +29,8 @@ class AMW_Corridor_Conflict;
 #define AMW_MAX_RESERVATION_ID UINT8_MAX
 #endif
 
-#define AMW_CORRIDOR_RESERVATION_TIMEOUT 30
-#define AMW_CORRIDOR_RESERVATION_TIMEOUT_MAX_DELTA 5
+#define AMW_CORRIDOR_RESERVATION_TIMEOUT 2
+#define AMW_CORRIDOR_RESERVATION_TIMEOUT_MAX_DELTA 3
 #define AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY 30
 #define AMW_CORRIDOR_RESERVATION_FAILURE_RETRY_DELAY_MAX_DELTA 5
 #define AMW_CORRIDOR_RESERVATION_ROUND_DELAY 0
@@ -110,7 +110,7 @@ public:
      * Get the altitude of the last succesfull reservation for module.
      */
     virtual float getReservedAltitude(const AMW_Module_Identifier* module) const {
-        if (reservedModule != module || !module)
+        if (reservedModule != module && module)
             return 0;
         return reservedAltitude;
     }
@@ -152,6 +152,11 @@ public:
      * A broadcast of reserved corridors was received
      */
     virtual void receivedCorridorBroadcast(const AMW_List<AMW_Corridor*>* corridors);
+
+    /**
+     * Get the deviation to the current corridor
+     */
+    virtual float getDeviation();
 
     enum State { IDLE, REQUEST_SEND, WAITING_FOR_RETRY, WAITING_FOR_NEXT_ROUND };
 

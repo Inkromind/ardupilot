@@ -12,6 +12,7 @@
 #include <AMW_Modules.h>
 #include <AC_CommunicationFacade.h>
 #include <AC_Facade.h>
+#include "SegmentDistance.h"
 
 AMW_Corridor_Manager* AMW_Corridor_Manager::instance = 0;
 uint8_t AMW_Corridor::nextId = 0;
@@ -400,4 +401,24 @@ void AMW_Corridor_Manager::resetLogging(void) {
     totalCompletedRes = 0;
     totalRounds = 0;
     sumLevels = 0;
+}
+
+float AMW_Corridor_Manager::getDeviation(void) {
+    if (reservedCorridors.empty())
+        return 0;
+    AMW_List<AMW_Corridor*>::Iterator* iterator = reservedCorridors.iterator();
+    float distance = 0;
+    bool foundCorridor = false;
+    while (iterator->hasNext()) {
+        AMW_Corridor* corridor = iterator->next();
+        if (corridor->isInCorridor() && !corridor->isCompleted()) {
+            foundCorridor = true;
+            distance = dist_Point_to_Segment(AC_Facade::getFacade()->getRealPosition(), corridor->getStartPoint(), corridor->getEndPoint());
+        }
+    }
+    delete iterator;
+    if (foundCorridor)
+        return distance;
+    AMW_Corridor* corridor = reservedCorridors.front();
+    return dist_Point_to_Segment(AC_Facade::getFacade()->getRealPosition(), corridor->getStartPoint(), corridor->getEndPoint());
 }

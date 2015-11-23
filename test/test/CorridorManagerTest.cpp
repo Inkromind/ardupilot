@@ -17,8 +17,8 @@
 #include  "../mocks/CorridorMock.h"
 #include  "../mocks/CommunicationFacadeMock.h"
 
-#define CM_MIN_RESERVATION_TIMEOUT 30
-#define CM_MAX_RESERVATION_TIMEOUT 35
+#define CM_MIN_RESERVATION_TIMEOUT 2
+#define CM_MAX_RESERVATION_TIMEOUT 5
 #define CM_MIN_RETRY_TIMEOUT 30
 #define CM_MAX_RETRY_TIMEOUT 35
 #define CM_MIN_ROUND_DELAY_TIMEOUT 0

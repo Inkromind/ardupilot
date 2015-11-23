@@ -37,6 +37,8 @@ public:
      */
     static void failedPackage(uint8_t packageId);
 
+    static void sendLogging(float xPos, float yPos, float curAlt, float assAlt, float deviation);
+
 
 #ifndef TESTENV
     static void sendDebug(const prog_char_t *str);

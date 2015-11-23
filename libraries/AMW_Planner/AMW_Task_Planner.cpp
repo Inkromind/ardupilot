@@ -113,6 +113,7 @@ void AMW_Task_Planner::returnHome() {
     returningHome = true;
     delete idleTask;
     idleTask = 0;
+    idleTaskCompleted = false;
 #ifdef AMW_PLANNER_DEBUG
     AC_CommunicationFacade::sendDebug(PSTR("Returning Home"));
 #endif

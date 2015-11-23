@@ -29,6 +29,7 @@ struct AMW_Logging_struct {
     uint16_t totalEmergencyLandings;
     uint16_t completedPackages;
     uint16_t failedPackages;
+    float distance;
 };
 
 class AMW_Facade {

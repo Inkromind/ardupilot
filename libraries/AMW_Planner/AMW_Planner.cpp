@@ -9,14 +9,19 @@
 #include "AMW_Sequencer.h"
 #include <AC_Facade.h>
 #include <stdlib.h>
+#include "../AMW_Corridors/SegmentDistance.h"
 
 bool AMW_Planner::previousToggleState = true;
 bool AMW_Planner::initialized = false;
 AMW_Module_Identifier* AMW_Planner::moduleIdentifier = new AMW_Module_Identifier(0);
+float AMW_Planner::distanceTravelled = 0;
+Vector3f AMW_Planner::lastPosition = Vector3f();
 
 void AMW_Planner::initPlanner() {
     if (initialized)
         return;
+    distanceTravelled = 0;
+    lastPosition = AC_Facade::getFacade()->getRealPosition();
     srand(AC_Facade::getFacade()->getTimeMillis());
     if (AC_Facade::getFacade()->initFlightMode()) {
         AMW_Task_Planner::getInstance()->init();
@@ -31,7 +36,12 @@ void AMW_Planner::run100Hz() {
 }
 
 void AMW_Planner::run50Hz() {
-
+    if (initialized) {
+        Vector3f newPosition = AC_Facade::getFacade()->getRealPosition();
+        if (!AC_Facade::getFacade()->isLanded())
+            distanceTravelled += dist_Point_to_Point(lastPosition, newPosition);
+        lastPosition = newPosition;
+    }
 }
 
 void AMW_Planner::run10Hz() {
@@ -99,9 +109,12 @@ AMW_Planner_Counters_t AMW_Planner::getCounters() {
     counters.failedPackages = sequencer->failedPackages;
     counters.totalEmergencyLandings = sequencer->totalEmergencyLandings;
     counters.totalReturnToStarts = sequencer->totalReturnToStarts;
+    counters.distance = distanceTravelled;
     return counters;
 }
 
 void AMW_Planner::resetLogging() {
     AMW_Sequencer::getInstance()->resetLogging();
+    distanceTravelled = 0;
+    lastPosition = AC_Facade::getFacade()->getRealPosition();
 }

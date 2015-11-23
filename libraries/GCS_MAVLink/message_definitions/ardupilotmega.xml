@@ -592,6 +592,21 @@
       <field type="uint16_t" name="lands">Total emergency landings</field>
       <field type="uint16_t" name="pack_completed">Total completed packages</field>
       <field type="uint16_t" name="pack_failed">Total failed packages</field>
+      <field type="float" name="distance">Distance travelled</field>
+    </message>
+    
+    <message name="MAD_LOGGING" id="210">
+      <description>Logging</description>
+      <field type="float" name="x">X-position</field>
+      <field type="float" name="y">Y-position</field>
+      <field type="float" name="alt">Current altitude</field>
+      <field type="float" name="assAlt">Assigned altitude</field>
+      <field type="float" name="dev">Deviation</field>
+    </message>
+    
+    <message name="MAD_SEED" id="211">
+      <description>Set seed</description>
+      <field type="uint8_t" name="seed">New Seed</field>
     </message>
     
      </messages>

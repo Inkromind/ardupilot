@@ -10,6 +10,7 @@
 #define MAD_MSG_CORRIDOR_ANNOUNCEMENT_ID 2
 #define MAD_MSG_COMPLETED_PACKAGE_ID 3
 #define MAD_MSG_FAILED_PACKAGE_ID 4
+#define MAD_MSG_LOGGING_ID 5
 #endif
 
 void AC_CommunicationFacade::broadcastReservationRequest(uint8_t reservationId, AMW_List<AMW_Corridor*>* corridors) {
@@ -52,6 +53,15 @@ void AC_CommunicationFacade::failedPackage(uint8_t packageId) {
             gcs[i].send_MADmsg(MAD_MSG_FAILED_PACKAGE_ID, packageId);
         }
     }
+}
+
+void AC_CommunicationFacade::sendLogging(float xPos, float yPos, float curAlt, float assAlt, float dev) {
+    for (uint8_t i=0; i<num_gcs; i++) {
+        if (gcs[i].initialised) {
+            gcs[i].send_MADmsg(MAD_MSG_LOGGING_ID, (double) xPos, (double) yPos, (double) curAlt, (double) assAlt, (double) dev);
+        }
+    }
+
 }
 
 void GCS_MAVLINK::send_MADmsg(uint8_t id, ...) {
@@ -134,6 +144,19 @@ void GCS_MAVLINK::send_MADmsg(uint8_t id, ...) {
             break;
         }
         mavlink_msg_mad_corridor_announcement_send(chan, 0, corridor->getId(), (uint8_t)corridor->getType(), corridor->getAltitude(), p1x, p1y, p2x, p2y);
+        break;
+    }
+    case MAD_MSG_LOGGING_ID:
+    {
+        float xPos, yPos, curAlt, assAlt, dev;
+        va_start(args, id);
+        xPos = (float) va_arg(args, double);
+        yPos = (float) va_arg(args, double);
+        curAlt = (float) va_arg(args, double);
+        assAlt = (float) va_arg(args, double);
+        dev = (float) va_arg(args, double);
+        va_end(args);
+        mavlink_msg_mad_logging_send(chan, xPos, yPos, curAlt, assAlt, dev);
         break;
     }
     }

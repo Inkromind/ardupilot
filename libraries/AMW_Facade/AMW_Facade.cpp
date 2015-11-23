@@ -8,6 +8,8 @@
 #include "AMW_Facade.h"
 #include <AMW_Planner.h>
 #include <AMW_Corridors.h>
+#include <AC_Facade.h>
+#include <AC_CommunicationFacade.h>
 
 void AMW_Facade::initPlanner() {
     AMW_Planner::initPlanner();
@@ -29,6 +31,10 @@ void AMW_Facade::run1Hz() {
     AMW_Planner::run1Hz();
     AMW_Corridor_Manager::getInstance()->broadcastReservedCorridors();
     AMW_Corridor_Manager::getInstance()->checkTimeout();
+    Vector3f location = AC_Facade::getFacade()->getRealPosition();
+    float assignedAltitude = AMW_Corridor_Manager::getInstance()->getReservedAltitude(0);
+    float deviation = AMW_Corridor_Manager::getInstance()->getDeviation();
+    AC_CommunicationFacade::sendLogging(location.x, location.y, location.z, assignedAltitude, deviation);
 }
 
 void AMW_Facade::resumeMission() {
@@ -92,6 +98,7 @@ AMW_Logging_struct AMW_Facade::getCounters() {
     counters.totalRetries = corridorManager->totalRetries;
     counters.totalResFailures = corridorManager->totalResFailures;
     counters.totalRounds = corridorManager->totalRounds;
+    counters.distance = plannerCounters.distance;
     return counters;
 }
 

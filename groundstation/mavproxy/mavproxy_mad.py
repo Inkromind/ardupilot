@@ -28,6 +28,7 @@ class MadModule(mp_module.MPModule):
         self.add_command('announceCorridor', self.cmd_announceCorridor, "Announce a reserved corridor", ["<droneId> <id> <type> <x1> <y1> <x2> <y2>"])
         self.add_command('resetCounters', self.cmd_resetCounters, "Reset Logging Counters")
         self.add_command('getCounters', self.cmd_getCounters, "Get Logging Counters")
+        self.add_command('setSeed', self.cmd_setSeed, "Set new random seed", ["<seed>"])
         self.droneId = 0
         self.showCorridors = False
         
@@ -62,6 +63,21 @@ class MadModule(mp_module.MPModule):
         self.droneId = id
         
         print("Drone ID set to %d" % (id))
+        
+    def cmd_setSeed(self, args):
+        '''Set the seed'''
+        usage = "Usage: <seed>"
+        
+        if len(args) != 1:
+            print(usage)
+            return;
+    
+        seed = int(args[0])
+        if seed < 0:
+            print("Invalid seed %d" % id)
+            return
+        
+        self.master.mav.mad_seed_send(seed)
         
     def cmd_setHomebase(self, args):
         '''Set the homebase-coordinates'''
@@ -302,8 +318,8 @@ class MadModule(mp_module.MPModule):
                  'id1' : m.preliminary_id, 'type1' : m.preliminary_type, 'alt1' : m.preliminary_alt,
                  'id2' : m.conflicting_id, 'type2' : m.conflicting_type, 'alt2' : m.conflicting_alt}
         elif m.get_type() == 'MAD_LOGGING_REPLY':
-            print "Logging Reply: %d;%d;%d;%d;%.2f;%d;%d;%d;%d" % \
-            (m.retries, m.rounds, m.res_failures, m.res_succes, m.flight_levels, m.returns, m.lands, m.pack_completed, m.pack_failed)
+            print "Logging Reply: %d;%d;%d;%d;%.2f;%d;%d;%d;%d;%.2f" % \
+            (m.retries, m.rounds, m.res_failures, m.res_succes, m.flight_levels, m.returns, m.lands, m.pack_completed, m.pack_failed, m.distance)
 
 def init(mpstate):
     '''initialise module'''

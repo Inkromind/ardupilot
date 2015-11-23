@@ -35,6 +35,9 @@ public:
     virtual void failedPackage(uint8_t packageId) {
     }
 
+    virtual void sendLogging(float xPos, float yPos, float curAlt, float assAlt, float deviation) {
+    }
+
 protected:
     static CommunicationFacadeStub* facade;
     CommunicationFacadeStub() {}

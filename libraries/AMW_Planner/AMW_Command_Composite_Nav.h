@@ -18,7 +18,7 @@
 #ifndef TESTENV
     #define AMW_COMMAND_ONLY_LAND_AT_BASE
 #endif
-#define AMW_COMMAND_HOVER_ALTITUDE 100
+#define AMW_COMMAND_HOVER_ALTITUDE 500
 
 /**
  * A command/goal representing a takeoff, navigation to and landing at

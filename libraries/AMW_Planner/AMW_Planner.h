@@ -15,12 +15,14 @@
 #include "AMW_Task_Planner.h"
 #include <AMW_Modules.h>
 #include "../AP_Math/vector2.h"
+#include "../AP_Math/vector3.h"
 
 struct AMW_Planner_Counters_t {
     uint16_t totalReturnToStarts;
     uint16_t totalEmergencyLandings;
     uint16_t completedPackages;
     uint16_t failedPackages;
+    float distance;
 };
 
 /**
@@ -100,6 +102,10 @@ private:
     static bool initialized;
 
     static AMW_Module_Identifier* moduleIdentifier;
+
+    static float distanceTravelled;
+
+    static Vector3f lastPosition;
 
 };
 

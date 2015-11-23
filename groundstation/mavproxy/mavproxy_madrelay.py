@@ -20,6 +20,7 @@ class MadRelayModule(mp_module.MPModule):
         self.connected = False
         self.droneId = -1
         self.resetMsgCounters()
+        self.logFile = False
         
     def resetMsgCounters(self):
         self.receivedMsg = 0;
@@ -32,6 +33,9 @@ class MadRelayModule(mp_module.MPModule):
             try:
                 self.droneId = self.con.root.register_relay(self.relayCallback)
                 print "Registered relay with id %d" % self.droneId
+                if not self.logFile:
+                    self.logFile = "logs/%s_%d" % (time.strftime("%H-%M-%S_%d-%m-%Y"), self.droneId)
+                    print "Logging to file %s" % self.logFile
             except:
                 print "Connection error. Reopening connection..."
                 self.connected = False
@@ -51,6 +55,8 @@ class MadRelayModule(mp_module.MPModule):
                 self.droneId = self.con.root.register_relay(self.relayCallback)
                 print "Registered relay with id %d" % self.droneId
                 self.connected = True
+                self.logFile = "logs/%s_%d" % (time.strftime("%H-%M-%S_%d-%m-%Y"), self.droneId)
+                print "Logging to files %s_*.txt" % self.logFile
             except:
                 print "Unexpected error:", sys.exc_info()[0]
         
@@ -81,6 +87,9 @@ class MadRelayModule(mp_module.MPModule):
                 print("Requesting package #%d to be moved from <%d, %d> to <%d, %d>" % (id, pickupX, pickupY, deliveryX, deliveryY))
                 self.master.mav.mad_request_package_estimate_send(id, pickupX, pickupY, deliveryX, deliveryY)
                 self.receivedMsg += 1
+                if self.logFile:
+                    with open(self.logFile + "_comm.txt", "a") as f:
+                        f.write("%d,RECEIVED,CONTRACT\n" % int(time.time()))
             elif messageId == 'ASSIGN_PACKAGE':
                 # {"packageId" : id, "pickup": {"x": x, "y": y}, "delivery": {"x": x, "y": y}}
                 id = int(msg["packageId"])
@@ -91,6 +100,9 @@ class MadRelayModule(mp_module.MPModule):
                 print("Assigning package #%d to be moved from <%d, %d> to <%d, %d>" % (id, pickupX, pickupY, deliveryX, deliveryY))
                 self.master.mav.mad_assign_package_send(id, pickupX, pickupY, deliveryX, deliveryY)
                 self.receivedMsg += 1
+                if self.logFile:
+                    with open(self.logFile + "_comm.txt", "a") as f:
+                        f.write("%d,RECEIVED,CONTRACT\n" % int(time.time()))
             elif messageId == 'REQUEST_CORRIDOR_RESERVATION':
                 # {'resId' : m.reservation_id, 'corId' : m.corridor_id, 'corType' : m.corridor_type,
                 #     'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
@@ -107,6 +119,9 @@ class MadRelayModule(mp_module.MPModule):
                   (droneId, resId, corId, type, alt, x1, y1, x2, y2))
                 self.master.mav.mad_request_corridor_reservation_send(droneId, resId, corId, type, alt, x1, y1, x2, y2)
                 self.receivedMsg += 1
+                if self.logFile:
+                    with open(self.logFile + "_comm.txt", "a") as f:
+                        f.write("%d,RECEIVED,CORRIDOR\n" % int(time.time()))
             elif messageId == 'CORRIDOR_ANNOUNCEMENT':
                 # {'corId' : m.corridor_id, 'corType' : m.corridor_type,
                 #         'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
@@ -122,6 +137,9 @@ class MadRelayModule(mp_module.MPModule):
                   (droneId, corId, type, alt, x1, y1, x2, y2))
                 self.master.mav.mad_corridor_announcement_send(droneId, corId, type, alt, x1, y1, x2, y2)
                 self.receivedMsg += 1
+                if self.logFile:
+                    with open(self.logFile + "_comm.txt", "a") as f:
+                        f.write("%d,RECEIVED,CORRIDOR\n" % int(time.time()))
             elif messageId == 'CORRIDOR_RESERVATION_CONFLICT':
                 #{'droneId' : m.drone_id, 'resId' : m.reservation_id,
                 #     'id1' : m.preliminary_id, 'type1' : m.preliminary_type, 'alt1' : m.preliminary_alt,
@@ -138,6 +156,9 @@ class MadRelayModule(mp_module.MPModule):
                 print("Announcing corridor conflict: DroneId: %d | ResId: %d | PrelId: %d | PrelType: %d | PrelAlt: %d | Id: %d | Type: %d | Alt: %d" % \
                   (droneId, resId, prelId, prelType, prelAlt, id, type, alt))
                 self.receivedMsg += 1
+                if self.logFile:
+                    with open(self.logFile + "_comm.txt", "a") as f:
+                        f.write("%d,RECEIVED,CORRIDOR\n" % int(time.time()))
             elif messageId == 'RESET_COUNTERS':
                 print("Resetting logging counters")
                 self.master.mav.mad_reset_logging_send(0)
@@ -167,30 +188,48 @@ class MadRelayModule(mp_module.MPModule):
                     asyncRelay = rpyc.async(self.con.root.add_estimate)
                     asyncRelay(m.package_id, m.estimate)
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CONTRACT\n" % int(time.time()))
                 elif m.get_type() == 'MAD_COMPLETED_PACKAGE':
                     asyncRelay = rpyc.async(self.con.root.completed_package)
                     asyncRelay(m.package_id)
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CONTRACT\n" % int(time.time()))
                 elif m.get_type() == 'MAD_FAILED_PACKAGE':
                     asyncRelay = rpyc.async(self.con.root.failed_package)
                     asyncRelay(m.package_id)
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CONTRACT\n" % int(time.time()))
                 elif m.get_type() == 'MAD_CONFIRM_PACKAGE':
                     asyncRelay = rpyc.async(self.con.root.confirm_package_assignment)
                     asyncRelay(m.package_id, m.estimate)
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CONTRACT\n" % int(time.time()))
                 elif m.get_type() == 'MAD_REQUEST_CORRIDOR_RESERVATION':
                     msg = {'resId' : m.reservation_id, 'corId' : m.corridor_id, 'corType' : m.corridor_type,
                            'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
                     asyncRelay = rpyc.async(self.con.root.broadcast)
                     asyncRelay('REQUEST_CORRIDOR_RESERVATION', json.dumps(msg))
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CORRIDOR\n" % int(time.time()))
                 elif m.get_type() == 'MAD_CORRIDOR_ANNOUNCEMENT':
                     msg = {'corId' : m.corridor_id, 'corType' : m.corridor_type,
                            'alt' : m.alt, 'p1' : {'x' : m.p1x, 'y' : m.p1y}, 'p2' : {'x' : m.p2x, 'y' : m.p2y}}
                     asyncRelay = rpyc.async(self.con.root.broadcast)
                     asyncRelay('CORRIDOR_ANNOUNCEMENT', json.dumps(msg))
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CORRIDOR\n" % int(time.time()))
                 elif m.get_type() == 'MAD_CORRIDOR_RESERVATION_CONFLICT':
                     msg = {'droneId' : m.drone_id, 'resId' : m.reservation_id,
                          'id1' : m.preliminary_id, 'type1' : m.preliminary_type, 'alt1' : m.preliminary_alt,
@@ -198,10 +237,17 @@ class MadRelayModule(mp_module.MPModule):
                     asyncRelay = rpyc.async(self.con.root.unicast)
                     asyncRelay(m.drone_id, 'CORRIDOR_RESERVATION_CONFLICT', json.dumps(msg))
                     self.sendMsg += 1
+                    if self.logFile:
+                        with open(self.logFile + "_comm.txt", "a") as f:
+                            f.write("%d,SENT,CORRIDOR\n" % int(time.time()))
                 elif m.get_type() == 'MAD_LOGGING_REPLY':
                     asyncRelay = rpyc.async(self.con.root.logging_reply)
                     asyncRelay(m.retries, m.rounds, m.res_failures, m.res_succes, m.flight_levels, m.returns, 
                                m.lands, m.pack_completed, m.pack_failed)
+                elif m.get_type() == 'MAD_LOGGING':
+                    if self.logFile:
+                        with open(self.logFile + "_log.txt", "a") as f:
+                            f.write("%d,%.2f,%.2f,%.2f,%.2f,%.2f\n" % (int(time.time()), m.x, m.y, m.alt, m.assAlt, m.dev))
         except:
             print "Unexpected error:", sys.exc_info()[0]
             traceback.print_exc()

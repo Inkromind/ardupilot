@@ -12,7 +12,7 @@ AC_ReactiveFacade* AC_ReactiveFacade::reactiveFacade = 0;
 
 bool MAD_navInitialized = false;
 
-// Takeoff location relative to homebase
+// Takeoff location relative to origin
 Vector3f MAD_takeoffLocation;
 // Homebase relative to origin
 Vector3f MAD_homebase;
@@ -23,10 +23,10 @@ void MAD_setHomebase(float x, float y);
 bool MAD_inControl(void);
 bool MAD_relativeDestinationReached(const Vector3f& destination, float radius = NEAR_DESTINATION_RADIUS);
 Vector3f MAD_convertExternToIntern(Vector3f position) {
-    return position - MAD_takeoffLocation - MAD_homebase;
+    return position - MAD_takeoffLocation;
 }
 Vector3f MAD_convertInternToExtern(Vector3f position) {
-    return position + MAD_takeoffLocation + MAD_homebase;
+    return position + MAD_takeoffLocation;
 }
 
 bool MAD_inControl() {
@@ -192,8 +192,10 @@ uint32_t AC_Facade::getTimeMillis(void) {
 void MAD_updateTakeoffLocation(void) {
     if (MAD_navInitialized)
         MAD_takeoffLocation = MAD_takeoffLocation + inertial_nav.get_position();
-    else
+    else {
+        MAD_takeoffLocation = inertial_nav.get_position();
         MAD_navInitialized = true;
+    }
 }
 void MAD_setHomebase(float x, float y) {
     MAD_homebase = Vector3f(x, y, 0);
@@ -202,5 +204,6 @@ void MAD_setHomebase(float x, float y) {
 }
 void MAD_resetHomebase(void) {
     MAD_takeoffLocation = Vector3f();
+    MAD_navInitialized = true;
 }
 
