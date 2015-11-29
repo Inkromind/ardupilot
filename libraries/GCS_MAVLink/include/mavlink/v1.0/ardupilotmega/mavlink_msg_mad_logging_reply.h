@@ -1,6 +1,6 @@
 // MESSAGE MAD_LOGGING_REPLY PACKING
 
-#define MAVLINK_MSG_ID_MAD_LOGGING_REPLY 209
+#define MAVLINK_MSG_ID_MAD_LOGGING_REPLY 211
 
 typedef struct __mavlink_mad_logging_reply_t
 {
@@ -17,10 +17,10 @@ typedef struct __mavlink_mad_logging_reply_t
 } mavlink_mad_logging_reply_t;
 
 #define MAVLINK_MSG_ID_MAD_LOGGING_REPLY_LEN 24
-#define MAVLINK_MSG_ID_209_LEN 24
+#define MAVLINK_MSG_ID_211_LEN 24
 
 #define MAVLINK_MSG_ID_MAD_LOGGING_REPLY_CRC 0
-#define MAVLINK_MSG_ID_209_CRC 0
+#define MAVLINK_MSG_ID_211_CRC 0
 
 
 

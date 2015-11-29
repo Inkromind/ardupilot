@@ -19,8 +19,8 @@
 
 #define CM_MIN_RESERVATION_TIMEOUT 2
 #define CM_MAX_RESERVATION_TIMEOUT 5
-#define CM_MIN_RETRY_TIMEOUT 30
-#define CM_MAX_RETRY_TIMEOUT 35
+#define CM_MIN_RETRY_TIMEOUT 15
+#define CM_MAX_RETRY_TIMEOUT 20
 #define CM_MIN_ROUND_DELAY_TIMEOUT 0
 #define CM_MAX_ROUND_DELAY_TIMEOUT 5
 #define CM_MIN_ALTITUDE 1000
@@ -1251,7 +1251,7 @@ TEST(CorridorManager, reservationConflictReceivedOwnCorridorVerticalMaxFailuresR
 }
 TEST(CorridorManager, reservationConflictReceivedOtherCorridorVertical)
 {
-    AMW_Corridor_Conflict conflict(AMW_Corridor::Type::HORIZONTAL, 0, 0, AMW_Corridor::Type::VERTICAL, 0, 2000);
+    AMW_Corridor_Conflict conflict(AMW_Corridor::Type::HORIZONTAL, 0, 0, AMW_Corridor::Type::VERTICAL, 0, 1000);
     CorridorMock corridor;
     CorridorMock corridor2;
     CMmanager->setCurrentReservationId(10);
@@ -1271,9 +1271,9 @@ TEST(CorridorManager, reservationConflictReceivedOtherCorridorVertical)
     CHECK_EQUAL(1, CMmanager->getPreliminaryCorridors()->size());
     CHECK_EQUAL(2, CMmanager->getFailures());
     CHECK_EQUAL(16 * 1000, CMmanager->getWaitStart());
-    CHECK_EQUAL(3000, CMmanager->getPreliminaryAltitude());
-    CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_ROUND_DELAY_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_ROUND_DELAY_TIMEOUT);
+    CHECK_EQUAL(2000, CMmanager->getPreliminaryAltitude());
     CHECK_EQUAL(AMW_Corridor_Manager::State::WAITING_FOR_NEXT_ROUND, CMmanager->getCurrentState());
+    CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_ROUND_DELAY_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_ROUND_DELAY_TIMEOUT);
 }
 TEST(CorridorManager, reservationConflictReceivedNextRound)
 {
@@ -1298,8 +1298,8 @@ TEST(CorridorManager, reservationConflictReceivedNextRound)
     CHECK_EQUAL(2, CMmanager->getFailures());
     CHECK_EQUAL(16 * 1000, CMmanager->getWaitStart());
     CHECK_EQUAL(1500, CMmanager->getPreliminaryAltitude());
-    CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_ROUND_DELAY_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_ROUND_DELAY_TIMEOUT);
     CHECK_EQUAL(AMW_Corridor_Manager::State::WAITING_FOR_NEXT_ROUND, CMmanager->getCurrentState());
+    CHECK_TRUE(CMmanager->getWaitTimeout() >= CM_MIN_ROUND_DELAY_TIMEOUT && CMmanager->getWaitTimeout() <= CM_MAX_ROUND_DELAY_TIMEOUT);
 }
 TEST(CorridorManager, reservationConflictReceivedAltitudeLimitReached)
 {

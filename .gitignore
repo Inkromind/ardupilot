@@ -82,3 +82,4 @@ status.txt
 tags
 test.ArduCopter/*
 Thumbs.db
+/Build.ArduCopter/

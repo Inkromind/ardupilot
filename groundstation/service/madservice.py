@@ -6,7 +6,7 @@ import json
 from madcontract import MADContract
 from threading import Lock
 from rwlock import RWLock
-logging.basicConfig()
+logging.basicConfig(filename="logs/%s.log" % time.strftime("%H-%M-%S_%d-%m-%Y"), level=logging.INFO, format='%(asctime)s - %(message)s')
 
 class MADService(rpyc.Service):
     
@@ -20,12 +20,11 @@ class MADService(rpyc.Service):
     pendingAssignmentsLock = Lock()
     
     nextDroneIdLock = Lock()
-    nextDroneId = 0
-        
+    nextDroneId = 0        
   
     def on_connect(self):
         # code that runs when a connection is created
-        # (to init the serivce, if needed)
+        # (to init the service, if needed)
         self.droneId = -1
         pass
 
@@ -45,6 +44,7 @@ class MADService(rpyc.Service):
             MADService.dronesLock.release() # Release write lock
             MADService.nextDroneIdLock.release() # Release lock
             print "Relay for drone %(id)d registered" % {'id' : self.droneId}
+            logging.info("%(date)d - Relay for drone %(id)d registered" % {'date' : int(time.time()), 'id' : self.droneId})
         return self.droneId
         
     def exposed_unregister_relay(self):
@@ -52,6 +52,7 @@ class MADService(rpyc.Service):
         if self.droneId >= 0 and self.droneId in MADService.drones:
             del MADService.drones[self.droneId]
             print "Relay for drone %(id)d unregistered" % {'id' : self.droneId}
+            logging.info("%(date)d - Relay for drone %(id)d unregistered" % {'date' : int(time.time()), 'id' : self.droneId})
         MADService.dronesLock.release() # Release write lock
         
     def exposed_get_drones(self):
@@ -74,6 +75,7 @@ class MADService(rpyc.Service):
         package = MADPackage(pickupX, pickupY, deliveryX, deliveryY)
         contract = MADContract(package)
         
+        MADService.dronesLock.acquire_read() #Acquire read lock
         MADService.contractsLock.acquire_write() #Acquire write lock
         MADService.openContractsLock.acquire_write() #Acquire write lock
         contract.rwLock.acquire_write() # Acquire write lock
@@ -84,8 +86,10 @@ class MADService(rpyc.Service):
         contract.rwLock.release() # Release write lock
         MADService.openContractsLock.release() # Release write lock
         MADService.contractsLock.release() # Release write lock
+        MADService.dronesLock.release() # Release read lock
             
         print "Started contract net for package #%d from <%.0f, %.0f> to <%.0f, %.0f>" % (package.id, pickupX, pickupY, deliveryX, deliveryY)
+        logging.info("%d - Started contract net for package #%d from <%.0f, %.0f> to <%.0f, %.0f>" % (int(time.time()), package.id, pickupX, pickupY, deliveryX, deliveryY))
         
     def exposed_print_contracts(self, state = 'ALL'):
         MADService.contractsLock.acquire_read() # Acquire read lock
@@ -111,8 +115,10 @@ class MADService(rpyc.Service):
                 del MADService.pendingAssignments[packageId]
             if contract.state == 'OPEN' or contract.state == 'INIT' or contract.state == 'FAILED_(UNASSIGNED)' or contract.state == 'WAITING_FOR_RETRY':
                 print "Package #%d cancelled" % packageId
+                logging.info("%d - Package #%d cancelled" % packageId)
             else:
                 print "Package #%d cancelled but was already in state %s" % (packageId, contract.state)
+                logging.warning("%d - Package #%d cancelled but was already in state %s" % (int(time.time()), packageId, contract.state))
             contract.state = 'CANCELLED'
             contract.rwLock.release() # Release write lock
             MADService.pendingAssignmentsLock.release() # Release write lock
@@ -126,12 +132,15 @@ class MADService(rpyc.Service):
         if self.droneId >= 0 and packageId in MADService.openContracts:
             contract = MADService.openContracts[packageId]
             ': :type contract: MADContract'
+            logging.info("%d - Estimate for package #%d by drone #%d: %.2f" % (int(time.time()), packageId, self.droneId, estimate))
             contract.rwLock.acquire_write() #Acquire write lock
             contract.addEstimate(self.droneId, estimate)
             contract.rwLock.release() # Release write lock
         MADService.openContractsLock.release() # Release read lock
                
     def exposed_confirm_package_assignment(self, packageId, estimate):
+        logging.info("%d - Package #%d confirmed by drone #%d with estimate %.2f" % (int(time.time()), packageId, self.droneId, estimate))
+        print "Package #%d confirmed by drone #%d with estimate %.2f" % (packageId, self.droneId, estimate)
         MADService.contractsLock.acquire_read() # Acquire read lock
         if packageId in MADService.contracts:
             MADService.openContractsLock.acquire_write() # Acquire write lock
@@ -150,6 +159,8 @@ class MADService(rpyc.Service):
         MADService.contractsLock.release() # Release read lock
         
     def exposed_completed_package(self, packageId):
+        logging.info("%d - Package #%d completed by drone #%d" % (int(time.time()), packageId, self.droneId))
+        print "Package #%d completed by drone #%d" % (packageId, self.droneId)
         MADService.contractsLock.acquire_read() # Acquire read lock
         if packageId in MADService.contracts:
             MADService.openContractsLock.acquire_write() # Acquire write lock
@@ -169,6 +180,8 @@ class MADService(rpyc.Service):
         MADService.contractsLock.release() # Release read lock
     
     def exposed_failed_package(self, packageId):
+        logging.info("%d - Package #%d failed by drone #%d" % (int(time.time()), packageId, self.droneId))
+        print "Package #%d failed by drone #%d" % (packageId, self.droneId)
         MADService.contractsLock.acquire_read() # Acquire read lock
         if packageId in MADService.contracts:
             contract = MADService.contracts[packageId]
@@ -195,13 +208,46 @@ class MADService(rpyc.Service):
         self.checkOpenContracts()
         self.checkPendingAssignments()
         
-    def exposed_logging_reply(self, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs):
-        print "Logging Reply %d: %d;%d;%d;%d;%.2f;%d;%d;%d;%d" % \
-        (self.droneId, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs)
+    def exposed_logging_reply(self, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs, distance):
+        print "%d - Logging Reply %d: %d;%d;%d;%d;%.2f;%d;%d;%d;%d;%.2f" % \
+        (self.droneId, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs, distance)
+        logging.info("%d - Logging Reply %d: %d;%d;%d;%d;%.2f;%d;%d;%d;%d;%.2f" % \
+        (int(time.time()), self.droneId, retries, rounds, resFailures, resSucces, flightLevels, returns, lands, completedPckgs, failedPckgs, distance))
         
     def exposed_msg_logging_reply(self, sent, received):
         print "Msg Logging Reply %d: %d;%d" % \
         (self.droneId, sent, received)
+        logging.info("Msg Logging Reply %d: %d;%d" % \
+        (self.droneId, sent, received))
+        
+    def exposed_sync_logs(self, syncId):
+        MADService.dronesLock.acquire_read() # Acquire read lock
+        print "Syncing logs"
+        logging.info("%d - [SYNC] Syncing logs: %d" % (int(time.time()), syncId))
+        payload = json.dumps({"syncId" : syncId})
+        
+        for callback in MADService.drones.itervalues():
+            callback('SYNC', payload)
+        MADService.dronesLock.release() # Release read lock
+        
+    def exposed_sync_reset_counters(self, syncId):
+        MADService.dronesLock.acquire_read() # Acquire read lock
+        print "Syncing logs and Resetting counters"
+        logging.info("%d - [SYNC] Syncing logs: %d" % (int(time.time()), syncId))
+        payload = json.dumps({"syncId" : syncId})
+        
+        for callback in MADService.drones.itervalues():
+            callback('SYNCANDRESET', payload)
+        MADService.dronesLock.release() # Release read lock
+        
+    def exposed_start(self):
+        MADService.dronesLock.acquire_read() # Acquire read lock
+        print "Starting mission"
+        logging.info("%d - [MISSION] Mission start" % int(time.time()))
+        
+        for callback in MADService.drones.itervalues():
+            callback('START', json.dumps({}))
+        MADService.dronesLock.release() # Release read lock
  
     def checkOpenContracts(self):
         MADService.dronesLock.acquire_read() # Acquire read lock
@@ -217,14 +263,19 @@ class MADService(rpyc.Service):
                     droneId, estimate = contract.winner
                     print "Contract for package #%d won by drone #%d with estimate %.0f" % \
                     (packageId, droneId, estimate)
+                    logging.info("%d - Contract for package #%d won by drone #%d with estimate %.0f" % \
+                    (int(time.time()), packageId, droneId, estimate))
                     self.assignContract(contract)
                 elif contract.state == 'FAILED_(UNASSIGNED)':
                     print "Contract assignment for package #%d failed due to no assignments" % packageId
+                    logging.info("%d - Contract assignment for package #%d failed due to no assignments" % (int(time.time()), packageId))
                 elif contract.state == 'WAITING_FOR_RETRY':
                     print "No estimates for package #%d. Retrying (failures: %d)" % (packageId, contract.failures)
+                    logging.info("%d - No estimates for package #%d. Retrying (failures: %d)" % (int(time.time()), packageId, contract.failures))
                     self.openContract(contract)
                 else:
                     print "WARNING: Contract for package #%d in unknown state after closing: %s" % (packageId, contract.state)
+                    logging.warning("%d - WARNING: Contract for package #%d in unknown state after closing: %s" % (int(time.time()), packageId, contract.state))
             contract.rwLock.release() # Release write lock
         MADService.pendingAssignmentsLock.release() # Release write lock
         MADService.openContractsLock.release() # Release write lock
@@ -244,8 +295,10 @@ class MADService(rpyc.Service):
                 if failures >= 5:
                     contract.state = 'UNCONFIRMED_ASSIGNMENT'
                     print "WARNING: Assignment of package #%d to drone %d unconfirmed" % (packageId, winner[0])
+                    logging.warning("%d - WARNING: Assignment of package #%d to drone %d unconfirmed" % (int(time.time()), packageId, winner[0]))
                 else:
                     print "Retrying assignment of package #%d to drone %d (failures: %d)" % (packageId, winner[0], failures)
+                    logging.info("%d - Retrying assignment of package #%d to drone %d (failures: %d)" % (int(time.time()), packageId, winner[0], failures))
                     self.assignContract(contract, failures)
             contract.rwLock.release() # Release write lock
         MADService.pendingAssignmentsLock.release() # Release write lock
@@ -276,6 +329,7 @@ class MADService(rpyc.Service):
             MADService.drones[droneId]('ASSIGN_PACKAGE', package.convertToJson())
         else:
             print "ERROR: Contract for package #%d won by invalid drone: %d" % (package.id, droneId)
+            logging.warning("%d - ERROR: Contract for package #%d won by invalid drone: %d" % (int(time.time()), package.id, droneId))
             
 class MADPackage():
     

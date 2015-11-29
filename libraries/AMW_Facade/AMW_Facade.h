@@ -134,6 +134,8 @@ public:
 
     static void resetLogging(void);
 
+    static void syncLogs(uint8_t id);
+
 private:
     AMW_Facade();
     ~AMW_Facade();

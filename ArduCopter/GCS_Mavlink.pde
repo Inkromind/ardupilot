@@ -1574,6 +1574,22 @@ void GCS_MAVLINK::handleMessage(mavlink_message_t* msg)
     }
     case MAVLINK_MSG_ID_MAD_RESET_LOGGING: {
         AMW_Facade::resetLogging();
+        AC_CommunicationFacade::sendDebug(PSTR("Logs reset"));
+        break;
+    }
+    case MAVLINK_MSG_ID_MAD_SYNC_AND_RESET_LOGGING: {
+        mavlink_mad_sync_and_reset_logging_t packet;
+        mavlink_msg_mad_sync_and_reset_logging_decode(msg, &packet);
+        AMW_Facade::syncLogs(packet.sync_id);
+        AMW_Facade::resetLogging();
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Logs synced and reset with id %d"), packet.sync_id);
+        break;
+    }
+    case MAVLINK_MSG_ID_MAD_SYNC_LOGGING: {
+        mavlink_mad_sync_logging_t packet;
+        mavlink_msg_mad_sync_logging_decode(msg, &packet);
+        AMW_Facade::syncLogs(packet.sync_id);
+        AC_CommunicationFacade::sendFormattedDebug(PSTR("Logs synced with id %d"), packet.sync_id);
         break;
     }
     case MAVLINK_MSG_ID_MAD_SEED: {

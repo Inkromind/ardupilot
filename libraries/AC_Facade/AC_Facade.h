@@ -11,8 +11,10 @@
 #include "../AP_Math/vector3.h"
 #include <AP_BattMonitor.h>
 #include <stdint.h>
+#include <DataFlash.h>
 
 // Default acceptance radius for nav
+#define NEAR_DESTINATION_RADIUS     50.0f
 #define NEAR_DESTINATION_RADIUS     100.0f
 
 /**
@@ -116,9 +118,10 @@ public:
      * Check if the given altitude has been reached. The default acceptance radius is used.
      *
      * @param altitude - Target altitude (in cm)
+     * @param radius (optional) - Acceptance radius (in cm)
      * @return True if the destination has been reached. False otherwise
      */
-    virtual bool altitudeReached(float altitude);
+    virtual bool altitudeReached(float altitude, float radius = NEAR_DESTINATION_RADIUS);
 
     /**
      * Get the current position in relation to the last takeoff location.
@@ -162,6 +165,8 @@ public:
      * Get the current scheduler time in milliseconds
      */
     virtual uint32_t getTimeMillis(void);
+
+    virtual DataFlash_Class* getDataFlash(void);
 
 private:
 protected:

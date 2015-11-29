@@ -10,6 +10,7 @@
 #include <AMW_Corridors.h>
 #include <AC_Facade.h>
 #include <AC_CommunicationFacade.h>
+#include <AMW_Logging.h>
 
 void AMW_Facade::initPlanner() {
     AMW_Planner::initPlanner();
@@ -25,16 +26,14 @@ void AMW_Facade::run50Hz() {
 
 void AMW_Facade::run10Hz() {
     AMW_Planner::run10Hz();
+    AMW_Logging::getInstance()->logPosition();
 }
 
 void AMW_Facade::run1Hz() {
     AMW_Planner::run1Hz();
     AMW_Corridor_Manager::getInstance()->broadcastReservedCorridors();
     AMW_Corridor_Manager::getInstance()->checkTimeout();
-    Vector3f location = AC_Facade::getFacade()->getRealPosition();
-    float assignedAltitude = AMW_Corridor_Manager::getInstance()->getReservedAltitude(0);
-    float deviation = AMW_Corridor_Manager::getInstance()->getDeviation();
-    AC_CommunicationFacade::sendLogging(location.x, location.y, location.z, assignedAltitude, deviation);
+    AC_CommunicationFacade::sendHeartbeat();
 }
 
 void AMW_Facade::resumeMission() {
@@ -50,7 +49,13 @@ void AMW_Facade::returnHome() {
 }
 
 float AMW_Facade::addPackage(uint8_t id, Vector2f pickupLocation, Vector2f deliveryLocation, bool estimate) {
-    return AMW_Task_Planner::getInstance()->addTask(new AMW_Task_Package(id, pickupLocation, deliveryLocation), estimate);
+    float result = AMW_Task_Planner::getInstance()->addTask(new AMW_Task_Package(id, pickupLocation, deliveryLocation), estimate);
+#ifdef AMW_PLANNER_LOGGING
+    if (result > 0 && !estimate) {
+        AMW_Logging::getInstance()->logAssignedPackage(id, result);
+    }
+#endif
+    return result;
 }
 
 AMW_Corridor_Conflict* AMW_Facade::checkReservationRequest(const AMW_List<AMW_Corridor*>* corridors) {
@@ -80,7 +85,6 @@ void AMW_Facade::markBatteryEmpty() {
     AMW_Planner::markBatteryEmpty();
 }
 
-
 void AMW_Facade::setHomebase(Vector2f newHomebase) {
     AMW_Planner::setHomebase(newHomebase);
 }
@@ -105,4 +109,8 @@ AMW_Logging_struct AMW_Facade::getCounters() {
 void AMW_Facade::resetLogging() {
     AMW_Corridor_Manager::getInstance()->resetLogging();
     AMW_Planner::resetLogging();
+}
+
+void AMW_Facade::syncLogs(uint8_t id) {
+    AMW_Logging::getInstance()->sync(id);
 }

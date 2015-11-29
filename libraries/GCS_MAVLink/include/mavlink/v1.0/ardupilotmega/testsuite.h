@@ -2332,6 +2332,92 @@ static void mavlink_test_mad_reset_logging(uint8_t system_id, uint8_t component_
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
+static void mavlink_test_mad_sync_logging(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_mad_sync_logging_t packet_in = {
+		5
+    };
+	mavlink_mad_sync_logging_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.sync_id = packet_in.sync_id;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_logging_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_mad_sync_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_logging_pack(system_id, component_id, &msg , packet1.sync_id );
+	mavlink_msg_mad_sync_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_logging_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.sync_id );
+	mavlink_msg_mad_sync_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_mad_sync_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_logging_send(MAVLINK_COMM_1 , packet1.sync_id );
+	mavlink_msg_mad_sync_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
+static void mavlink_test_mad_sync_and_reset_logging(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+{
+	mavlink_message_t msg;
+        uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
+        uint16_t i;
+	mavlink_mad_sync_and_reset_logging_t packet_in = {
+		5
+    };
+	mavlink_mad_sync_and_reset_logging_t packet1, packet2;
+        memset(&packet1, 0, sizeof(packet1));
+        	packet1.sync_id = packet_in.sync_id;
+        
+        
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_and_reset_logging_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_mad_sync_and_reset_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_and_reset_logging_pack(system_id, component_id, &msg , packet1.sync_id );
+	mavlink_msg_mad_sync_and_reset_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_and_reset_logging_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.sync_id );
+	mavlink_msg_mad_sync_and_reset_logging_decode(&msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+
+        memset(&packet2, 0, sizeof(packet2));
+        mavlink_msg_to_send_buffer(buffer, &msg);
+        for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
+        	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
+        }
+	mavlink_msg_mad_sync_and_reset_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+        
+        memset(&packet2, 0, sizeof(packet2));
+	mavlink_msg_mad_sync_and_reset_logging_send(MAVLINK_COMM_1 , packet1.sync_id );
+	mavlink_msg_mad_sync_and_reset_logging_decode(last_msg, &packet2);
+        MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
+}
+
 static void mavlink_test_mad_get_logging(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 	mavlink_message_t msg;
@@ -2427,37 +2513,33 @@ static void mavlink_test_mad_logging_reply(uint8_t system_id, uint8_t component_
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
-static void mavlink_test_mad_logging(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
+static void mavlink_test_mad_heartbeat(uint8_t system_id, uint8_t component_id, mavlink_message_t *last_msg)
 {
 	mavlink_message_t msg;
         uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
         uint16_t i;
-	mavlink_mad_logging_t packet_in = {
-		17.0,45.0,73.0,101.0,129.0
+	mavlink_mad_heartbeat_t packet_in = {
+		5
     };
-	mavlink_mad_logging_t packet1, packet2;
+	mavlink_mad_heartbeat_t packet1, packet2;
         memset(&packet1, 0, sizeof(packet1));
-        	packet1.x = packet_in.x;
-        	packet1.y = packet_in.y;
-        	packet1.alt = packet_in.alt;
-        	packet1.assAlt = packet_in.assAlt;
-        	packet1.dev = packet_in.dev;
+        	packet1.drone_id = packet_in.drone_id;
         
         
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_mad_logging_encode(system_id, component_id, &msg, &packet1);
-	mavlink_msg_mad_logging_decode(&msg, &packet2);
+	mavlink_msg_mad_heartbeat_encode(system_id, component_id, &msg, &packet1);
+	mavlink_msg_mad_heartbeat_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_mad_logging_pack(system_id, component_id, &msg , packet1.x , packet1.y , packet1.alt , packet1.assAlt , packet1.dev );
-	mavlink_msg_mad_logging_decode(&msg, &packet2);
+	mavlink_msg_mad_heartbeat_pack(system_id, component_id, &msg , packet1.drone_id );
+	mavlink_msg_mad_heartbeat_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_mad_logging_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.x , packet1.y , packet1.alt , packet1.assAlt , packet1.dev );
-	mavlink_msg_mad_logging_decode(&msg, &packet2);
+	mavlink_msg_mad_heartbeat_pack_chan(system_id, component_id, MAVLINK_COMM_0, &msg , packet1.drone_id );
+	mavlink_msg_mad_heartbeat_decode(&msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 
         memset(&packet2, 0, sizeof(packet2));
@@ -2465,12 +2547,12 @@ static void mavlink_test_mad_logging(uint8_t system_id, uint8_t component_id, ma
         for (i=0; i<mavlink_msg_get_send_buffer_length(&msg); i++) {
         	comm_send_ch(MAVLINK_COMM_0, buffer[i]);
         }
-	mavlink_msg_mad_logging_decode(last_msg, &packet2);
+	mavlink_msg_mad_heartbeat_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
         
         memset(&packet2, 0, sizeof(packet2));
-	mavlink_msg_mad_logging_send(MAVLINK_COMM_1 , packet1.x , packet1.y , packet1.alt , packet1.assAlt , packet1.dev );
-	mavlink_msg_mad_logging_decode(last_msg, &packet2);
+	mavlink_msg_mad_heartbeat_send(MAVLINK_COMM_1 , packet1.drone_id );
+	mavlink_msg_mad_heartbeat_decode(last_msg, &packet2);
         MAVLINK_ASSERT(memcmp(&packet1, &packet2, sizeof(packet1)) == 0);
 }
 
@@ -2568,9 +2650,11 @@ static void mavlink_test_ardupilotmega(uint8_t system_id, uint8_t component_id, 
 	mavlink_test_mad_completed_package(system_id, component_id, last_msg);
 	mavlink_test_mad_failed_package(system_id, component_id, last_msg);
 	mavlink_test_mad_reset_logging(system_id, component_id, last_msg);
+	mavlink_test_mad_sync_logging(system_id, component_id, last_msg);
+	mavlink_test_mad_sync_and_reset_logging(system_id, component_id, last_msg);
 	mavlink_test_mad_get_logging(system_id, component_id, last_msg);
 	mavlink_test_mad_logging_reply(system_id, component_id, last_msg);
-	mavlink_test_mad_logging(system_id, component_id, last_msg);
+	mavlink_test_mad_heartbeat(system_id, component_id, last_msg);
 	mavlink_test_mad_seed(system_id, component_id, last_msg);
 }
 

@@ -7,3 +7,4 @@
 #include <AC_SafetyControl.h>
 #include <AC_CommunicationFacade.h>
 #include <AMW_Modules.h>
+#include <AMW_Logging.h>

@@ -576,12 +576,22 @@
       <field type="uint8_t" name="drone_id">Drone id</field>
     </message>
     
-    <message name="MAD_GET_LOGGING" id="208">
+    <message name="MAD_SYNC_LOGGING" id="208">
+      <description>Sync the logs</description>
+      <field type="uint8_t" name="sync_id">Sync id</field>
+    </message>
+    
+    <message name="MAD_SYNC_AND_RESET_LOGGING" id="209">
+      <description>Reset the logging counters and sync the logs</description>
+      <field type="uint8_t" name="sync_id">Sync id</field>
+    </message>
+    
+    <message name="MAD_GET_LOGGING" id="210">
       <description>Failed a package</description>
       <field type="uint8_t" name="drone_id">Drone id</field>
     </message>
     
-    <message name="MAD_LOGGING_REPLY" id="209">
+    <message name="MAD_LOGGING_REPLY" id="211">
       <description>Logged counters</description>
       <field type="uint16_t" name="retries">Total reservation retries</field>
       <field type="uint16_t" name="rounds">Total reservation rounds</field>
@@ -595,16 +605,12 @@
       <field type="float" name="distance">Distance travelled</field>
     </message>
     
-    <message name="MAD_LOGGING" id="210">
-      <description>Logging</description>
-      <field type="float" name="x">X-position</field>
-      <field type="float" name="y">Y-position</field>
-      <field type="float" name="alt">Current altitude</field>
-      <field type="float" name="assAlt">Assigned altitude</field>
-      <field type="float" name="dev">Deviation</field>
+    <message name="MAD_HEARTBEAT" id="212">
+      <description>Send a heartbeat</description>
+      <field type="uint8_t" name="drone_id">Drone id</field>
     </message>
     
-    <message name="MAD_SEED" id="211">
+    <message name="MAD_SEED" id="213">
       <description>Set seed</description>
       <field type="uint8_t" name="seed">New Seed</field>
     </message>

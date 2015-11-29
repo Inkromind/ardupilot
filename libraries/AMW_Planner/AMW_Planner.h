@@ -9,6 +9,7 @@
 #define AMW_PLANNER_H_
 
 #ifndef TESTENV
+    #define AMW_PLANNER_LOGGING
     #define AMW_PLANNER_DEBUG
 #endif
 
@@ -82,6 +83,8 @@ public:
 
     static AMW_Planner_Counters_t getCounters(void);
 
+    static float distanceTravelled;
+
     static void resetLogging(void);
 
 private:
@@ -102,8 +105,6 @@ private:
     static bool initialized;
 
     static AMW_Module_Identifier* moduleIdentifier;
-
-    static float distanceTravelled;
 
     static Vector3f lastPosition;
 

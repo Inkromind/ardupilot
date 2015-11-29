@@ -124,11 +124,13 @@ float AC_Facade::getAltitude() {
     return inertial_nav.get_altitude();
 }
 
-bool AC_Facade::altitudeReached(float altitude) {
+bool AC_Facade::altitudeReached(float altitude, float radius) {
     Vector3f dest = getRelativePosition();
-    dest.z = altitude;
 
-    return MAD_relativeDestinationReached(dest);
+    if (abs(dest.z - altitude) > radius)
+        return false;
+
+    return MAD_relativeDestinationReached(dest, radius);
 }
 
 bool AC_Facade::isLanded() {
@@ -161,8 +163,12 @@ bool MAD_relativeDestinationReached(const Vector3f& destination, float radius) {
         return (ap.land_complete);
 
     Vector3f wpDistToDest = wp_nav.get_wp_destination() - destination;
+    if (wpDistToDest.length() > radius)
+        return false;
 
-    return (wpDistToDest.length() <= radius);
+    Vector3f wpDistToCurrent = wp_nav.get_wp_destination() - inertial_nav.get_position();
+
+    return (wpDistToCurrent.length() <= radius);
 }
 
 Vector3f AC_Facade::getRelativePosition() {
@@ -189,6 +195,10 @@ uint32_t AC_Facade::getTimeMillis(void) {
     return hal.scheduler->millis();
 }
 
+DataFlash_Class* AC_Facade::getDataFlash(void) {
+    return &DataFlash;
+}
+
 void MAD_updateTakeoffLocation(void) {
     if (MAD_navInitialized)
         MAD_takeoffLocation = MAD_takeoffLocation + inertial_nav.get_position();
@@ -203,7 +213,10 @@ void MAD_setHomebase(float x, float y) {
     AC_CommunicationFacade::sendFormattedDebug(PSTR("Setting homebase to <%.2f, %.2f>"), x, y);
 }
 void MAD_resetHomebase(void) {
-    MAD_takeoffLocation = Vector3f();
-    MAD_navInitialized = true;
+    if (!MAD_navInitialized) {
+        MAD_takeoffLocation = inertial_nav.get_position();
+        MAD_navInitialized = true;
+    }
+    MAD_setHomebase(MAD_takeoffLocation.x, MAD_takeoffLocation.y);
 }
 

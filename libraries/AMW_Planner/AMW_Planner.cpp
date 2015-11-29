@@ -9,7 +9,6 @@
 #include "AMW_Sequencer.h"
 #include <AC_Facade.h>
 #include <stdlib.h>
-#include "../AMW_Corridors/SegmentDistance.h"
 
 bool AMW_Planner::previousToggleState = true;
 bool AMW_Planner::initialized = false;
@@ -39,7 +38,7 @@ void AMW_Planner::run50Hz() {
     if (initialized) {
         Vector3f newPosition = AC_Facade::getFacade()->getRealPosition();
         if (!AC_Facade::getFacade()->isLanded())
-            distanceTravelled += dist_Point_to_Point(lastPosition, newPosition);
+            distanceTravelled += (lastPosition - newPosition).length();
         lastPosition = newPosition;
     }
 }

@@ -21,12 +21,12 @@ AMW_Command* AMW_Task_RTL_Forced::generatePlan(void) const {
     plan->addNewCommand(new AMW_Command_Composite_Forced_Nav(AMW_Task_Planner::getInstance()->getHomeBase(), true));
     plan->addNewCommand(new AMW_Command_Disarm());
 #ifdef AMW_TASK_DEBUG
-    AC_CommunicationFacade::sendDebug(PSTR("Generated plan to return home (forced)"));
+    //AC_CommunicationFacade::sendDebug(PSTR("Generated plan to return home (forced)"));
 #endif
     return plan;
 }
 
-void AMW_Task_RTL_Forced::completeTask(void) {
+void AMW_Task_RTL_Forced::completedTask(void) {
 #ifdef AMW_TASK_DEBUG
     AC_CommunicationFacade::sendFormattedDebug(PSTR("Returned to home at <%.2f,%.2f> (forced)"), AMW_Task_Planner::getInstance()->getHomeBase().x, AMW_Task_Planner::getInstance()->getHomeBase().y);
 #endif

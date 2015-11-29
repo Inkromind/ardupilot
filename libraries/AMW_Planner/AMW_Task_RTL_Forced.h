@@ -16,7 +16,7 @@ public:
 
     virtual AMW_Command* generatePlan(void) const;
 
-    virtual void completeTask(void);
+    virtual void completedTask(void);
 };
 
 #endif /* AMW_TASK_RTL_FORCED_H_ */

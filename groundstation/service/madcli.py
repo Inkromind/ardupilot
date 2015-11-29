@@ -38,6 +38,13 @@ class MADCLI(cmd.Cmd):
         except:
             print "Unexpected error:", sys.exc_info()[0]
             
+    def do_start(self, line):
+        "Start missions"
+        try:
+            print self.con.root.start()
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
     def do_resetCounters(self, line):
         "Reset Logging Counters"
         try:
@@ -45,6 +52,50 @@ class MADCLI(cmd.Cmd):
             self.con.root.broadcast("RESET_COUNTERS", json.dumps({}))
         except:
             print "Unexpected error:", sys.exc_info()[0]
+            
+    def do_sync(self, line):
+        "Syncing logs"
+        usage = "Usage: <id>"
+        
+        args = line.split()
+        
+        if len(args) != 1:
+            print(usage)
+            return;
+        
+        syncId = int(args[0])
+        if syncId < 0:
+            print("Invalid sync id %d" % syncId)
+            return
+        
+        try:
+            self.con.root.sync_logs(syncId)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
+    def do_syncReset(self, line):
+        "Syncing logs"
+        usage = "Usage: <id>"
+        
+        args = line.split()
+        
+        if len(args) != 1:
+            print(usage)
+            return;
+        
+        syncId = int(args[0])
+        if syncId < 0:
+            print("Invalid sync id %d" % syncId)
+            return
+        
+        try:
+            self.con.root.sync_reset_counters(syncId)
+        except:
+            print "Unexpected error:", sys.exc_info()[0]
+            
+    def help_sync(self):
+        print "Synchronizes logs"
+        print "Usage: <tag>"
             
     def do_getCounters(self, line):
         "Get Logging Counters"

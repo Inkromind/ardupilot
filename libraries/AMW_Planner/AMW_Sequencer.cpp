@@ -189,7 +189,7 @@ void AMW_Sequencer::startNewTask(AMW_Task* task) {
     }
     else {
 #ifdef AMW_PLANNER_DEBUG
-        AC_CommunicationFacade::sendDebug(PSTR("Starting new task"));
+        //AC_CommunicationFacade::sendDebug(PSTR("Starting new task"));
 #endif
     }
 }
@@ -205,7 +205,7 @@ void AMW_Sequencer::executeCurrentTask() {
         AMW_Task_Planner::getInstance()->completedTask(currentTask);
         currentTask = 0;
         #ifdef AMW_PLANNER_DEBUG
-            AC_CommunicationFacade::sendDebug(PSTR("Plan completed"));
+            //AC_CommunicationFacade::sendDebug(PSTR("Plan completed"));
         #endif
     }
     else if (currentPlan->hasFailed()) {
@@ -214,7 +214,7 @@ void AMW_Sequencer::executeCurrentTask() {
         AMW_Task_Planner::getInstance()->completedTask(currentTask, true);
         currentTask = 0;
         #ifdef AMW_PLANNER_DEBUG
-            AC_CommunicationFacade::sendDebug(PSTR("Plan failed"));
+            //AC_CommunicationFacade::sendDebug(PSTR("Plan failed"));
         #endif
     }
 }
@@ -230,12 +230,12 @@ void AMW_Sequencer::executeTempTask() {
         AMW_Task_Planner::getInstance()->completedTask(tempTask);
         tempTask = 0;
 #ifdef AMW_PLANNER_DEBUG
-        AC_CommunicationFacade::sendDebug(PSTR("New Plan completed"));
+        //AC_CommunicationFacade::sendDebug(PSTR("New Plan completed"));
 #endif
     }
     else if (tempPlan->hasFailed()) {
 #ifdef AMW_PLANNER_DEBUG
-        AC_CommunicationFacade::sendDebug(PSTR("New Plan failed"));
+        //AC_CommunicationFacade::sendDebug(PSTR("New Plan failed"));
 #endif
         delete tempPlan;
         tempPlan = 0;

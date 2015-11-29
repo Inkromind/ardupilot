@@ -69,7 +69,7 @@ float AC_Facade::getAltitude() {
     return 0.0;
 }
 
-bool AC_Facade::altitudeReached(float altitude) {
+bool AC_Facade::altitudeReached(float altitude, float radius) {
     return true;
 }
 
@@ -110,5 +110,9 @@ AP_BattMonitor* AC_Facade::getBattery(void) {
 }
 
 uint32_t AC_Facade::getTimeMillis(void) {
+    return 0;
+}
+
+DataFlash_Class* AC_Facade::getDataFlash(void) {
     return 0;
 }

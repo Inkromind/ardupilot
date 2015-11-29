@@ -13,6 +13,9 @@
 #include <AC_CommunicationFacade.h>
 #include "AMW_Planner.h"
 #include "AMW_Sequencer.h"
+#ifdef AMW_TASK_LOGGING
+    #include <AMW_Logging.h>
+#endif
 
 AMW_Task_Package::AMW_Task_Package(uint8_t newId, Vector2f newPickupLocation, Vector2f newDeliveryLocation) {
     this->id = newId;
@@ -27,12 +30,12 @@ AMW_Command* AMW_Task_Package::generatePlan(void) const {
 #ifndef AMW_COMMAND_ONLY_LAND_AT_BASE
     plan->addNewCommand(new AMW_Command_Disarm());
 #endif
-    plan->addNewCommand(new AMW_Command_Delay(15000));
+    plan->addNewCommand(new AMW_Command_Delay(20000));
     plan->addNewCommand(new AMW_Command_Composite_Nav(deliveryLocation));
 #ifndef AMW_COMMAND_ONLY_LAND_AT_BASE
     plan->addNewCommand(new AMW_Command_Disarm());
 #endif
-    plan->addNewCommand(new AMW_Command_Delay(15000));
+    plan->addNewCommand(new AMW_Command_Delay(20000));
 #ifdef AMW_TASK_DEBUG
     AC_CommunicationFacade::sendFormattedDebug(PSTR("Generated plan for package #%d"), id);
 #endif
@@ -42,10 +45,16 @@ AMW_Command* AMW_Task_Package::generatePlan(void) const {
 void AMW_Task_Package::completedTask(void) {
     AMW_Sequencer::getInstance()->completedPackages++;
     AC_CommunicationFacade::completedPackage(this->id);
+#ifdef AMW_TASK_LOGGING
+    AMW_Logging::getInstance()->logCompletedPackage(this->id);
+#endif
 }
 
 void AMW_Task_Package::failedTask(void) {
     AMW_Sequencer::getInstance()->failedPackages++;
     AC_CommunicationFacade::failedPackage(this->id);
+#ifdef AMW_TASK_LOGGING
+    AMW_Logging::getInstance()->logFailedPackage(this->id);
+#endif
 }
 

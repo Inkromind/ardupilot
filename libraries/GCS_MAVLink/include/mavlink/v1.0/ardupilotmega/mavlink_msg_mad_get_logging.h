@@ -1,6 +1,6 @@
 // MESSAGE MAD_GET_LOGGING PACKING
 
-#define MAVLINK_MSG_ID_MAD_GET_LOGGING 208
+#define MAVLINK_MSG_ID_MAD_GET_LOGGING 210
 
 typedef struct __mavlink_mad_get_logging_t
 {
@@ -8,10 +8,10 @@ typedef struct __mavlink_mad_get_logging_t
 } mavlink_mad_get_logging_t;
 
 #define MAVLINK_MSG_ID_MAD_GET_LOGGING_LEN 1
-#define MAVLINK_MSG_ID_208_LEN 1
+#define MAVLINK_MSG_ID_210_LEN 1
 
 #define MAVLINK_MSG_ID_MAD_GET_LOGGING_CRC 147
-#define MAVLINK_MSG_ID_208_CRC 147
+#define MAVLINK_MSG_ID_210_CRC 147
 
 
 

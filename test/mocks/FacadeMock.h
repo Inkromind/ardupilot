@@ -79,7 +79,7 @@ public:
         return (bool) mock("Facade").actualCall("loiter").onObject(this).returnIntValueOrDefault(1);
     }
 
-    bool altitudeReached(float altitude) {
+    bool altitudeReached(float altitude, float radius) {
         return (bool) mock("Facade").actualCall("altitudeReached").onObject(this).withDoubleParameter("altitude", altitude).returnIntValueOrDefault(1);
     }
 };

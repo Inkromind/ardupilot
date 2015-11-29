@@ -138,6 +138,26 @@ public:
     virtual Vector3f getEndPoint() const = 0;
 
     static uint8_t nextId;
+
+    /**
+     * Get the closest distance to the given corridor
+     */
+    float getDistance(const AMW_Corridor* corridor, bool checkFullCorridor = true) const {
+        if (getType() == POSITION || corridor->getType() == POSITION) {
+            if (getType() == POSITION && corridor->getType() == POSITION) {
+                return dist_Point_to_Point(getStartPoint(), corridor->getStartPoint());
+            }
+            else if (getType() == POSITION) {
+                return dist_Point_to_Segment(getStartPoint(), corridor->getStartPoint(), corridor->getEndPoint());
+            }
+            else {
+                return dist_Point_to_Segment(corridor->getStartPoint(), getStartPoint(checkFullCorridor), getEndPoint());
+            }
+        }
+        else {
+            return dist3D_Segment_to_Segment(getStartPoint(checkFullCorridor), getEndPoint(), corridor->getStartPoint(), corridor->getEndPoint());
+        }
+    }
 protected:
     bool reverseDirection;
     bool inCorridor;
@@ -183,26 +203,6 @@ private:
                     corridor->getType(), corridor->getId(), corridor->getAltitude());
         else
             return 0;
-    }
-
-    /**
-     * Get the closest distance to the given corridor
-     */
-    float getDistance(const AMW_Corridor* corridor, bool checkFullCorridor) const {
-        if (getType() == POSITION || corridor->getType() == POSITION) {
-            if (getType() == POSITION && corridor->getType() == POSITION) {
-                return dist_Point_to_Point(getStartPoint(), corridor->getStartPoint());
-            }
-            else if (getType() == POSITION) {
-                return dist_Point_to_Segment(getStartPoint(), corridor->getStartPoint(), corridor->getEndPoint());
-            }
-            else {
-                return dist_Point_to_Segment(corridor->getStartPoint(), getStartPoint(checkFullCorridor), getEndPoint());
-            }
-        }
-        else {
-            return dist3D_Segment_to_Segment(getStartPoint(checkFullCorridor), getEndPoint(), corridor->getStartPoint(), corridor->getEndPoint());
-        }
     }
 
 };

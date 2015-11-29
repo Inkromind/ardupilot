@@ -13,7 +13,7 @@
 #include "../AP_Math/vector2.h"
 #include "AMW_Task_Package.h"
 
-#define AMW_PLANNER_BATTERY_TAKEOFF_LIMIT 30
+#define AMW_PLANNER_BATTERY_TAKEOFF_LIMIT 35
 
 /**
  * Schedules tasks

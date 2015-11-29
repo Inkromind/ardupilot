@@ -1,6 +1,6 @@
 // MESSAGE MAD_SEED PACKING
 
-#define MAVLINK_MSG_ID_MAD_SEED 211
+#define MAVLINK_MSG_ID_MAD_SEED 213
 
 typedef struct __mavlink_mad_seed_t
 {
@@ -8,10 +8,10 @@ typedef struct __mavlink_mad_seed_t
 } mavlink_mad_seed_t;
 
 #define MAVLINK_MSG_ID_MAD_SEED_LEN 1
-#define MAVLINK_MSG_ID_211_LEN 1
+#define MAVLINK_MSG_ID_213_LEN 1
 
 #define MAVLINK_MSG_ID_MAD_SEED_CRC 240
-#define MAVLINK_MSG_ID_211_CRC 240
+#define MAVLINK_MSG_ID_213_CRC 240
 
 
 

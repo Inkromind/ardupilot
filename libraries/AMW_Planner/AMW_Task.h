@@ -13,6 +13,7 @@
 #include <math.h>
 
 #ifndef TESTENV
+    #define AMW_TASK_LOGGING
     #define AMW_TASK_DEBUG
 #endif
 

@@ -13,6 +13,9 @@
 #include <AC_CommunicationFacade.h>
 #include <AC_Facade.h>
 #include "SegmentDistance.h"
+#ifdef AMW_CORRIDOR_LOGGING
+    #include <AMW_Logging.h>
+#endif
 
 AMW_Corridor_Manager* AMW_Corridor_Manager::instance = 0;
 uint8_t AMW_Corridor::nextId = 0;
@@ -155,6 +158,9 @@ void AMW_Corridor_Manager::checkTimeout(void) {
             this->totalCompletedRes++;
             this->sumLevels += reservedAltitude/100;
 
+#ifdef AMW_CORRIDOR_LOGGING
+        AMW_Logging::getInstance()->logCompletedReservation(reservedAltitude, this->failures+1);
+#endif
 #ifdef AMW_CORRIDOR_DEBUG
             AC_CommunicationFacade::sendFormattedDebug(PSTR("Corridors reserved at altitude %.2f"), reservedAltitude / 100);
 #endif
@@ -330,6 +336,9 @@ void AMW_Corridor_Manager::reservationFailed(void) {
     failures++;
     if (failures >= maxFailures) {
         this->totalResFailures++;
+#ifdef AMW_CORRIDOR_LOGGING
+        AMW_Logging::getInstance()->logFailedReservation(this->failures);
+#endif
 #ifdef AMW_CORRIDOR_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("Reservation failed."));
 #endif
@@ -375,7 +384,7 @@ void AMW_Corridor_Manager::broadcastReservedCorridors(void) {
 }
 
 void AMW_Corridor_Manager::receivedCorridorBroadcast(const AMW_List<AMW_Corridor*>* corridors) {
-    if (!corridors || corridors->empty())
+    if (!corridors || corridors->empty() || corridorConflict)
         return;
 
     AMW_Corridor_Conflict* conflict = 0;
@@ -387,6 +396,9 @@ void AMW_Corridor_Manager::receivedCorridorBroadcast(const AMW_List<AMW_Corridor
     }
     delete iterator;
     if (conflict) {
+#ifdef AMW_CORRIDOR_LOGGING
+        AMW_Logging::getInstance()->logConflict();
+#endif
 #ifdef AMW_CORRIDOR_DEBUG
         AC_CommunicationFacade::sendDebug(PSTR("Corridor conflict detected."));
 #endif
@@ -409,16 +421,18 @@ float AMW_Corridor_Manager::getDeviation(void) {
     AMW_List<AMW_Corridor*>::Iterator* iterator = reservedCorridors.iterator();
     float distance = 0;
     bool foundCorridor = false;
+    AMW_Position_Corridor positionCorridor(AC_Facade::getFacade()->getRealPosition());
     while (iterator->hasNext()) {
         AMW_Corridor* corridor = iterator->next();
         if (corridor->isInCorridor() && !corridor->isCompleted()) {
             foundCorridor = true;
-            distance = dist_Point_to_Segment(AC_Facade::getFacade()->getRealPosition(), corridor->getStartPoint(), corridor->getEndPoint());
+            distance = corridor->getDistance(&positionCorridor);
+            break;
         }
     }
     delete iterator;
     if (foundCorridor)
         return distance;
     AMW_Corridor* corridor = reservedCorridors.front();
-    return dist_Point_to_Segment(AC_Facade::getFacade()->getRealPosition(), corridor->getStartPoint(), corridor->getEndPoint());
+    return corridor->getDistance(&positionCorridor);
 }
