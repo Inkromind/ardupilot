@@ -13,20 +13,24 @@ AC_ReactiveFacade* AC_ReactiveFacade::reactiveFacade = 0;
 bool MAD_navInitialized = false;
 
 // Takeoff location relative to origin
-Vector3f MAD_takeoffLocation;
+Vector2f MAD_takeoffLocation;
 // Homebase relative to origin
-Vector3f MAD_homebase;
+Vector2f MAD_homebase;
 
 void MAD_updateTakeoffLocation(void);
 void MAD_resetHomebase(void);
 void MAD_setHomebase(float x, float y);
 bool MAD_inControl(void);
 bool MAD_relativeDestinationReached(const Vector3f& destination, float radius = NEAR_DESTINATION_RADIUS);
+void MAD_runCorridorBroadcast(void);
 Vector3f MAD_convertExternToIntern(Vector3f position) {
-    return position - MAD_takeoffLocation;
+    Vector2f pos2d = Vector2f(position.x, position.y);
+    Vector2f internPos = Vector2f(position.x, position.y) - MAD_takeoffLocation;
+    return Vector3f(internPos.x, internPos.y, position.z);
 }
 Vector3f MAD_convertInternToExtern(Vector3f position) {
-    return position + MAD_takeoffLocation;
+    Vector2f externPos = Vector2f(position.x, position.y) + MAD_takeoffLocation;
+    return Vector3f(externPos.x, externPos.y, position.z);
 }
 
 bool MAD_inControl() {
@@ -201,22 +205,21 @@ DataFlash_Class* AC_Facade::getDataFlash(void) {
 
 void MAD_updateTakeoffLocation(void) {
     if (MAD_navInitialized)
-        MAD_takeoffLocation = MAD_takeoffLocation + inertial_nav.get_position();
+        MAD_takeoffLocation = MAD_takeoffLocation + Vector2f(inertial_nav.get_position().x, inertial_nav.get_position().y);
     else {
-        MAD_takeoffLocation = inertial_nav.get_position();
+        MAD_takeoffLocation = Vector2f(inertial_nav.get_position().x, inertial_nav.get_position().y);
         MAD_navInitialized = true;
     }
 }
 void MAD_setHomebase(float x, float y) {
-    MAD_homebase = Vector3f(x, y, 0);
+    MAD_homebase = Vector2f(x, y);
     AMW_Facade::setHomebase(Vector2f(x, y));
     AC_CommunicationFacade::sendFormattedDebug(PSTR("Setting homebase to <%.2f, %.2f>"), x, y);
 }
 void MAD_resetHomebase(void) {
-    if (!MAD_navInitialized) {
-        MAD_takeoffLocation = inertial_nav.get_position();
-        MAD_navInitialized = true;
-    }
-    MAD_setHomebase(MAD_takeoffLocation.x, MAD_takeoffLocation.y);
+    MAD_setHomebase(AC_Facade::getFacade()->getRealPosition().x, AC_Facade::getFacade()->getRealPosition().y);
+}
+void MAD_runCorridorBroadcast(void) {
+    AMW_Facade::runCorridorBroadcast();
 }
 

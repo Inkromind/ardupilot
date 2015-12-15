@@ -130,6 +130,8 @@ public:
 
     static void run1Hz();
 
+    static void runCorridorBroadcast();
+
     static AMW_Logging_struct getCounters(void);
 
     static void resetLogging(void);

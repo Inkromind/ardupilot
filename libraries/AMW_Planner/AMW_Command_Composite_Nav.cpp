@@ -254,7 +254,7 @@ void AMW_Command_Composite_Nav::returnToStart() {
 #else
     subCommands.push(new AMW_Command_Land());
 #endif
-    subCommands.push(new AMW_Command_Delay((30 + rand() % 10) * 1000));
+    subCommands.push(new AMW_Command_Delay((10 + rand() % 5) * 1000));
 
     if (subCommands.size() == 4) {
         corridors.get(2)->setInCorridor(true);
@@ -283,7 +283,7 @@ void AMW_Command_Composite_Nav::land() {
 #else
     subCommands.push(new AMW_Command_Land());
 #endif
-    subCommands.push(new AMW_Command_Delay((30 + rand() % 10) * 1000));
+    subCommands.push(new AMW_Command_Delay((10 + rand() % 5) * 1000));
     currentState = LAND;
 }
 

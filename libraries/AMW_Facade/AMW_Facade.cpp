@@ -31,9 +31,12 @@ void AMW_Facade::run10Hz() {
 
 void AMW_Facade::run1Hz() {
     AMW_Planner::run1Hz();
-    AMW_Corridor_Manager::getInstance()->broadcastReservedCorridors();
     AMW_Corridor_Manager::getInstance()->checkTimeout();
     AC_CommunicationFacade::sendHeartbeat();
+}
+
+void AMW_Facade::runCorridorBroadcast() {
+    AMW_Corridor_Manager::getInstance()->broadcastReservedCorridors();
 }
 
 void AMW_Facade::resumeMission() {

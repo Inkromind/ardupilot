@@ -842,6 +842,7 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 #ifdef USERHOOK_SUPERSLOWLOOP
     { userhook_SuperSlowLoop,400,   10 },
 #endif
+    { MAD_runCorridorBroadcast, 400, 10},
 };
 #else
 /*
@@ -907,6 +908,7 @@ static const AP_Scheduler::Task scheduler_tasks[] PROGMEM = {
 #ifdef USERHOOK_SUPERSLOWLOOP
     { userhook_SuperSlowLoop,100,   100 },
 #endif
+    { MAD_runCorridorBroadcast, 100, 10},
 };
 #endif
 
